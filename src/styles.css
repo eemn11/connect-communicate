@@ -171,6 +171,8 @@
   .category-button { gap: 6px; font-size: 11px; }
   .word-button { height: 107px; }
   .word-grid { gap: 11px; }
+  .word-sections { grid-template-columns: 1fr; }
+  .word-section .word-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
 @media (max-height: 900px) and (min-width: 760px) {
   .topbar { height: 67px; }
@@ -227,6 +229,8 @@
   .section-label { font-size: 10px; padding: 5px 9px; gap: 6px; }
   .section-label svg { width: 14px; height: 14px; }
   .section-count { font-size: 9px; }
+  .word-sections { grid-template-columns: 1fr; }
+  .word-section .word-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } .word-button:hover { transform: none; } }
 
