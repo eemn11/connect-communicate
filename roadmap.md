@@ -1,5 +1,4 @@
 # Roadmap
-
-- [x] Move Home, Favorites, Back, Settings buttons to a bottom bar (remove sidebar)
-- [x] Center the Home button in the bottom bar
-- [x] Verify bottom bar layout and interactions with Playwright
+- [x] Bottom bar with centered Home
+- [ ] Accounts (email + Google) and user profile page
+- [ ] Profile button at top right of home screen

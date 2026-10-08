@@ -71,7 +71,10 @@ function Index() {
       <div className="app-main">
         <header className="topbar">
           <div className="wordmark">together<span className="brand-dot">.</span><span className="wordmark-divider" /><span className="page-label">My voice</span></div>
-          <Button variant="aac" className="sound-button" onClick={() => setSound(!sound)} aria-pressed={sound} title="Toggle word audio">{sound ? <Volume2 /> : <VolumeX />}<span>Sound {sound ? "on" : "off"}</span></Button>
+          <div className="topbar-actions">
+            <Button variant="aac" className="sound-button" onClick={() => setSound(!sound)} aria-pressed={sound} title="Toggle word audio">{sound ? <Volume2 /> : <VolumeX />}<span>Sound {sound ? "on" : "off"}</span></Button>
+            <Button variant="aac" className="sound-button" asChild><Link to="/profile" aria-label="My profile"><UserRound /><span>Profile</span></Link></Button>
+          </div>
         </header>
         <main className="home-content">
           <section className="welcome">
