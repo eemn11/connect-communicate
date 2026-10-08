@@ -46,6 +46,17 @@ function Index() {
   const [favorites, setFavorites] = useState(false);
   const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
+  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string }[]>([]);
+  function goTo(next: { favorites: boolean; category: string }) {
+    if (next.favorites === favorites && next.category === category) return;
+    setViewHistory(h => [...h, { favorites, category }]);
+    setFavorites(next.favorites); setCategory(next.category);
+  }
+  function goBack() {
+    const prev = viewHistory[viewHistory.length - 1];
+    if (prev) { setViewHistory(h => h.slice(0, -1)); setFavorites(prev.favorites); setCategory(prev.category); }
+    else if (window.history.length > 1) window.history.back();
+  }
   const [speaking, setSpeaking] = useState(false);
   const [rate, setRate] = useState("0.85");
   const [speechError, setSpeechError] = useState("");
@@ -82,7 +93,7 @@ function Index() {
             <img src={mascot} alt="A friendly green speech bubble waving hello" width={512} height={512} className="welcome-mascot" />
           </section>
           <nav className="category-bar" aria-label="Word categories">
-            {categories.map(({ label, icon: Icon }) => <Button key={label} variant="aac" className={`category-button ${!favorites && category === label ? "is-active" : ""}`} aria-pressed={!favorites && category === label} onClick={() => { setFavorites(false); setCategory(label); }}><Icon /><span>{label}</span></Button>)}
+            {categories.map(({ label, icon: Icon }) => <Button key={label} variant="aac" className={`category-button ${!favorites && category === label ? "is-active" : ""}`} aria-pressed={!favorites && category === label} onClick={() => goTo({ favorites: false, category: label })}><Icon /><span>{label}</span></Button>)}
           </nav>
           <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span>{visibleWords.length} words <span className="heading-dot">·</span> A little connection starts here</span></div>
           <section className="word-grid" aria-label="Communication words">
@@ -101,10 +112,10 @@ function Index() {
       </div>
       <nav className="bottom-bar" aria-label="Main navigation">
         <div className="bottom-bar-side">
-          <Button variant="navigation" className="back-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /><span>Back</span></Button>
-          <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => setFavorites(true)} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
+          <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
+          <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => goTo({ favorites: true, category })} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
         </div>
-        <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => { setFavorites(false); setCategory("All words"); }} aria-pressed={!favorites}><Home /><span>Home</span></Button>
+        <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => goTo({ favorites: false, category: "All words" })} aria-pressed={!favorites}><Home /><span>Home</span></Button>
         <div className="bottom-bar-side">
           <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
         </div>
