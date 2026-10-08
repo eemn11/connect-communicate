@@ -57,7 +57,7 @@ function Index() {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = Number(rate);
     utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => { setSpeaking(false); setSpeechError("Couldn't speak. Please try again."); };
+    utterance.onerror = (event) => { setSpeaking(false); if (event.error !== "canceled" && event.error !== "interrupted") setSpeechError("Couldn't speak. Please try again."); };
     setSpeechError("");
     setSpeaking(true);
     window.speechSynthesis.speak(utterance);
