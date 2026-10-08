@@ -68,17 +68,6 @@ function Index() {
   }
   return (
     <div className="aac-app">
-      <aside className="sidebar" aria-label="Main navigation">
-        <a className="brand-icon" href="/" aria-label="Together home"><MessageCircle /></a>
-        <div className="sidebar-links">
-          <Button variant="navigation" className={!favorites ? "is-active" : ""} onClick={() => { setFavorites(false); setCategory("All words"); }} aria-pressed={!favorites}><Home /><span>Home</span></Button>
-          <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => setFavorites(true)} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
-        </div>
-        <div className="sidebar-bottom">
-          <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
-          <div className="profile-avatar" aria-label="My profile">Me</div>
-        </div>
-      </aside>
       <div className="app-main">
         <header className="topbar">
           <div className="wordmark">together<span className="brand-dot">.</span><span className="wordmark-divider" /><span className="page-label">My voice</span></div>
@@ -100,7 +89,6 @@ function Index() {
             <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
             <div className="sentence-row">
               <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
-              <Button variant="aac" className="backspace-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /></Button>
               <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
             </div>
             {speechError && <p role="alert" className="speech-error">{speechError}</p>}
