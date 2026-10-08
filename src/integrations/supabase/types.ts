@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          age: string | null
+          allow_camera: boolean
+          allow_microphone: boolean
+          allow_photos: boolean
+          avatar_path: string | null
+          caregiver_name: string | null
+          caregiver_phone: string | null
+          caregiver_relationship: string | null
+          created_at: string
+          dislikes: string | null
+          display_name: string | null
+          id: string
+          likes: string | null
+          sensory_notes: string | null
+          set_up_by: string | null
+          speech_rate: number
+          symbol_size: string
+          updated_at: string
+          voice_name: string | null
+        }
+        Insert: {
+          age?: string | null
+          allow_camera?: boolean
+          allow_microphone?: boolean
+          allow_photos?: boolean
+          avatar_path?: string | null
+          caregiver_name?: string | null
+          caregiver_phone?: string | null
+          caregiver_relationship?: string | null
+          created_at?: string
+          dislikes?: string | null
+          display_name?: string | null
+          id: string
+          likes?: string | null
+          sensory_notes?: string | null
+          set_up_by?: string | null
+          speech_rate?: number
+          symbol_size?: string
+          updated_at?: string
+          voice_name?: string | null
+        }
+        Update: {
+          age?: string | null
+          allow_camera?: boolean
+          allow_microphone?: boolean
+          allow_photos?: boolean
+          avatar_path?: string | null
+          caregiver_name?: string | null
+          caregiver_phone?: string | null
+          caregiver_relationship?: string | null
+          created_at?: string
+          dislikes?: string | null
+          display_name?: string | null
+          id?: string
+          likes?: string | null
+          sensory_notes?: string | null
+          set_up_by?: string | null
+          speech_rate?: number
+          symbol_size?: string
+          updated_at?: string
+          voice_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
