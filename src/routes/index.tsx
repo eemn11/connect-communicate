@@ -68,17 +68,6 @@ function Index() {
   }
   return (
     <div className="aac-app">
-      <aside className="sidebar" aria-label="Main navigation">
-        <a className="brand-icon" href="/" aria-label="Together home"><MessageCircle /></a>
-        <div className="sidebar-links">
-          <Button variant="navigation" className={!favorites ? "is-active" : ""} onClick={() => { setFavorites(false); setCategory("All words"); }} aria-pressed={!favorites}><Home /><span>Home</span></Button>
-          <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => setFavorites(true)} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
-        </div>
-        <div className="sidebar-bottom">
-          <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
-          <div className="profile-avatar" aria-label="My profile">Me</div>
-        </div>
-      </aside>
       <div className="app-main">
         <header className="topbar">
           <div className="wordmark">together<span className="brand-dot">.</span><span className="wordmark-divider" /><span className="page-label">My voice</span></div>
@@ -100,7 +89,6 @@ function Index() {
             <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
             <div className="sentence-row">
               <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
-              <Button variant="aac" className="backspace-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /></Button>
               <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
             </div>
             {speechError && <p role="alert" className="speech-error">{speechError}</p>}
@@ -108,6 +96,12 @@ function Index() {
           <footer className="home-footer"><span><Heart /> Every voice matters.</span><span>Made for connection, at your pace.</span></footer>
         </main>
       </div>
+      <nav className="bottom-bar" aria-label="Main navigation">
+        <Button variant="navigation" className={!favorites ? "is-active" : ""} onClick={() => { setFavorites(false); setCategory("All words"); }} aria-pressed={!favorites}><Home /><span>Home</span></Button>
+        <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => setFavorites(true)} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
+        <Button variant="navigation" className="back-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /><span>Back</span></Button>
+        <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
+      </nav>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );
