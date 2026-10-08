@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import mascot from "@/assets/hello-mascot.png";
@@ -18,26 +18,31 @@ export const Route = createFileRoute("/")({
 });
 
 const words = [
-  { label: "I want", icon: Hand, category: "Needs", tone: "mint" },
-  { label: "I feel", icon: Heart, category: "Feelings", tone: "yellow" },
-  { label: "Yes", icon: ThumbsUp, category: "Needs", tone: "mint" },
-  { label: "No", icon: ThumbsDown, category: "Needs", tone: "rose" },
-  { label: "Help", icon: Handshake, category: "People", tone: "blue" },
-  { label: "Eat", icon: Apple, category: "Food & drink", tone: "peach" },
-  { label: "Drink", icon: CupSoda, category: "Food & drink", tone: "blue" },
-  { label: "Toilet", icon: Toilet, category: "Needs", tone: "lavender" },
-  { label: "A break", icon: Leaf, category: "Needs", tone: "mint" },
-  { label: "More", icon: Plus, category: "Needs", tone: "yellow" },
-  { label: "Happy", icon: Smile, category: "Feelings", tone: "yellow" },
-  { label: "Sad", icon: Frown, category: "Feelings", tone: "blue" },
-  { label: "Play", icon: Gamepad2, category: "Activities", tone: "peach" },
-  { label: "All done", icon: PartyPopper, category: "Activities", tone: "lavender" },
-  { label: "Thank you", icon: Gift, category: "People", tone: "rose" },
+  { label: "I want", icon: Hand, category: "Needs", section: "Daily", tone: "mint" },
+  { label: "I feel", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow" },
+  { label: "Yes", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint" },
+  { label: "No", icon: ThumbsDown, category: "Needs", section: "Daily", tone: "rose" },
+  { label: "Help", icon: Handshake, category: "People", section: "Situation", tone: "blue" },
+  { label: "Eat", icon: Apple, category: "Food & drink", section: "Daily", tone: "peach" },
+  { label: "Drink", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "blue" },
+  { label: "Toilet", icon: Toilet, category: "Needs", section: "Daily", tone: "lavender" },
+  { label: "A break", icon: Leaf, category: "Needs", section: "Planning", tone: "mint" },
+  { label: "More", icon: Plus, category: "Needs", section: "Planning", tone: "yellow" },
+  { label: "Happy", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow" },
+  { label: "Sad", icon: Frown, category: "Feelings", section: "Situation", tone: "blue" },
+  { label: "Play", icon: Gamepad2, category: "Activities", section: "Planning", tone: "peach" },
+  { label: "All done", icon: PartyPopper, category: "Activities", section: "Planning", tone: "lavender" },
+  { label: "Thank you", icon: Gift, category: "People", section: "Daily", tone: "rose" },
 ];
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
   { label: "People", icon: Users }, { label: "Activities", icon: Shapes },
+];
+const sections = [
+  { label: "Daily", icon: CalendarDays, tone: "mint" },
+  { label: "Situation", icon: Compass, tone: "blue" },
+  { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
 
 function Index() {
@@ -96,9 +101,25 @@ function Index() {
             {categories.map(({ label, icon: Icon }) => <Button key={label} variant="aac" className={`category-button ${!favorites && category === label ? "is-active" : ""}`} aria-pressed={!favorites && category === label} onClick={() => goTo({ favorites: false, category: label })}><Icon /><span>{label}</span></Button>)}
           </nav>
           <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span>{visibleWords.length} words <span className="heading-dot">·</span> A little connection starts here</span></div>
-          <section className="word-grid" aria-label="Communication words">
-            {visibleWords.map(word => <Button key={word.label} variant="word" className={`tone-${word.tone}`} onClick={() => addWord(word)}><span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span></Button>)}
-          </section>
+          <div className="word-sections">
+            {sections.map(({ label, icon: SectionIcon, tone }) => {
+              const sectionWords = visibleWords.filter(word => word.section === label);
+              if (!sectionWords.length) return null;
+              return (
+                <section className={`word-section tone-${tone}`} key={label} aria-label={`${label} words`}>
+                  <header className="section-head">
+                    <h2 className="section-label"><SectionIcon aria-hidden="true" />{label}</h2>
+                    <span className="section-rule" aria-hidden="true" />
+                    <span className="section-count">{sectionWords.length} words</span>
+                  </header>
+                  <div className="word-grid">
+                    {sectionWords.map(word => <Button key={word.label} variant="word" className={`tone-${word.tone}`} onClick={() => addWord(word)}><span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span></Button>)}
+                  </div>
+                </section>
+              );
+            })}
+            {!visibleWords.length && <p className="words-empty">No words here yet. Try another category.</p>}
+          </div>
           <section className="sentence-section" aria-label="Sentence builder">
             <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
             <div className="sentence-row">
