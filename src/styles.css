@@ -151,7 +151,7 @@
   .word-button { height: 107px; }
   .word-grid { gap: 11px; }
 }
-@media (max-height: 800px) and (min-width: 760px) {
+@media (max-height: 900px) and (min-width: 760px) {
   .topbar { height: 67px; }
   .home-content { padding-top: 18px; }
   .welcome { min-height: 115px; padding: 15px 25px; }
@@ -202,3 +202,9 @@
   .home-footer { display: grid; gap: 7px; font-size: 9px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } .word-button:hover { transform: none; } }
+
+.word-symbol svg { width: 43px; height: 43px; stroke-width: 1.7; }
+.sentence-word svg { width: 18px; height: 18px; }
+.wave { display: inline-block; width: 27px; height: 27px; color: var(--primary); vertical-align: middle; }
+@media (max-height: 900px) and (min-width: 760px) { .word-symbol svg { width: 35px; height: 35px; } }
+@media (max-width: 759px) { .word-symbol svg { width: 32px; height: 32px; } .wave { width: 20px; height: 20px; } }
