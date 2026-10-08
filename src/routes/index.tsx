@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, Star } from "lucide-react";
+import { Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import mascot from "@/assets/hello-mascot.png";
@@ -18,21 +18,21 @@ export const Route = createFileRoute("/")({
 });
 
 const words = [
-  { label: "I want", symbol: "🙋", category: "Needs", tone: "mint" },
-  { label: "I feel", symbol: "💛", category: "Feelings", tone: "yellow" },
-  { label: "Yes", symbol: "👍", category: "Needs", tone: "mint" },
-  { label: "No", symbol: "👎", category: "Needs", tone: "rose" },
-  { label: "Help", symbol: "🤝", category: "People", tone: "blue" },
-  { label: "Eat", symbol: "🍎", category: "Food & drink", tone: "peach" },
-  { label: "Drink", symbol: "🥤", category: "Food & drink", tone: "blue" },
-  { label: "Toilet", symbol: "🚽", category: "Needs", tone: "lavender" },
-  { label: "A break", symbol: "🌿", category: "Needs", tone: "mint" },
-  { label: "More", symbol: "➕", category: "Needs", tone: "yellow" },
-  { label: "Happy", symbol: "😊", category: "Feelings", tone: "yellow" },
-  { label: "Sad", symbol: "😢", category: "Feelings", tone: "blue" },
-  { label: "Play", symbol: "🧸", category: "Activities", tone: "peach" },
-  { label: "All done", symbol: "🙌", category: "Activities", tone: "lavender" },
-  { label: "Thank you", symbol: "💝", category: "People", tone: "rose" },
+  { label: "I want", icon: Hand, category: "Needs", tone: "mint" },
+  { label: "I feel", icon: Heart, category: "Feelings", tone: "yellow" },
+  { label: "Yes", icon: ThumbsUp, category: "Needs", tone: "mint" },
+  { label: "No", icon: ThumbsDown, category: "Needs", tone: "rose" },
+  { label: "Help", icon: Handshake, category: "People", tone: "blue" },
+  { label: "Eat", icon: Apple, category: "Food & drink", tone: "peach" },
+  { label: "Drink", icon: CupSoda, category: "Food & drink", tone: "blue" },
+  { label: "Toilet", icon: Toilet, category: "Needs", tone: "lavender" },
+  { label: "A break", icon: Leaf, category: "Needs", tone: "mint" },
+  { label: "More", icon: Plus, category: "Needs", tone: "yellow" },
+  { label: "Happy", icon: Smile, category: "Feelings", tone: "yellow" },
+  { label: "Sad", icon: Frown, category: "Feelings", tone: "blue" },
+  { label: "Play", icon: Gamepad2, category: "Activities", tone: "peach" },
+  { label: "All done", icon: PartyPopper, category: "Activities", tone: "lavender" },
+  { label: "Thank you", icon: Gift, category: "People", tone: "rose" },
 ];
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
@@ -86,7 +86,7 @@ function Index() {
         </header>
         <main className="home-content">
           <section className="welcome">
-            <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, friend <span className="wave">👋</span></h1><p>What’s on your mind today?</p></div>
+            <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, friend <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
             <img src={mascot} alt="A friendly green speech bubble waving hello" width={512} height={512} className="welcome-mascot" />
           </section>
           <nav className="category-bar" aria-label="Word categories">
@@ -94,12 +94,12 @@ function Index() {
           </nav>
           <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span>{visibleWords.length} words <span className="heading-dot">·</span> A little connection starts here</span></div>
           <section className="word-grid" aria-label="Communication words">
-            {visibleWords.map(word => <Button key={word.label} variant="word" className={`tone-${word.tone}`} onClick={() => addWord(word)}><span className="word-symbol" aria-hidden="true">{word.symbol}</span><span className="word-label">{word.label}</span></Button>)}
+            {visibleWords.map(word => <Button key={word.label} variant="word" className={`tone-${word.tone}`} onClick={() => addWord(word)}><span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span></Button>)}
           </section>
           <section className="sentence-section" aria-label="Sentence builder">
             <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
             <div className="sentence-row">
-              <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><span aria-hidden="true">{word.symbol}</span>{word.label}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
+              <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
               <Button variant="aac" className="backspace-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /></Button>
               <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
             </div>
