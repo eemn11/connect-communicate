@@ -97,10 +97,14 @@ function Index() {
         </main>
       </div>
       <nav className="bottom-bar" aria-label="Main navigation">
-        <Button variant="navigation" className={!favorites ? "is-active" : ""} onClick={() => { setFavorites(false); setCategory("All words"); }} aria-pressed={!favorites}><Home /><span>Home</span></Button>
-        <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => setFavorites(true)} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
-        <Button variant="navigation" className="back-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /><span>Back</span></Button>
-        <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
+        <div className="bottom-bar-side">
+          <Button variant="navigation" className="back-button" title="Remove last word" aria-label="Remove last word" disabled={!sentence.length} onClick={() => setSentence(current => current.slice(0, -1))}><ArrowLeft /><span>Back</span></Button>
+          <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => setFavorites(true)} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
+        </div>
+        <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => { setFavorites(false); setCategory("All words"); }} aria-pressed={!favorites}><Home /><span>Home</span></Button>
+        <div className="bottom-bar-side">
+          <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
+        </div>
       </nav>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
