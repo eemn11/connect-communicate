@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import mascot from "@/assets/hello-mascot.png";
