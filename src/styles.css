@@ -117,7 +117,7 @@
 .words-heading > span { color: var(--muted-foreground); font-size: 11px; }
 .heading-dot { margin: 0 6px; }
 .word-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 14px; }
-.word-sections { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 4px; }
+.word-sections { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 4px; align-items: start; }
 .word-section .word-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 .word-section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px 16px; box-shadow: var(--panel-shadow); }
 .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; }
