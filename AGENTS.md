@@ -12,3 +12,4 @@
 - Keep the AAC home and its category/sentence interactions in the index route; this is one communication screen, not separate category pages.
 - Use the shared Button variants and global semantic CSS tokens for AAC controls so word tiles and navigation remain consistent.
 - Use browser speech synthesis only after user interaction; the home screen does not require a backend.
+- Prebundle the Radix dialog and slot with React in Vite's initial dependency pass to avoid late optimization producing mixed React module identities in an open preview.
