@@ -164,11 +164,8 @@
   .home-footer { padding: 14px 0; }
 }
 @media (max-width: 759px) {
-  .aac-app { grid-template-columns: 66px minmax(0,1fr); }
-  .sidebar { padding: 18px 7px; }
-  .brand-icon { width: 38px; height: 38px; border-radius: 10px 10px 10px 3px; }
-  .navigation-button { font-size: 9px; height: 64px; }
-  .sidebar-links { margin-top: 30px; }
+  .bottom-bar { gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
+  .bottom-bar .navigation-button, .navigation-button { min-width: 0; flex: 1; height: 50px; padding: 0 6px; font-size: 10px; gap: 6px; }
   .topbar { padding: 0 16px; height: 67px; }
   .wordmark { font-size: 22px; }
   .wordmark-divider, .page-label, .sound-button span { display: none; }
@@ -190,11 +187,10 @@
   .word-symbol { font-size: 32px; height: 38px; }
   .word-label { font-size: 12px; }
   .sentence-section { padding: 9px; margin-top: 20px; }
-  .sentence-row { grid-template-columns: minmax(0,1fr) 40px; gap: 7px; }
+  .sentence-row { grid-template-columns: minmax(0,1fr); gap: 7px; }
   .sentence-preview { padding: 8px; }
   .sentence-placeholder { font-size: 12px; }
-  .backspace-button { width: 40px; }
-  .speak-button { grid-column: 1/-1; height: 48px; }
+  .speak-button { height: 48px; }
   .home-footer { display: grid; gap: 7px; font-size: 9px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } .word-button:hover { transform: none; } }
