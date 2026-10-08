@@ -25,7 +25,7 @@ const words = [
   { label: "Help", icon: Handshake, category: "People", section: "Situation", tone: "blue" },
   { label: "Eat", icon: Apple, category: "Food & drink", section: "Daily", tone: "peach" },
   { label: "Drink", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "blue" },
-  { label: "Toilet", icon: Toilet, category: "Needs", section: "Daily", tone: "lavender" },
+  { label: "Toilet", icon: Toilet, category: "Needs", section: "Situation", tone: "lavender" },
   { label: "A break", icon: Leaf, category: "Needs", section: "Planning", tone: "mint" },
   { label: "More", icon: Plus, category: "Needs", section: "Planning", tone: "yellow" },
   { label: "Happy", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow" },
