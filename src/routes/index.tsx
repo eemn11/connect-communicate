@@ -19,30 +19,30 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const defaultWords: { label: string; icon: LucideIcon; category: string; section: string; tone: string }[] = [
-  { label: "I want", icon: Hand, category: "Needs", section: "Daily", tone: "mint" },
-  { label: "I feel", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow" },
-  { label: "Yes", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint" },
-  { label: "No", icon: ThumbsDown, category: "Needs", section: "Daily", tone: "rose" },
-  { label: "Help", icon: Handshake, category: "People", section: "Situation", tone: "blue" },
-  { label: "Eat", icon: Apple, category: "Food & drink", section: "Daily", tone: "peach" },
-  { label: "Drink", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "blue" },
-  { label: "Toilet", icon: Toilet, category: "Needs", section: "Situation", tone: "lavender" },
-  { label: "A break", icon: Leaf, category: "Needs", section: "Planning", tone: "mint" },
-  { label: "More", icon: Plus, category: "Needs", section: "Planning", tone: "yellow" },
-  { label: "Happy", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow" },
-  { label: "Sad", icon: Frown, category: "Feelings", section: "Situation", tone: "blue" },
-  { label: "Play", icon: Gamepad2, category: "Activities", section: "Planning", tone: "peach" },
-  { label: "All done", icon: PartyPopper, category: "Activities", section: "Planning", tone: "lavender" },
-  { label: "Thank you", icon: Gift, category: "People", section: "Daily", tone: "rose" },
+const defaultWords: { label: string; ko?: string; icon: LucideIcon; category: string; section: string; tone: string }[] = [
+  { label: "I want this, please", ko: "이거 주세요", icon: Hand, category: "Needs", section: "Daily", tone: "mint" },
+  { label: "I feel", ko: "나는 느껴요", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow" },
+  { label: "Yes, please", ko: "네, 좋아요", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint" },
+  { label: "No, thank you", ko: "아니요, 괜찮아요", icon: ThumbsDown, category: "Needs", section: "Daily", tone: "rose" },
+  { label: "Help", ko: "도와주세요", icon: Handshake, category: "People", section: "Situation", tone: "blue" },
+  { label: "I want to eat", ko: "먹고 싶어요", icon: Apple, category: "Food & drink", section: "Daily", tone: "peach" },
+  { label: "I want a drink", ko: "마시고 싶어요", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "blue" },
+  { label: "Toilet", ko: "화장실", icon: Toilet, category: "Needs", section: "Situation", tone: "lavender" },
+  { label: "A break", ko: "쉬는 시간", icon: Leaf, category: "Needs", section: "Planning", tone: "mint" },
+  { label: "More", ko: "더", icon: Plus, category: "Needs", section: "Planning", tone: "yellow" },
+  { label: "Happy", ko: "행복해요", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow" },
+  { label: "Sad", ko: "슬퍼요", icon: Frown, category: "Feelings", section: "Situation", tone: "blue" },
+  { label: "Play", ko: "놀이", icon: Gamepad2, category: "Activities", section: "Planning", tone: "peach" },
+  { label: "All done", ko: "다 했어요", icon: PartyPopper, category: "Activities", section: "Planning", tone: "lavender" },
+  { label: "Thank you so much", ko: "정말 고마워요", icon: Gift, category: "People", section: "Daily", tone: "rose" },
 ];
 const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
 const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper };
 const tones = ["mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
-type Draft = { index: number | null; label: string; icon: string; category: string; section: string; tone: string };
-const STORE = "together-words-v1";
+type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string };
+const STORE = "together-words-v2";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
@@ -69,14 +69,14 @@ function Index() {
     localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
   }
   function openNew(section: string) {
-    setDraft({ index: null, label: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint" });
+    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint" });
   }
   function openEdit(word: Word) {
-    setDraft({ index: words.indexOf(word), label: word.label, icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone });
+    setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone });
   }
   function commitDraft() {
     if (!draft || !draft.label.trim()) return;
-    const w: Word = { label: draft.label.trim(), icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone };
+    const w: Word = { label: draft.label.trim(), ko: draft.ko.trim() || undefined, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone };
     saveWords(draft.index === null ? [...words, w] : words.map((x, i) => i === draft.index ? w : x));
     setDraft(null);
   }
@@ -103,7 +103,7 @@ function Index() {
   const [speaking, setSpeaking] = useState(false);
   const [rate, setRate] = useState("0.85");
   const [speechError, setSpeechError] = useState("");
-  const favoriteLabels = ["I want", "Yes", "No", "Help", "Drink", "A break"];
+  const favoriteLabels = ["I want this, please", "Yes, please", "No, thank you", "Help", "I want a drink", "A break"];
   const visibleWords = words.filter(word => favorites ? favoriteLabels.includes(word.label) : category === "All words" || word.category === category);
   function speak(text: string) {
     if (!("speechSynthesis" in window)) { setSpeechError("Speaking isn't available in this browser."); return; }
@@ -151,8 +151,8 @@ function Index() {
                     <span className="section-count">{sectionWords.length} words</span>
                   </header>
                   <div className="word-grid">
-                    {sectionWords.map((word, i) => <Button key={`${word.label}-${i}`} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""}`} aria-label={editing ? `Edit ${word.label}` : undefined} onClick={() => editing ? openEdit(word) : addWord(word)}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span></Button>)}
-                    <Button variant="word" className="add-word-card" aria-label={`Add a word to ${label}`} onClick={() => openNew(label)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">Add word</span></Button>
+                    {sectionWords.map((word, i) => <Button key={`${word.label}-${i}`} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""}`} aria-label={editing ? `Edit ${word.label}` : undefined} onClick={() => editing ? openEdit(word) : addWord(word)}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>)}
+                    <Button variant="word" className="add-word-card" aria-label={`Add a word to ${label}`} onClick={() => openNew(label)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">{label === "Daily" ? "Add phrase" : "Add word"}</span><span className="word-label-ko" lang="ko">{label === "Daily" ? "문장 추가" : "단어 추가"}</span></Button>
                   </div>
                 </section>
               );
@@ -162,7 +162,7 @@ function Index() {
           <section className="sentence-section" aria-label="Sentence builder">
             <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
             <div className="sentence-row">
-              <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
+              <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}{word.ko && <span className="sentence-ko" lang="ko">{word.ko}</span>}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
               <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
             </div>
             {speechError && <p role="alert" className="speech-error">{speechError}</p>}
@@ -182,8 +182,10 @@ function Index() {
       </nav>
       <Dialog open={!!draft} onOpenChange={open => !open && setDraft(null)}><DialogContent className="settings-dialog">{draft && <>
         <DialogHeader><DialogTitle>{draft.index === null ? "Add a word" : "Edit word"}</DialogTitle><DialogDescription>Choose the word, picture, and where it goes.</DialogDescription></DialogHeader>
-        <label className="settings-label" htmlFor="word-label">Word</label>
+        <label className="settings-label" htmlFor="word-label">{draft.section === "Daily" ? "Phrase (English)" : "Word (English)"}</label>
         <input id="word-label" className="settings-select" value={draft.label} maxLength={30} autoFocus onChange={e => setDraft({ ...draft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitDraft()} />
+        <label className="settings-label" htmlFor="word-ko">Korean</label>
+        <input id="word-ko" lang="ko" className="settings-select" value={draft.ko} maxLength={30} onChange={e => setDraft({ ...draft, ko: e.target.value })} />
         <span className="settings-label">Picture</span>
         <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${draft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={draft.icon === name} onClick={() => setDraft({ ...draft, icon: name })}><Icon /></button>)}</div>
         <span className="settings-label">Color</span>

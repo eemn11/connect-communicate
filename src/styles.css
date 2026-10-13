@@ -253,3 +253,7 @@
 .icon-choice.is-active, .tone-choice.is-active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--accent); }
 .tone-choice.tone-mint { background: var(--mint); } .tone-choice.tone-yellow { background: var(--yellow); } .tone-choice.tone-rose { background: var(--rose); }
 .tone-choice.tone-blue { background: var(--blue); } .tone-choice.tone-peach { background: var(--peach); } .tone-choice.tone-lavender { background: var(--lavender); }
+
+.word-label-ko { display: block; font-size: 12px; font-weight: 600; color: var(--muted-foreground); line-height: 1.2; }
+.word-section.tone-mint .word-label { font-size: 14px; line-height: 1.2; white-space: normal; text-align: center; }
+.sentence-ko { margin-left: 4px; font-size: 11px; color: var(--muted-foreground); }
