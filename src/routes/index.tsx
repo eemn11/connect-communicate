@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import type React from "react";
 import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
@@ -59,7 +60,7 @@ const sections = [
   { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
 type SectionLabel = { label: string; ko: string; icon: LucideIcon; tone: string; section: string };
-const LABEL_STORE = "together-labels-v2";
+const LABEL_STORE = "together-labels-v3";
 const baseLabels: SectionLabel[] = [
   ...[
     { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
