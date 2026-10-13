@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const defaultWords: { label: string; ko?: string; icon: LucideIcon; category: string; section: string; tone: string }[] = [
+const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; category: string; section: string; tone: string }[] = [
   { label: "I want this, please", ko: "이거 주세요", icon: Hand, category: "Needs", section: "Daily", tone: "mint" },
   { label: "I feel", ko: "나는 느껴요", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow" },
   { label: "Yes, please", ko: "네, 좋아요", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint" },
