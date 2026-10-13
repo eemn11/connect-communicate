@@ -49,7 +49,6 @@ const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
 const STORE = "together-words-v4";
-const TONE_STORE = "together-tone-white-v2";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
