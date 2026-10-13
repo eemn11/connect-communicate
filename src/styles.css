@@ -169,10 +169,25 @@
   .home-content { padding: 24px 26px 0; }
   .topbar { padding: 0 26px; height: 75px; }
   .category-button { gap: 6px; font-size: 11px; }
-  .word-button { height: 107px; }
-  .word-grid { gap: 11px; }
-  .word-sections { grid-template-columns: 1fr; }
-  .word-section .word-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .word-button { height: auto; min-height: 96px; }
+  .word-grid { gap: 10px; }
+  .word-sections { gap: 12px; }
+  .word-section { padding: 12px 12px 14px; }
+  .word-section .word-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .section-label { font-size: 11px; padding: 5px 10px; gap: 6px; }
+  .section-label svg { width: 14px; height: 14px; }
+  .section-count { font-size: 10px; }
+  .word-label { font-size: 14px; }
+}
+@media (max-width: 900px) and (min-width: 760px) {
+  .word-sections { gap: 9px; }
+  .word-section { padding: 10px 10px 12px; }
+  .word-section .word-grid { grid-template-columns: minmax(0,1fr); }
+  .word-button { min-height: 80px; padding: 10px 8px; }
+  .word-label { font-size: 13px; }
+  .word-label-ko { font-size: 11px; }
+  .section-label { font-size: 10px; padding: 4px 8px; }
+  .section-rule { display: none; }
 }
 @media (max-height: 900px) and (min-width: 760px) {
   .topbar { height: 67px; }
@@ -182,7 +197,7 @@
   .welcome-mascot { width: 115px; height: 115px; }
   .category-bar { padding: 16px 0; }
   .words-heading { margin: 16px 0 12px; }
-  .word-button { height: 96px; gap: 5px; }
+  .word-button { height: auto; min-height: 86px; gap: 5px; }
   .word-symbol { font-size: 35px; height: 41px; }
   .word-label { font-size: 14px; }
   .word-grid { gap: 11px; }
