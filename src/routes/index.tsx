@@ -194,18 +194,19 @@ function Index() {
             })}
             {!visibleWords.length && <p className="words-empty">No words here yet. Try another category.</p>}
           </div>
-          <section className="sentence-section" aria-label="Sentence builder">
-            <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
-            <div className="sentence-row">
-              <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}{word.ko && <span className="sentence-ko" lang="ko">{word.ko}</span>}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
-              <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
-            </div>
-            {speechError && <p role="alert" className="speech-error">{speechError}</p>}
-          </section>
           <footer className="home-footer"><span><Heart /> Every voice matters.</span><span>Made for connection, at your pace.</span></footer>
         </main>
       </div>
-      <nav className="bottom-bar" aria-label="Main navigation">
+      <div className="dock">
+        <section className="sentence-section" aria-label="Sentence builder">
+          <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
+          <div className="sentence-row">
+            <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}{word.ko && <span className="sentence-ko" lang="ko">{word.ko}</span>}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
+            <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
+          </div>
+          {speechError && <p role="alert" className="speech-error">{speechError}</p>}
+        </section>
+        <nav className="bottom-bar" aria-label="Main navigation">
         <div className="bottom-bar-side">
           <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
           <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => goTo({ favorites: true, category })} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
@@ -214,7 +215,8 @@ function Index() {
         <div className="bottom-bar-side">
           <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
         </div>
-      </nav>
+        </nav>
+      </div>
       <Dialog open={!!draft} onOpenChange={open => !open && setDraft(null)}><DialogContent className="settings-dialog">{draft && <>
         <DialogHeader><DialogTitle>{draft.index === null ? "Add a word" : "Edit word"}</DialogTitle><DialogDescription>Choose the word, picture, and where it goes.</DialogDescription></DialogHeader>
         <label className="settings-label" htmlFor="word-label">{draft.section === "Daily" ? "Phrase (English)" : "Word (English)"}</label>
