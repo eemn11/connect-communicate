@@ -121,6 +121,11 @@
 .word-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 14px; }
 .word-sections { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 4px; align-items: start; }
 .word-section .word-grid { grid-template-columns: minmax(0,1fr); }
+.word-section .word-grid .word-button { position: relative; display: grid; grid-template-columns: auto minmax(0,1fr); grid-template-areas: "icon en" "icon ko"; align-items: center; column-gap: 12px; row-gap: 1px; height: auto; min-height: 58px; padding: 8px 12px; text-align: left; }
+.word-section .word-grid .word-symbol { grid-area: icon; justify-self: center; font-size: 26px; height: 30px; width: 30px; }
+.word-section .word-grid .word-symbol svg { width: 26px; height: 26px; }
+.word-section .word-grid .word-label { grid-area: en; }
+.word-section .word-grid .word-label-ko { grid-area: ko; font-size: 11px; }
 .word-section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px 16px; box-shadow: var(--panel-shadow); }
 .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; }
 .section-label { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 6px 14px; border-radius: 999px; background: var(--tile-color); border: 1px solid var(--tile-border); color: var(--foreground); font-family: var(--font-heading); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
