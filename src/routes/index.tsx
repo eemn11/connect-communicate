@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import type React from "react";
 import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
@@ -59,7 +60,7 @@ const sections = [
   { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
 type SectionLabel = { label: string; ko: string; icon: LucideIcon; tone: string; section: string };
-const LABEL_STORE = "together-labels-v2";
+const LABEL_STORE = "together-labels-v3";
 const baseLabels: SectionLabel[] = [
   ...[
     { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
@@ -88,28 +89,35 @@ function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [customLabels, setCustomLabels] = useState<SectionLabel[]>([]);
-  const [labelDraft, setLabelDraft] = useState<{ section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
+  const [labels, setLabels] = useState<SectionLabel[]>(baseLabels);
+  const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
       if (Array.isArray(saved)) setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle })));
       const savedLabels = JSON.parse(localStorage.getItem(LABEL_STORE) || "null");
-      if (Array.isArray(savedLabels)) setCustomLabels(savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint", section: typeof g.section === "string" ? g.section : "Daily" })));
+      if (Array.isArray(savedLabels)) setLabels(savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint", section: typeof g.section === "string" ? g.section : "Daily" })));
     } catch { /* ignore */ }
   }, []);
-  const allLabels: SectionLabel[] = [...baseLabels, ...customLabels];
+  const allLabels: SectionLabel[] = labels;
   const labelsFor = (section: string) => allLabels.filter(l => l.section === section);
   const labelNamesFor = (section: string) => labelsFor(section).map(l => l.label);
   function saveWords(next: Word[]) {
     setWords(next);
     localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
   }
+  function saveLabels(next: SectionLabel[]) {
+    setLabels(next);
+    localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+  }
   function openNew(section: string, group?: string) {
     setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
     setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
+  }
+  function openLabelEdit(l: SectionLabel) {
+    setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
   }
   function commitDraft() {
     if (!draft || !draft.label.trim()) return;
@@ -124,13 +132,79 @@ function Index() {
   function commitLabel() {
     if (!labelDraft || !labelDraft.label.trim()) return;
     const name = labelDraft.label.trim();
-    if (!labelNamesFor(labelDraft.section).includes(name)) {
-      const next = [...customLabels, { label: name, ko: labelDraft.ko.trim(), icon: iconChoices[labelDraft.icon] ?? Star, tone: labelDraft.tone, section: labelDraft.section }];
-      setCustomLabels(next);
-      localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+    const entry: SectionLabel = { label: name, ko: labelDraft.ko.trim(), icon: iconChoices[labelDraft.icon] ?? allIcons[labelDraft.icon] ?? Star, tone: labelDraft.tone, section: labelDraft.section };
+    if (labelDraft.index === null) {
+      if (!labelNamesFor(labelDraft.section).includes(name)) saveLabels([...labels, entry]);
+      setOpenLabel({ section: labelDraft.section, label: name });
+    } else {
+      const old = labels[labelDraft.index];
+      saveLabels(labels.map((x, i) => i === labelDraft.index ? entry : x));
+      if (old && old.label !== name) saveWords(words.map(w => w.section === old.section && w.group === old.label ? { ...w, group: name } : w));
     }
-    setOpenLabel({ section: labelDraft.section, label: name });
     setLabelDraft(null);
+  }
+  function deleteLabel() {
+    if (!labelDraft || labelDraft.index === null) return;
+    const old = labels[labelDraft.index];
+    saveLabels(labels.filter((_, i) => i !== labelDraft.index));
+    if (old) saveWords(words.filter(w => !(w.section === old.section && w.group === old.label)));
+    setLabelDraft(null);
+  }
+
+  // Hold a card ~1s to turn on editing; while editing, drag a card to reorder.
+  const press = useRef<{ key: string; x: number; y: number; timer: number | null; long: boolean; moved: boolean; id: number } | null>(null);
+  const suppressClick = useRef(false);
+  const [dragKey, setDragKey] = useState<string | null>(null);
+  const [overKey, setOverKey] = useState<string | null>(null);
+  const [dragDelta, setDragDelta] = useState({ x: 0, y: 0 });
+  function moveCard(from: string, to: string) {
+    const [fk, fi] = [from[0], Number(from.slice(2))];
+    const [tk, ti] = [to[0], Number(to.slice(2))];
+    if (fk !== tk || fi === ti) return;
+    const reorder = <T,>(list: T[]) => { const next = [...list]; const [item] = next.splice(fi, 1); if (item !== undefined) next.splice(ti, 0, item); return next; };
+    if (fk === "w") saveWords(reorder(words)); else saveLabels(reorder(labels));
+  }
+  function endPress() {
+    const p = press.current;
+    if (p?.timer) window.clearTimeout(p.timer);
+    press.current = null;
+    setDragKey(null); setOverKey(null); setDragDelta({ x: 0, y: 0 });
+  }
+  function cardProps(key: string, onTap: () => void, onLongEdit: () => void) {
+    void onLongEdit;
+    return {
+      "data-card": key,
+      onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+      onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+        if (e.button !== 0) return;
+        suppressClick.current = false;
+        const p = { key, x: e.clientX, y: e.clientY, timer: null as number | null, long: false, moved: false, id: e.pointerId };
+        if (!editing) p.timer = window.setTimeout(() => { p.long = true; setEditing(true); navigator.vibrate?.(30); }, 1000);
+        else e.currentTarget.setPointerCapture(e.pointerId);
+        press.current = p;
+      },
+      onPointerMove: (e: React.PointerEvent<HTMLButtonElement>) => {
+        const p = press.current;
+        if (!p || p.key !== key) return;
+        const dx = e.clientX - p.x, dy = e.clientY - p.y;
+        if (!editing) { if (Math.hypot(dx, dy) > 10 && p.timer) { window.clearTimeout(p.timer); p.timer = null; } return; }
+        if (!p.moved && Math.hypot(dx, dy) < 8) return;
+        p.moved = true;
+        setDragKey(key); setDragDelta({ x: dx, y: dy });
+        const target = document.elementsFromPoint(e.clientX, e.clientY).map(el => (el as HTMLElement).closest?.("[data-card]") as HTMLElement | null).find(el => el && el.dataset["card"] !== key && el.dataset["card"]?.[0] === key[0]);
+        setOverKey(target?.dataset["card"] ?? null);
+      },
+      onPointerUp: () => {
+        const p = press.current;
+        if (p && p.key === key) {
+          if (p.long || p.moved) suppressClick.current = true;
+          if (p.moved && overKey) moveCard(key, overKey);
+        }
+        endPress();
+      },
+      onPointerCancel: endPress,
+      onClick: () => { if (suppressClick.current) { suppressClick.current = false; return; } onTap(); },
+    };
   }
 
   const [category, setCategory] = useState("All words");
@@ -193,14 +267,14 @@ function Index() {
           <nav className="category-bar" aria-label="Word categories">
             {categories.map(({ label, icon: Icon }) => <Button key={label} variant="aac" className={`category-button ${!favorites && category === label ? "is-active" : ""}`} aria-pressed={!favorites && category === label} onClick={() => goTo({ favorites: false, category: label })}><Icon /><span>{label}</span></Button>)}
           </nav>
-          <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span className="words-heading-meta"><Button variant="aac" className={`edit-toggle ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit words"}</span></Button>{visibleWords.length} words <span className="heading-dot">·</span> A little connection starts here</span></div>
+          <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span className="words-heading-meta"><Button variant="aac" className={`edit-toggle ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit words"}</span></Button>{editing ? "Tap a card to change it · drag to move it" : <>{visibleWords.length} words <span className="heading-dot">·</span> Hold a card to edit</>}</span></div>
           <div className="word-sections">
             {sections.map(({ label, icon: SectionIcon, tone }) => {
               const sectionWords = visibleWords.filter(word => word.section === label);
               if (!sectionWords.length && favorites) return null;
               const sectionLabels = labelsFor(label);
               const open = openLabel && openLabel.section === label ? openLabel.label : null;
-              const renderWord = (word: Word, i: number) => <Button key={`${word.label}-${i}`} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""}`} aria-label={editing ? `Edit ${word.label}` : undefined} onClick={() => editing ? openEdit(word) : addWord(word)}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>;
+              const renderWord = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
               const addCard = (group: string) => <Button variant="word" className="add-word-card" aria-label={group ? `Add a phrase to ${group}` : `Add a word to ${label}`} onClick={() => openNew(label, group || undefined)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">{group || sectionLabels.length ? "Add phrase" : "Add word"}</span><span className="word-label-ko" lang="ko">{group || sectionLabels.length ? "문장 추가" : "단어 추가"}</span></Button>;
               return (
                 <section className={`word-section tone-${tone}`} key={label} aria-label={`${label} words`}>
@@ -219,14 +293,15 @@ function Index() {
                     </>
                   ) : (
                     <div className="word-grid daily-group-cards">
-                      {sectionLabels.map(({ label: groupLabel, ko, icon: GroupIcon, tone: groupTone }) => (
-                        <Button key={groupLabel} variant="word" className={`tone-${groupTone}`} aria-label={`Open ${groupLabel}`} onClick={() => setOpenLabel({ section: label, label: groupLabel })}>
+                      {sectionLabels.map((l) => { const { label: groupLabel, ko, icon: GroupIcon, tone: groupTone } = l; const key = `l:${labels.indexOf(l)}`; return (
+                        <Button key={groupLabel} {...cardProps(key, () => editing ? openLabelEdit(l) : setOpenLabel({ section: label, label: groupLabel }), () => openLabelEdit(l))} variant="word" className={`tone-${groupTone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${groupLabel}` : `Open ${groupLabel}`}>
+                          {editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}
                           <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
                           <span className="word-label">{groupLabel}</span>
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
-                      ))}
-                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ section: label, label: "", ko: "", icon: "Star", tone: "mint" })}>
+                      ); })}
+                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "mint" })}>
                         <span className="word-symbol" aria-hidden="true"><Plus /></span>
                         <span className="word-label">Add label</span>
                         <span className="word-label-ko" lang="ko">라벨 추가</span>
@@ -285,7 +360,7 @@ function Index() {
         {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
       </>}</DialogContent></Dialog>
       <Dialog open={!!labelDraft} onOpenChange={open => !open && setLabelDraft(null)}><DialogContent className="settings-dialog">{labelDraft && <>
-        <DialogHeader><DialogTitle>Add a {labelDraft.section} label</DialogTitle><DialogDescription>Give your new label a name, a picture, and a color.</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>{labelDraft.index === null ? `Add a ${labelDraft.section} label` : `Edit ${labelDraft.label || "label"}`}</DialogTitle><DialogDescription>Choose a name, a picture, and a color.</DialogDescription></DialogHeader>
         <label className="settings-label" htmlFor="group-label">Label (English)</label>
         <input id="group-label" className="settings-select" value={labelDraft.label} maxLength={30} autoFocus onChange={e => setLabelDraft({ ...labelDraft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitLabel()} />
         <label className="settings-label" htmlFor="group-ko">Korean</label>
@@ -295,6 +370,7 @@ function Index() {
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
         <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
+        {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
       </>}</DialogContent></Dialog>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>

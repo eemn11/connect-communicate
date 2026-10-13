@@ -293,3 +293,11 @@
 
 .daily-back { justify-self: start; margin-bottom: 12px; }
 .daily-back .word-label-ko { margin-left: 6px; }
+
+/* Hold-to-edit + drag to reorder */
+.word-grid > [data-card] { -webkit-touch-callout: none; user-select: none; }
+.word-grid > .is-editing { touch-action: none; cursor: grab; animation: card-wiggle 0.5s ease-in-out infinite alternate; }
+.word-grid > .is-dragging { z-index: 20; cursor: grabbing; animation: none; box-shadow: var(--shadow-lg, 0 12px 28px color-mix(in oklab, var(--foreground) 25%, transparent)); transition: none; }
+.word-grid > .is-drop-target { outline: 3px solid var(--primary); outline-offset: 3px; }
+@keyframes card-wiggle { from { rotate: -0.6deg; } to { rotate: 0.6deg; } }
+@media (prefers-reduced-motion: reduce) { .word-grid > .is-editing { animation: none; } }
