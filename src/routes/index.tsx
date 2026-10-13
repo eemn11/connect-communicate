@@ -60,17 +60,27 @@ const dailyGroupCards = [
   { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "peach" },
   { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "rose" },
 ] as const;
+type DailyLabel = { label: string; ko: string; icon: LucideIcon; tone: string };
+const GROUP_STORE = "together-daily-labels-v1";
+
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [customGroups, setCustomGroups] = useState<DailyLabel[]>([]);
+  const [groupDraft, setGroupDraft] = useState<{ label: string; ko: string; icon: string; tone: string } | null>(null);
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
       if (Array.isArray(saved)) setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle })));
+      const savedGroups = JSON.parse(localStorage.getItem(GROUP_STORE) || "null");
+      if (Array.isArray(savedGroups)) setCustomGroups(savedGroups.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint" })));
     } catch { /* ignore */ }
   }, []);
+  const groups: DailyLabel[] = [...dailyGroupCards, ...customGroups];
+  const groupNames = groups.map(g => g.label);
+
   function saveWords(next: Word[]) {
     setWords(next);
     localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
@@ -91,6 +101,18 @@ function Index() {
     if (!draft || draft.index === null) return;
     saveWords(words.filter((_, i) => i !== draft.index)); setDraft(null);
   }
+  function commitGroup() {
+    if (!groupDraft || !groupDraft.label.trim()) return;
+    const label = groupDraft.label.trim();
+    if (!groupNames.includes(label)) {
+      const next = [...customGroups, { label, ko: groupDraft.ko.trim(), icon: iconChoices[groupDraft.icon] ?? Star, tone: groupDraft.tone }];
+      setCustomGroups(next);
+      localStorage.setItem(GROUP_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+    }
+    setGroupDraft(null);
+    setDailyOpen(label);
+  }
+
   const [category, setCategory] = useState("All words");
   const [sentence, setSentence] = useState<typeof words>([]);
   const [favorites, setFavorites] = useState(false);
@@ -175,14 +197,20 @@ function Index() {
                     </>
                   ) : (
                     <div className="word-grid daily-group-cards">
-                      {dailyGroupCards.map(({ label: groupLabel, ko, icon: GroupIcon, tone }) => (
+                      {groups.map(({ label: groupLabel, ko, icon: GroupIcon, tone }) => (
                         <Button key={groupLabel} variant="word" className={`tone-${tone}`} aria-label={`Open ${groupLabel}`} onClick={() => setDailyOpen(groupLabel)}>
                           <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
                           <span className="word-label">{groupLabel}</span>
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
                       ))}
+                      <Button variant="word" className="add-word-card" aria-label="Add a Daily label" onClick={() => setGroupDraft({ label: "", ko: "", icon: "Star", tone: "mint" })}>
+                        <span className="word-symbol" aria-hidden="true"><Plus /></span>
+                        <span className="word-label">Add label</span>
+                        <span className="word-label-ko" lang="ko">라벨 추가</span>
+                      </Button>
                     </div>
+
                   )) : (
                     <div className="word-grid">
                       {sectionWords.map(renderWord)}
@@ -231,10 +259,23 @@ function Index() {
         <select id="word-section" className="settings-select" value={draft.section} onChange={e => setDraft({ ...draft, section: e.target.value })}>{sections.map(s => <option key={s.label}>{s.label}</option>)}</select>
         <label className="settings-label" htmlFor="word-category">Category</label>
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
-        {draft.section === "Daily" && <><label className="settings-label" htmlFor="word-group">Daily label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{dailyGroups.map(g => <option key={g}>{g}</option>)}</select></>}
+        {draft.section === "Daily" && <><label className="settings-label" htmlFor="word-group">Daily label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{groupNames.map(g => <option key={g}>{g}</option>)}</select></>}
         <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
         {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
       </>}</DialogContent></Dialog>
+      <Dialog open={!!groupDraft} onOpenChange={open => !open && setGroupDraft(null)}><DialogContent className="settings-dialog">{groupDraft && <>
+        <DialogHeader><DialogTitle>Add a Daily label</DialogTitle><DialogDescription>Give your new label a name, a picture, and a color.</DialogDescription></DialogHeader>
+        <label className="settings-label" htmlFor="group-label">Label (English)</label>
+        <input id="group-label" className="settings-select" value={groupDraft.label} maxLength={30} autoFocus onChange={e => setGroupDraft({ ...groupDraft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitGroup()} />
+        <label className="settings-label" htmlFor="group-ko">Korean</label>
+        <input id="group-ko" lang="ko" className="settings-select" value={groupDraft.ko} maxLength={30} onChange={e => setGroupDraft({ ...groupDraft, ko: e.target.value })} />
+        <span className="settings-label">Picture</span>
+        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${groupDraft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={groupDraft.icon === name} onClick={() => setGroupDraft({ ...groupDraft, icon: name })}><Icon /></button>)}</div>
+        <span className="settings-label">Color</span>
+        <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${groupDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={groupDraft.tone === t} onClick={() => setGroupDraft({ ...groupDraft, tone: t })} />)}</div>
+        <Button onClick={commitGroup} disabled={!groupDraft.label.trim()}><Check />Save label</Button>
+      </>}</DialogContent></Dialog>
+
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );
