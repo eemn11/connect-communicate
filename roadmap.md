@@ -8,4 +8,6 @@
 - [x] Daily, Situation and Planning shown side by side (stack only on phones)
 - [x] Sentence bar docked above the bottom navigation so Speak is always on screen
 - [x] Daily label cards: "+ Add label" card at the end so users can create their own Daily labels
+- [x] Situation shows three label cards: Hospital 병원 갔을 때, Swimming pool 수영장 갔을 때, Restaurant 식당 갔을 때
+
 

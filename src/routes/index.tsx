@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,28 +21,33 @@ export const Route = createFileRoute("/")({
 
 const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; category: string; section: string; tone: string; group?: string | undefined }[] = [
   { label: "I want this, please", ko: "이거 주세요", icon: Hand, category: "Needs", section: "Daily", tone: "mint", group: "Things I want to do" },
-  { label: "I feel", ko: "나는 느껴요", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow" },
+  { label: "I feel", ko: "나는 느껴요", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow", group: "Hospital" },
   { label: "Yes, please", ko: "네, 좋아요", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint", group: "Things I want to do" },
   { label: "No, thank you", ko: "아니요, 괜찮아요", icon: ThumbsDown, category: "Needs", section: "Daily", tone: "rose", group: "Things I should not do" },
-  { label: "Help", ko: "도와주세요", icon: Handshake, category: "People", section: "Situation", tone: "blue" },
+  { label: "Help", ko: "도와주세요", icon: Handshake, category: "People", section: "Situation", tone: "blue", group: "Hospital" },
   { label: "I want to eat", ko: "먹고 싶어요", icon: Apple, category: "Food & drink", section: "Daily", tone: "peach", group: "Food I want to eat" },
   { label: "I want a drink", ko: "마시고 싶어요", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "blue", group: "Food I want to eat" },
-  { label: "Toilet", ko: "화장실", icon: Toilet, category: "Needs", section: "Situation", tone: "lavender" },
+  { label: "Toilet", ko: "화장실", icon: Toilet, category: "Needs", section: "Situation", tone: "lavender", group: "Swimming pool" },
   { label: "A break", ko: "쉬는 시간", icon: Leaf, category: "Needs", section: "Daily", tone: "mint", group: "Things I need to do" },
   { label: "More", ko: "더", icon: Plus, category: "Needs", section: "Planning", tone: "yellow" },
-  { label: "Happy", ko: "행복해요", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow" },
-  { label: "Sad", ko: "슬퍼요", icon: Frown, category: "Feelings", section: "Situation", tone: "blue" },
+  { label: "Happy", ko: "행복해요", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow", group: "Swimming pool" },
+  { label: "Sad", ko: "슬퍼요", icon: Frown, category: "Feelings", section: "Situation", tone: "blue", group: "Hospital" },
   { label: "Play", ko: "놀이", icon: Gamepad2, category: "Activities", section: "Planning", tone: "peach" },
   { label: "All done", ko: "다 했어요", icon: PartyPopper, category: "Activities", section: "Planning", tone: "lavender" },
   { label: "Thank you so much", ko: "정말 고마워요", icon: Gift, category: "People", section: "Daily", tone: "rose", group: "Things I want to do" },
+  { label: "It hurts", ko: "아파요", icon: HeartPulse, category: "Needs", section: "Situation", tone: "rose", group: "Hospital" },
+  { label: "I want to swim", ko: "수영하고 싶어요", icon: Waves, category: "Activities", section: "Situation", tone: "blue", group: "Swimming pool" },
+  { label: "Menu, please", ko: "메뉴 주세요", icon: Utensils, category: "Food & drink", section: "Situation", tone: "peach", group: "Restaurant" },
+  { label: "More, please", ko: "더 주세요", icon: Plus, category: "Needs", section: "Situation", tone: "yellow", group: "Restaurant" },
+  { label: "I'm full", ko: "배 불러요", icon: Soup, category: "Food & drink", section: "Situation", tone: "mint", group: "Restaurant" },
 ];
 const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
-const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper };
+const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper, Hospital, Waves, HeartPulse, Soup };
 const tones = ["mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
-const STORE = "together-words-v3";
+const STORE = "together-words-v4";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
@@ -53,47 +58,52 @@ const sections = [
   { label: "Situation", icon: Compass, tone: "blue" },
   { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
-const dailyGroups = ["Things I want to do", "Things I need to do", "Food I want to eat", "Things I should not do"] as const;
-const dailyGroupCards = [
-  { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
-  { label: "Things I need to do", ko: "해야 할 일", icon: Check, tone: "yellow" },
-  { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "peach" },
-  { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "rose" },
-] as const;
-type DailyLabel = { label: string; ko: string; icon: LucideIcon; tone: string };
-const GROUP_STORE = "together-daily-labels-v1";
-
+type SectionLabel = { label: string; ko: string; icon: LucideIcon; tone: string; section: string };
+const LABEL_STORE = "together-labels-v2";
+const baseLabels: SectionLabel[] = [
+  ...[
+    { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
+    { label: "Things I need to do", ko: "해야 할 일", icon: Check, tone: "yellow" },
+    { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "peach" },
+    { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "rose" },
+  ].map(g => ({ ...g, section: "Daily" })),
+  ...[
+    { label: "Hospital", ko: "병원 갔을 때", icon: Hospital, tone: "rose" },
+    { label: "Swimming pool", ko: "수영장 갔을 때", icon: Waves, tone: "blue" },
+    { label: "Restaurant", ko: "식당 갔을 때", icon: Utensils, tone: "peach" },
+  ].map(g => ({ ...g, section: "Situation" })),
+];
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [customGroups, setCustomGroups] = useState<DailyLabel[]>([]);
-  const [groupDraft, setGroupDraft] = useState<{ label: string; ko: string; icon: string; tone: string } | null>(null);
+  const [customLabels, setCustomLabels] = useState<SectionLabel[]>([]);
+  const [labelDraft, setLabelDraft] = useState<{ section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
       if (Array.isArray(saved)) setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle })));
-      const savedGroups = JSON.parse(localStorage.getItem(GROUP_STORE) || "null");
-      if (Array.isArray(savedGroups)) setCustomGroups(savedGroups.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint" })));
+      const savedLabels = JSON.parse(localStorage.getItem(LABEL_STORE) || "null");
+      if (Array.isArray(savedLabels)) setCustomLabels(savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint", section: typeof g.section === "string" ? g.section : "Daily" })));
     } catch { /* ignore */ }
   }, []);
-  const groups: DailyLabel[] = [...dailyGroupCards, ...customGroups];
-  const groupNames = groups.map(g => g.label);
-
+  const allLabels: SectionLabel[] = [...baseLabels, ...customLabels];
+  const labelsFor = (section: string) => allLabels.filter(l => l.section === section);
+  const labelNamesFor = (section: string) => labelsFor(section).map(l => l.label);
   function saveWords(next: Word[]) {
     setWords(next);
     localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
   }
   function openNew(section: string, group?: string) {
-    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint", group: group ?? dailyGroups[0] });
+    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
-    setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: word.section === "Daily" ? (word.group ?? dailyGroups[0]) : dailyGroups[0] });
+    setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
   }
   function commitDraft() {
     if (!draft || !draft.label.trim()) return;
-    const w: Word = { label: draft.label.trim(), ko: draft.ko.trim() || undefined, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone, group: draft.section === "Daily" ? draft.group : undefined };
+    const w: Word = { label: draft.label.trim(), ko: draft.ko.trim() || undefined, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone, group: labelNamesFor(draft.section).length ? draft.group : undefined };
     saveWords(draft.index === null ? [...words, w] : words.map((x, i) => i === draft.index ? w : x));
     setDraft(null);
   }
@@ -101,16 +111,16 @@ function Index() {
     if (!draft || draft.index === null) return;
     saveWords(words.filter((_, i) => i !== draft.index)); setDraft(null);
   }
-  function commitGroup() {
-    if (!groupDraft || !groupDraft.label.trim()) return;
-    const label = groupDraft.label.trim();
-    if (!groupNames.includes(label)) {
-      const next = [...customGroups, { label, ko: groupDraft.ko.trim(), icon: iconChoices[groupDraft.icon] ?? Star, tone: groupDraft.tone }];
-      setCustomGroups(next);
-      localStorage.setItem(GROUP_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+  function commitLabel() {
+    if (!labelDraft || !labelDraft.label.trim()) return;
+    const name = labelDraft.label.trim();
+    if (!labelNamesFor(labelDraft.section).includes(name)) {
+      const next = [...customLabels, { label: name, ko: labelDraft.ko.trim(), icon: iconChoices[labelDraft.icon] ?? Star, tone: labelDraft.tone, section: labelDraft.section }];
+      setCustomLabels(next);
+      localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
     }
-    setGroupDraft(null);
-    setDailyOpen(label);
+    setOpenLabel({ section: labelDraft.section, label: name });
+    setLabelDraft(null);
   }
 
   const [category, setCategory] = useState("All words");
@@ -118,11 +128,11 @@ function Index() {
   const [favorites, setFavorites] = useState(false);
   const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
-  const [dailyOpen, setDailyOpen] = useState<string | null>(null);
-  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string; daily: string | null }[]>([]);
+  const [openLabel, setOpenLabel] = useState<{ section: string; label: string } | null>(null);
+  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string; open: { section: string; label: string } | null }[]>([]);
   function goTo(next: { favorites: boolean; category: string }) {
-    setViewHistory(h => [...h, { favorites, category, daily: dailyOpen }]);
-    setDailyOpen(null);
+    setViewHistory(h => [...h, { favorites, category, open: openLabel }]);
+    setOpenLabel(null);
     if (next.favorites === favorites && next.category === category) return;
     setFavorites(next.favorites); setCategory(next.category);
   }
@@ -130,8 +140,8 @@ function Index() {
     const prev = viewHistory[viewHistory.length - 1];
     if (prev) {
       setViewHistory(h => h.slice(0, -1));
-      setFavorites(prev.favorites); setCategory(prev.category); setDailyOpen(prev.daily);
-    } else if (dailyOpen) setDailyOpen(null);
+      setFavorites(prev.favorites); setCategory(prev.category); setOpenLabel(prev.open);
+    } else if (openLabel) setOpenLabel(null);
     else if (favorites || category !== "All words") { setFavorites(false); setCategory("All words"); }
     else if (window.history.length > 1) window.history.back();
   }
@@ -178,8 +188,10 @@ function Index() {
             {sections.map(({ label, icon: SectionIcon, tone }) => {
               const sectionWords = visibleWords.filter(word => word.section === label);
               if (!sectionWords.length && favorites) return null;
+              const sectionLabels = labelsFor(label);
+              const open = openLabel && openLabel.section === label ? openLabel.label : null;
               const renderWord = (word: Word, i: number) => <Button key={`${word.label}-${i}`} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""}`} aria-label={editing ? `Edit ${word.label}` : undefined} onClick={() => editing ? openEdit(word) : addWord(word)}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>;
-              const addCard = (group: string) => <Button variant="word" className="add-word-card" aria-label={group ? `Add a phrase to ${group}` : `Add a word to ${label}`} onClick={() => openNew(label, group || undefined)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">{group || label === "Daily" ? "Add phrase" : "Add word"}</span><span className="word-label-ko" lang="ko">{group || label === "Daily" ? "문장 추가" : "단어 추가"}</span></Button>;
+              const addCard = (group: string) => <Button variant="word" className="add-word-card" aria-label={group ? `Add a phrase to ${group}` : `Add a word to ${label}`} onClick={() => openNew(label, group || undefined)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">{group || sectionLabels.length ? "Add phrase" : "Add word"}</span><span className="word-label-ko" lang="ko">{group || sectionLabels.length ? "문장 추가" : "단어 추가"}</span></Button>;
               return (
                 <section className={`word-section tone-${tone}`} key={label} aria-label={`${label} words`}>
                   <header className="section-head">
@@ -187,30 +199,29 @@ function Index() {
                     <span className="section-rule" aria-hidden="true" />
                     <span className="section-count">{sectionWords.length} words</span>
                   </header>
-                  {label === "Daily" ? (dailyOpen ? (
+                  {sectionLabels.length ? (open ? (
                     <>
-                      <Button variant="aac" className="daily-back" onClick={() => setDailyOpen(null)} aria-label="Back to all Daily labels"><ArrowLeft /><span>All Daily labels</span><span className="word-label-ko" lang="ko">전체</span></Button>
+                      <Button variant="aac" className="daily-back" onClick={() => setOpenLabel(null)} aria-label={`Back to all ${label} labels`}><ArrowLeft /><span>All {label} labels</span><span className="word-label-ko" lang="ko">전체</span></Button>
                       <div className="word-grid">
-                        {sectionWords.filter(word => word.group === dailyOpen).map(renderWord)}
-                        {addCard(dailyOpen)}
+                        {sectionWords.filter(word => word.group === open).map(renderWord)}
+                        {addCard(open)}
                       </div>
                     </>
                   ) : (
                     <div className="word-grid daily-group-cards">
-                      {groups.map(({ label: groupLabel, ko, icon: GroupIcon, tone }) => (
-                        <Button key={groupLabel} variant="word" className={`tone-${tone}`} aria-label={`Open ${groupLabel}`} onClick={() => setDailyOpen(groupLabel)}>
+                      {sectionLabels.map(({ label: groupLabel, ko, icon: GroupIcon, tone: groupTone }) => (
+                        <Button key={groupLabel} variant="word" className={`tone-${groupTone}`} aria-label={`Open ${groupLabel}`} onClick={() => setOpenLabel({ section: label, label: groupLabel })}>
                           <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
                           <span className="word-label">{groupLabel}</span>
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
                       ))}
-                      <Button variant="word" className="add-word-card" aria-label="Add a Daily label" onClick={() => setGroupDraft({ label: "", ko: "", icon: "Star", tone: "mint" })}>
+                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ section: label, label: "", ko: "", icon: "Star", tone: "mint" })}>
                         <span className="word-symbol" aria-hidden="true"><Plus /></span>
                         <span className="word-label">Add label</span>
                         <span className="word-label-ko" lang="ko">라벨 추가</span>
                       </Button>
                     </div>
-
                   )) : (
                     <div className="word-grid">
                       {sectionWords.map(renderWord)}
@@ -235,19 +246,19 @@ function Index() {
           {speechError && <p role="alert" className="speech-error">{speechError}</p>}
         </section>
         <nav className="bottom-bar" aria-label="Main navigation">
-        <div className="bottom-bar-side">
-          <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
-          <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => goTo({ favorites: true, category })} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
-        </div>
-        <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => goTo({ favorites: false, category: "All words" })} aria-pressed={!favorites}><Home /><span>Home</span></Button>
-        <div className="bottom-bar-side">
-          <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
-        </div>
+          <div className="bottom-bar-side">
+            <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
+            <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => goTo({ favorites: true, category })} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
+          </div>
+          <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => goTo({ favorites: false, category: "All words" })} aria-pressed={!favorites}><Home /><span>Home</span></Button>
+          <div className="bottom-bar-side">
+            <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
+          </div>
         </nav>
       </div>
       <Dialog open={!!draft} onOpenChange={open => !open && setDraft(null)}><DialogContent className="settings-dialog">{draft && <>
         <DialogHeader><DialogTitle>{draft.index === null ? "Add a word" : "Edit word"}</DialogTitle><DialogDescription>Choose the word, picture, and where it goes.</DialogDescription></DialogHeader>
-        <label className="settings-label" htmlFor="word-label">{draft.section === "Daily" ? "Phrase (English)" : "Word (English)"}</label>
+        <label className="settings-label" htmlFor="word-label">{labelsFor(draft.section).length ? "Phrase (English)" : "Word (English)"}</label>
         <input id="word-label" className="settings-select" value={draft.label} maxLength={30} autoFocus onChange={e => setDraft({ ...draft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitDraft()} />
         <label className="settings-label" htmlFor="word-ko">Korean</label>
         <input id="word-ko" lang="ko" className="settings-select" value={draft.ko} maxLength={30} onChange={e => setDraft({ ...draft, ko: e.target.value })} />
@@ -259,23 +270,22 @@ function Index() {
         <select id="word-section" className="settings-select" value={draft.section} onChange={e => setDraft({ ...draft, section: e.target.value })}>{sections.map(s => <option key={s.label}>{s.label}</option>)}</select>
         <label className="settings-label" htmlFor="word-category">Category</label>
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
-        {draft.section === "Daily" && <><label className="settings-label" htmlFor="word-group">Daily label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{groupNames.map(g => <option key={g}>{g}</option>)}</select></>}
+        {labelsFor(draft.section).length > 0 && <><label className="settings-label" htmlFor="word-group">{draft.section} label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{labelNamesFor(draft.section).map(g => <option key={g}>{g}</option>)}</select></>}
         <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
         {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
       </>}</DialogContent></Dialog>
-      <Dialog open={!!groupDraft} onOpenChange={open => !open && setGroupDraft(null)}><DialogContent className="settings-dialog">{groupDraft && <>
-        <DialogHeader><DialogTitle>Add a Daily label</DialogTitle><DialogDescription>Give your new label a name, a picture, and a color.</DialogDescription></DialogHeader>
+      <Dialog open={!!labelDraft} onOpenChange={open => !open && setLabelDraft(null)}><DialogContent className="settings-dialog">{labelDraft && <>
+        <DialogHeader><DialogTitle>Add a {labelDraft.section} label</DialogTitle><DialogDescription>Give your new label a name, a picture, and a color.</DialogDescription></DialogHeader>
         <label className="settings-label" htmlFor="group-label">Label (English)</label>
-        <input id="group-label" className="settings-select" value={groupDraft.label} maxLength={30} autoFocus onChange={e => setGroupDraft({ ...groupDraft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitGroup()} />
+        <input id="group-label" className="settings-select" value={labelDraft.label} maxLength={30} autoFocus onChange={e => setLabelDraft({ ...labelDraft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitLabel()} />
         <label className="settings-label" htmlFor="group-ko">Korean</label>
-        <input id="group-ko" lang="ko" className="settings-select" value={groupDraft.ko} maxLength={30} onChange={e => setGroupDraft({ ...groupDraft, ko: e.target.value })} />
+        <input id="group-ko" lang="ko" className="settings-select" value={labelDraft.ko} maxLength={30} onChange={e => setLabelDraft({ ...labelDraft, ko: e.target.value })} />
         <span className="settings-label">Picture</span>
-        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${groupDraft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={groupDraft.icon === name} onClick={() => setGroupDraft({ ...groupDraft, icon: name })}><Icon /></button>)}</div>
+        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${labelDraft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={labelDraft.icon === name} onClick={() => setLabelDraft({ ...labelDraft, icon: name })}><Icon /></button>)}</div>
         <span className="settings-label">Color</span>
-        <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${groupDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={groupDraft.tone === t} onClick={() => setGroupDraft({ ...groupDraft, tone: t })} />)}</div>
-        <Button onClick={commitGroup} disabled={!groupDraft.label.trim()}><Check />Save label</Button>
+        <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
+        <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
       </>}</DialogContent></Dialog>
-
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );
