@@ -109,7 +109,9 @@ function Index() {
     if (prev) {
       setViewHistory(h => h.slice(0, -1));
       setFavorites(prev.favorites); setCategory(prev.category); setDailyOpen(prev.daily);
-    } else if (window.history.length > 1) window.history.back();
+    } else if (dailyOpen) setDailyOpen(null);
+    else if (favorites || category !== "All words") { setFavorites(false); setCategory("All words"); }
+    else if (window.history.length > 1) window.history.back();
   }
   const [speaking, setSpeaking] = useState(false);
   const [rate, setRate] = useState("0.85");
