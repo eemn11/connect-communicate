@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type React from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Church, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; 
 ];
 const iconGroups: { name: string; icons: Record<string, LucideIcon> }[] = [
   { name: "Everyday", icons: { Star, Heart, Hand, Smile, Frown, ThumbsUp, ThumbsDown, Check, X, Plus, MessageCircle, Users, Handshake, Gift, Speech, Lightbulb, Megaphone, Bell } },
-  { name: "Places", icons: { Hospital, Waves, Utensils, Home, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent } },
+  { name: "Places", icons: { Hospital, Waves, Utensils, Home, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Church } },
   { name: "Food & drink", icons: { Apple, CupSoda, Soup, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet } },
   { name: "Body & health", icons: { HeartPulse, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Toilet, Bath, Bed, PersonStanding, Accessibility, Cross } },
   { name: "Travel", icons: { Plane, TrainFront, Bus, Car, Bike, Ship, Map, MapPin, Luggage, Backpack } },
