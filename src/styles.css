@@ -124,7 +124,7 @@
 .word-section .word-grid .word-button { position: relative; display: grid; grid-template-columns: auto minmax(0,1fr); grid-template-areas: "icon en" "icon ko"; align-items: center; column-gap: 12px; row-gap: 1px; height: auto; min-height: 58px; padding: 8px 12px; text-align: left; }
 .word-section .word-grid .word-symbol { grid-area: icon; justify-self: center; font-size: 26px; height: 30px; width: 30px; }
 .word-section .word-grid .word-symbol svg { width: 26px; height: 26px; }
-.word-section .word-grid .word-label { grid-area: en; }
+.word-section .word-grid .word-label { grid-area: en; text-align: left; }
 .word-section .word-grid .word-label-ko { grid-area: ko; font-size: 11px; }
 .word-section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px 16px; box-shadow: var(--panel-shadow); }
 .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; }
