@@ -198,28 +198,29 @@
   .section-rule { display: none; }
 }
 @media (max-height: 900px) and (min-width: 760px) {
-  .topbar { height: 62px; }
-  .home-content { padding-top: 12px; }
-  .welcome { min-height: 74px; padding: 8px 18px; }
-  .welcome h1 { font-size: 22px; margin-top: 2px; }
-  .welcome-mascot { width: 76px; height: 76px; }
-  .category-bar { padding: 9px 0; }
-  .words-heading { margin: 11px 0 9px; }
-  .word-button { height: auto; min-height: 74px; gap: 4px; padding: 9px 7px; }
-  .word-symbol { font-size: 29px; height: 34px; }
+  .topbar { height: 58px; }
+  .home-content { padding-top: 8px; }
+  .welcome { min-height: 60px; padding: 6px 18px; }
+  .welcome h1 { font-size: 21px; margin-top: 2px; }
+  .welcome-mascot { width: 68px; height: 68px; }
+  .category-bar { padding: 6px 0; }
+  .words-heading { margin: 8px 0 7px; }
+  .word-button { height: auto; min-height: 66px; gap: 3px; padding: 6px 7px; }
+  .word-symbol { font-size: 25px; height: 29px; }
   .word-label { font-size: 13px; }
   .word-label-ko { font-size: 11px; }
-  .word-grid { gap: 9px; }
-  .sentence-section { margin-top: 12px; padding-top: 7px; padding-bottom: 9px; }
-  .sentence-preview, .speak-button { height: 46px; }
-  .home-footer { padding: 10px 0; }
-  .word-sections { gap: 10px; }
-  .word-section { padding: 9px 10px 10px; }
-  .section-head { margin-bottom: 8px; gap: 8px; }
-  .section-label { font-size: 11px; padding: 4px 10px; }
-  .bottom-bar { padding: 6px 12px; }
-  .bottom-bar .navigation-button { height: 44px; }
+  .word-grid { gap: 8px; }
+  .sentence-section { margin-top: 8px; padding-top: 6px; padding-bottom: 7px; }
+  .sentence-preview, .speak-button { height: 42px; }
+  .home-footer { padding: 6px 0; }
+  .word-sections { gap: 9px; }
+  .word-section { padding: 8px 9px 9px; }
+  .section-head { margin-bottom: 6px; gap: 8px; }
+  .section-label { font-size: 11px; padding: 3px 9px; }
+  .bottom-bar { padding: 5px 12px; }
+  .bottom-bar .navigation-button { height: 40px; }
 }
+
 @media (max-width: 759px) {
   .bottom-bar { gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
   .bottom-bar .navigation-button, .navigation-button { min-width: 0; flex: 1; height: 50px; padding: 0 6px; font-size: 10px; gap: 6px; }
@@ -264,7 +265,7 @@
 .word-symbol svg { width: 43px; height: 43px; stroke-width: 1.7; }
 .sentence-word svg { width: 18px; height: 18px; }
 .wave { display: inline-block; width: 27px; height: 27px; color: var(--primary); vertical-align: middle; }
-@media (max-height: 900px) and (min-width: 760px) { .word-symbol svg { width: 35px; height: 35px; } }
+@media (max-height: 900px) and (min-width: 760px) { .word-symbol svg { width: 29px; height: 29px; } }
 @media (max-width: 759px) { .word-symbol svg { width: 32px; height: 32px; } .wave { width: 20px; height: 20px; } }
 
 .words-heading-meta { display: flex; align-items: center; gap: 10px; color: var(--muted-foreground); font-size: 11px; }
