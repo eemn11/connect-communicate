@@ -55,6 +55,8 @@
   --peach-border: oklch(.887 .06 55);
   --lavender: oklch(.956 .026 298);
   --lavender-border: oklch(.88 .043 298);
+  --white: oklch(1 0 0);
+  --white-border: oklch(.855 .014 175);
   --welcome: oklch(.954 .026 164);
   --tile-shadow: 0 3px 0 color-mix(in oklab, var(--tile-border) 55%, transparent);
   --panel-shadow: 0 3px 12px oklch(.3 .025 175 / .035);
@@ -139,6 +141,7 @@
 .tone-blue { --tile-color: var(--blue); --tile-border: var(--blue-border); }
 .tone-peach { --tile-color: var(--peach); --tile-border: var(--peach-border); }
 .tone-lavender { --tile-color: var(--lavender); --tile-border: var(--lavender-border); }
+.tone-white { --tile-color: var(--white); --tile-border: var(--white-border); }
 .word-button { height: 118px; padding: 13px 8px 12px; display: flex; flex-direction: column; gap: 9px; border: 1px solid var(--tile-border); border-radius: 8px; background: var(--tile-color); color: var(--foreground); box-shadow: var(--tile-shadow); transition: transform .15s, box-shadow .15s; }
 .word-button:hover { transform: translateY(-2px); box-shadow: 0 5px 0 color-mix(in oklab, var(--tile-border) 65%, transparent); }
 .word-button:active { transform: translateY(2px); box-shadow: none; }
@@ -286,6 +289,7 @@
 .icon-choice.is-active, .tone-choice.is-active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--accent); }
 .tone-choice.tone-mint { background: var(--mint); } .tone-choice.tone-yellow { background: var(--yellow); } .tone-choice.tone-rose { background: var(--rose); }
 .tone-choice.tone-blue { background: var(--blue); } .tone-choice.tone-peach { background: var(--peach); } .tone-choice.tone-lavender { background: var(--lavender); }
+.tone-choice.tone-white { background: var(--white); }
 
 .word-label-ko { display: block; font-size: 12px; font-weight: 600; color: var(--muted-foreground); line-height: 1.2; }
 .word-section .word-grid .word-label { line-height: 1.25; white-space: normal; text-align: left; }

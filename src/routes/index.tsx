@@ -21,34 +21,35 @@ export const Route = createFileRoute("/")({
 });
 
 const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; category: string; section: string; tone: string; group?: string | undefined }[] = [
-  { label: "I want this, please", ko: "이거 주세요", icon: Hand, category: "Needs", section: "Daily", tone: "mint", group: "Things I want to do" },
-  { label: "I feel", ko: "나는 느껴요", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow", group: "Hospital" },
-  { label: "Yes, please", ko: "네, 좋아요", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint", group: "Things I want to do" },
-  { label: "No, thank you", ko: "아니요, 괜찮아요", icon: ThumbsDown, category: "Needs", section: "Daily", tone: "rose", group: "Things I should not do" },
-  { label: "Help", ko: "도와주세요", icon: Handshake, category: "People", section: "Situation", tone: "blue", group: "Hospital" },
-  { label: "I want to eat", ko: "먹고 싶어요", icon: Apple, category: "Food & drink", section: "Daily", tone: "peach", group: "Food I want to eat" },
-  { label: "I want a drink", ko: "마시고 싶어요", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "blue", group: "Food I want to eat" },
-  { label: "Toilet", ko: "화장실", icon: Toilet, category: "Needs", section: "Situation", tone: "lavender", group: "Swimming pool" },
-  { label: "A break", ko: "쉬는 시간", icon: Leaf, category: "Needs", section: "Daily", tone: "mint", group: "Things I need to do" },
-  { label: "More", ko: "더", icon: Plus, category: "Needs", section: "Planning", tone: "yellow" },
-  { label: "Happy", ko: "행복해요", icon: Smile, category: "Feelings", section: "Situation", tone: "yellow", group: "Swimming pool" },
-  { label: "Sad", ko: "슬퍼요", icon: Frown, category: "Feelings", section: "Situation", tone: "blue", group: "Hospital" },
-  { label: "Play", ko: "놀이", icon: Gamepad2, category: "Activities", section: "Planning", tone: "peach" },
-  { label: "All done", ko: "다 했어요", icon: PartyPopper, category: "Activities", section: "Planning", tone: "lavender" },
-  { label: "Thank you so much", ko: "정말 고마워요", icon: Gift, category: "People", section: "Daily", tone: "rose", group: "Things I want to do" },
-  { label: "It hurts", ko: "아파요", icon: HeartPulse, category: "Needs", section: "Situation", tone: "rose", group: "Hospital" },
-  { label: "I want to swim", ko: "수영하고 싶어요", icon: Waves, category: "Activities", section: "Situation", tone: "blue", group: "Swimming pool" },
-  { label: "Menu, please", ko: "메뉴 주세요", icon: Utensils, category: "Food & drink", section: "Situation", tone: "peach", group: "Restaurant" },
-  { label: "More, please", ko: "더 주세요", icon: Plus, category: "Needs", section: "Situation", tone: "yellow", group: "Restaurant" },
-  { label: "I'm full", ko: "배 불러요", icon: Soup, category: "Food & drink", section: "Situation", tone: "mint", group: "Restaurant" },
+  { label: "I want this, please", ko: "이거 주세요", icon: Hand, category: "Needs", section: "Daily", tone: "white", group: "Things I want to do" },
+  { label: "I feel", ko: "나는 느껴요", icon: Heart, category: "Feelings", section: "Situation", tone: "white", group: "Hospital" },
+  { label: "Yes, please", ko: "네, 좋아요", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "white", group: "Things I want to do" },
+  { label: "No, thank you", ko: "아니요, 괜찮아요", icon: ThumbsDown, category: "Needs", section: "Daily", tone: "white", group: "Things I should not do" },
+  { label: "Help", ko: "도와주세요", icon: Handshake, category: "People", section: "Situation", tone: "white", group: "Hospital" },
+  { label: "I want to eat", ko: "먹고 싶어요", icon: Apple, category: "Food & drink", section: "Daily", tone: "white", group: "Food I want to eat" },
+  { label: "I want a drink", ko: "마시고 싶어요", icon: CupSoda, category: "Food & drink", section: "Daily", tone: "white", group: "Food I want to eat" },
+  { label: "Toilet", ko: "화장실", icon: Toilet, category: "Needs", section: "Situation", tone: "white", group: "Swimming pool" },
+  { label: "A break", ko: "쉬는 시간", icon: Leaf, category: "Needs", section: "Daily", tone: "white", group: "Things I need to do" },
+  { label: "More", ko: "더", icon: Plus, category: "Needs", section: "Planning", tone: "white" },
+  { label: "Happy", ko: "행복해요", icon: Smile, category: "Feelings", section: "Situation", tone: "white", group: "Swimming pool" },
+  { label: "Sad", ko: "슬퍼요", icon: Frown, category: "Feelings", section: "Situation", tone: "white", group: "Hospital" },
+  { label: "Play", ko: "놀이", icon: Gamepad2, category: "Activities", section: "Planning", tone: "white" },
+  { label: "All done", ko: "다 했어요", icon: PartyPopper, category: "Activities", section: "Planning", tone: "white" },
+  { label: "Thank you so much", ko: "정말 고마워요", icon: Gift, category: "People", section: "Daily", tone: "white", group: "Things I want to do" },
+  { label: "It hurts", ko: "아파요", icon: HeartPulse, category: "Needs", section: "Situation", tone: "white", group: "Hospital" },
+  { label: "I want to swim", ko: "수영하고 싶어요", icon: Waves, category: "Activities", section: "Situation", tone: "white", group: "Swimming pool" },
+  { label: "Menu, please", ko: "메뉴 주세요", icon: Utensils, category: "Food & drink", section: "Situation", tone: "white", group: "Restaurant" },
+  { label: "More, please", ko: "더 주세요", icon: Plus, category: "Needs", section: "Situation", tone: "white", group: "Restaurant" },
+  { label: "I'm full", ko: "배 불러요", icon: Soup, category: "Food & drink", section: "Situation", tone: "white", group: "Restaurant" },
 ];
 const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
 const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper, Hospital, Waves, HeartPulse, Soup };
-const tones = ["mint", "yellow", "rose", "blue", "peach", "lavender"];
+const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
 const STORE = "together-words-v4";
+const TONE_STORE = "together-tone-white-v1";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
@@ -63,25 +64,25 @@ type SectionLabel = { label: string; ko: string; icon: LucideIcon; tone: string;
 const LABEL_STORE = "together-labels-v3";
 const baseLabels: SectionLabel[] = [
   ...[
-    { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
-    { label: "Things I need to do", ko: "해야 할 일", icon: Check, tone: "yellow" },
-    { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "peach" },
-    { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "rose" },
+    { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "white" },
+    { label: "Things I need to do", ko: "해야 할 일", icon: Check, tone: "white" },
+    { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "white" },
+    { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "white" },
   ].map(g => ({ ...g, section: "Daily" })),
   ...[
-    { label: "Hospital", ko: "병원 갔을 때", icon: Hospital, tone: "rose" },
-    { label: "Swimming pool", ko: "수영장 갔을 때", icon: Waves, tone: "blue" },
-    { label: "Restaurant", ko: "식당 갔을 때", icon: Utensils, tone: "peach" },
+    { label: "Hospital", ko: "병원 갔을 때", icon: Hospital, tone: "white" },
+    { label: "Swimming pool", ko: "수영장 갔을 때", icon: Waves, tone: "white" },
+    { label: "Restaurant", ko: "식당 갔을 때", icon: Utensils, tone: "white" },
   ].map(g => ({ ...g, section: "Situation" })),
   ...[
-    { label: "Today", ko: "오늘", icon: Sun, tone: "yellow" },
-    { label: "Sunday", ko: "일요일", icon: CalendarDays, tone: "rose" },
-    { label: "Monday", ko: "월요일", icon: CalendarDays, tone: "peach" },
-    { label: "Tuesday", ko: "화요일", icon: CalendarDays, tone: "yellow" },
-    { label: "Wednesday", ko: "수요일", icon: CalendarDays, tone: "mint" },
-    { label: "Thursday", ko: "목요일", icon: CalendarDays, tone: "blue" },
-    { label: "Friday", ko: "금요일", icon: CalendarDays, tone: "lavender" },
-    { label: "Saturday", ko: "토요일", icon: CalendarDays, tone: "blue" },
+    { label: "Today", ko: "오늘", icon: Sun, tone: "white" },
+    { label: "Sunday", ko: "일요일", icon: CalendarDays, tone: "white" },
+    { label: "Monday", ko: "월요일", icon: CalendarDays, tone: "white" },
+    { label: "Tuesday", ko: "화요일", icon: CalendarDays, tone: "white" },
+    { label: "Wednesday", ko: "수요일", icon: CalendarDays, tone: "white" },
+    { label: "Thursday", ko: "목요일", icon: CalendarDays, tone: "white" },
+    { label: "Friday", ko: "금요일", icon: CalendarDays, tone: "white" },
+    { label: "Saturday", ko: "토요일", icon: CalendarDays, tone: "white" },
   ].map(g => ({ ...g, section: "Planning" })),
 ];
 
@@ -93,10 +94,20 @@ function Index() {
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
   useEffect(() => {
     try {
+      const recolor = !localStorage.getItem(TONE_STORE);
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
-      if (Array.isArray(saved)) setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle })));
+      if (Array.isArray(saved)) {
+        const next = saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle, tone: recolor || typeof w.tone !== "string" ? "white" : w.tone }));
+        setWords(next);
+        if (recolor) localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
+      }
       const savedLabels = JSON.parse(localStorage.getItem(LABEL_STORE) || "null");
-      if (Array.isArray(savedLabels)) setLabels(savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint", section: typeof g.section === "string" ? g.section : "Daily" })));
+      if (Array.isArray(savedLabels)) {
+        const next = savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: recolor || typeof g.tone !== "string" ? "white" : g.tone, section: typeof g.section === "string" ? g.section : "Daily" }));
+        setLabels(next);
+        if (recolor) localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+      }
+      if (recolor) localStorage.setItem(TONE_STORE, "1");
     } catch { /* ignore */ }
   }, []);
   const allLabels: SectionLabel[] = labels;
@@ -111,7 +122,7 @@ function Index() {
     localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
   }
   function openNew(section: string, group?: string) {
-    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint", group: group ?? labelNamesFor(section)[0] ?? "" });
+    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
     setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
@@ -301,7 +312,7 @@ function Index() {
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
                       ); })}
-                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "mint" })}>
+                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" })}>
                         <span className="word-symbol" aria-hidden="true"><Plus /></span>
                         <span className="word-label">Add label</span>
                         <span className="word-label-ko" lang="ko">라벨 추가</span>
