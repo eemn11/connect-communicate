@@ -177,6 +177,7 @@ function Index() {
       onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
       onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
         if (e.button !== 0) return;
+        suppressClick.current = false;
         const p = { key, x: e.clientX, y: e.clientY, timer: null as number | null, long: false, moved: false, id: e.pointerId };
         if (!editing) p.timer = window.setTimeout(() => { p.long = true; setEditing(true); navigator.vibrate?.(30); }, 1000);
         else e.currentTarget.setPointerCapture(e.pointerId);
