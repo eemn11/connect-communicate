@@ -103,6 +103,7 @@ function Index() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<SectionLabel[]>(baseLabels);
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
+  const [iconQuery, setIconQuery] = useState("");
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
@@ -118,6 +119,22 @@ function Index() {
   const allLabels: SectionLabel[] = labels;
   const labelsFor = (section: string) => allLabels.filter(l => l.section === section);
   const labelNamesFor = (section: string) => labelsFor(section).map(l => l.label);
+  // Called as a function (not a component) so the search box keeps focus while typing.
+  function renderIconPicker(value: string, onPick: (name: string) => void) {
+    const q = iconQuery.trim().toLowerCase();
+    const groups = iconGroups
+      .map(g => ({ name: g.name, entries: Object.entries(g.icons).filter(([name]) => !q || name.toLowerCase().includes(q) || g.name.toLowerCase().includes(q)) }))
+      .filter(g => g.entries.length > 0);
+    return <div className="icon-picker-box">
+      <input type="search" className="settings-select icon-search" aria-label="Search pictures" placeholder="Search pictures…" value={iconQuery} onChange={e => setIconQuery(e.target.value)} />
+      <div className="icon-picker-scroll">
+        {groups.length ? groups.map(g => <div className="icon-group" key={g.name}>
+          <span className="icon-group-name">{g.name}</span>
+          <div className="icon-picker">{g.entries.map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${value === name ? "is-active" : ""}`} aria-label={iconLabel(name)} title={iconLabel(name)} aria-pressed={value === name} onClick={() => onPick(name)}><Icon /></button>)}</div>
+        </div>) : <p className="icon-group-empty">No picture called “{iconQuery}”. Try another word.</p>}
+      </div>
+    </div>;
+  }
   function saveWords(next: Word[]) {
     setWords(next);
     localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
@@ -127,13 +144,13 @@ function Index() {
     localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
   }
   function openNew(section: string, group?: string) {
-    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
+    setIconQuery(""); setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
-    setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
+    setIconQuery(""); setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
   }
   function openLabelEdit(l: SectionLabel) {
-    setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
+    setIconQuery(""); setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
   }
   function commitDraft() {
     if (!draft || !draft.label.trim()) return;
@@ -317,7 +334,7 @@ function Index() {
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
                       ); })}
-                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" })}>
+                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => { setIconQuery(""); setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" }) }}>
                         <span className="word-symbol" aria-hidden="true"><Plus /></span>
                         <span className="word-label">Add label</span>
                         <span className="word-label-ko" lang="ko">라벨 추가</span>
@@ -364,7 +381,7 @@ function Index() {
         <label className="settings-label" htmlFor="word-ko">Korean</label>
         <input id="word-ko" lang="ko" className="settings-select" value={draft.ko} maxLength={30} onChange={e => setDraft({ ...draft, ko: e.target.value })} />
         <span className="settings-label">Picture</span>
-        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${draft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={draft.icon === name} onClick={() => setDraft({ ...draft, icon: name })}><Icon /></button>)}</div>
+        {renderIconPicker(draft.icon, name => setDraft({ ...draft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${draft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={draft.tone === t} onClick={() => setDraft({ ...draft, tone: t })} />)}</div>
         <label className="settings-label" htmlFor="word-section">Section</label>
@@ -382,7 +399,7 @@ function Index() {
         <label className="settings-label" htmlFor="group-ko">Korean</label>
         <input id="group-ko" lang="ko" className="settings-select" value={labelDraft.ko} maxLength={30} onChange={e => setLabelDraft({ ...labelDraft, ko: e.target.value })} />
         <span className="settings-label">Picture</span>
-        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${labelDraft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={labelDraft.icon === name} onClick={() => setLabelDraft({ ...labelDraft, icon: name })}><Icon /></button>)}</div>
+        {renderIconPicker(labelDraft.icon, name => setLabelDraft({ ...labelDraft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
         <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
