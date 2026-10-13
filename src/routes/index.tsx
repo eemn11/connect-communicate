@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun } from "lucide-react";
+import { useEffect } from "react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import mascot from "@/assets/hello-mascot.png";
@@ -17,7 +19,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const words = [
+const defaultWords: { label: string; icon: LucideIcon; category: string; section: string; tone: string }[] = [
   { label: "I want", icon: Hand, category: "Needs", section: "Daily", tone: "mint" },
   { label: "I feel", icon: Heart, category: "Feelings", section: "Situation", tone: "yellow" },
   { label: "Yes", icon: ThumbsUp, category: "Needs", section: "Daily", tone: "mint" },
@@ -34,6 +36,13 @@ const words = [
   { label: "All done", icon: PartyPopper, category: "Activities", section: "Planning", tone: "lavender" },
   { label: "Thank you", icon: Gift, category: "People", section: "Daily", tone: "rose" },
 ];
+const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
+const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
+const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper };
+const tones = ["mint", "yellow", "rose", "blue", "peach", "lavender"];
+type Word = typeof defaultWords[number];
+type Draft = { index: number | null; label: string; icon: string; category: string; section: string; tone: string };
+const STORE = "together-words-v1";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
@@ -46,6 +55,35 @@ const sections = [
 ];
 
 function Index() {
+  const [words, setWords] = useState<Word[]>(defaultWords);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+      if (Array.isArray(saved)) setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle })));
+    } catch { /* ignore */ }
+  }, []);
+  function saveWords(next: Word[]) {
+    setWords(next);
+    localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
+  }
+  function openNew(section: string) {
+    setDraft({ index: null, label: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint" });
+  }
+  function openEdit(word: Word) {
+    setDraft({ index: words.indexOf(word), label: word.label, icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone });
+  }
+  function commitDraft() {
+    if (!draft || !draft.label.trim()) return;
+    const w: Word = { label: draft.label.trim(), icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone };
+    saveWords(draft.index === null ? [...words, w] : words.map((x, i) => i === draft.index ? w : x));
+    setDraft(null);
+  }
+  function deleteDraft() {
+    if (!draft || draft.index === null) return;
+    saveWords(words.filter((_, i) => i !== draft.index)); setDraft(null);
+  }
   const [category, setCategory] = useState("All words");
   const [sentence, setSentence] = useState<typeof words>([]);
   const [favorites, setFavorites] = useState(false);
@@ -100,11 +138,11 @@ function Index() {
           <nav className="category-bar" aria-label="Word categories">
             {categories.map(({ label, icon: Icon }) => <Button key={label} variant="aac" className={`category-button ${!favorites && category === label ? "is-active" : ""}`} aria-pressed={!favorites && category === label} onClick={() => goTo({ favorites: false, category: label })}><Icon /><span>{label}</span></Button>)}
           </nav>
-          <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span>{visibleWords.length} words <span className="heading-dot">·</span> A little connection starts here</span></div>
+          <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span className="words-heading-meta"><Button variant="aac" className={`edit-toggle ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit words"}</span></Button>{visibleWords.length} words <span className="heading-dot">·</span> A little connection starts here</span></div>
           <div className="word-sections">
             {sections.map(({ label, icon: SectionIcon, tone }) => {
               const sectionWords = visibleWords.filter(word => word.section === label);
-              if (!sectionWords.length) return null;
+              if (!sectionWords.length && favorites) return null;
               return (
                 <section className={`word-section tone-${tone}`} key={label} aria-label={`${label} words`}>
                   <header className="section-head">
@@ -113,7 +151,8 @@ function Index() {
                     <span className="section-count">{sectionWords.length} words</span>
                   </header>
                   <div className="word-grid">
-                    {sectionWords.map(word => <Button key={word.label} variant="word" className={`tone-${word.tone}`} onClick={() => addWord(word)}><span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span></Button>)}
+                    {sectionWords.map((word, i) => <Button key={`${word.label}-${i}`} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""}`} aria-label={editing ? `Edit ${word.label}` : undefined} onClick={() => editing ? openEdit(word) : addWord(word)}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span></Button>)}
+                    <Button variant="word" className="add-word-card" aria-label={`Add a word to ${label}`} onClick={() => openNew(label)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">Add word</span></Button>
                   </div>
                 </section>
               );
@@ -141,6 +180,21 @@ function Index() {
           <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
         </div>
       </nav>
+      <Dialog open={!!draft} onOpenChange={open => !open && setDraft(null)}><DialogContent className="settings-dialog">{draft && <>
+        <DialogHeader><DialogTitle>{draft.index === null ? "Add a word" : "Edit word"}</DialogTitle><DialogDescription>Choose the word, picture, and where it goes.</DialogDescription></DialogHeader>
+        <label className="settings-label" htmlFor="word-label">Word</label>
+        <input id="word-label" className="settings-select" value={draft.label} maxLength={30} autoFocus onChange={e => setDraft({ ...draft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitDraft()} />
+        <span className="settings-label">Picture</span>
+        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${draft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={draft.icon === name} onClick={() => setDraft({ ...draft, icon: name })}><Icon /></button>)}</div>
+        <span className="settings-label">Color</span>
+        <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${draft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={draft.tone === t} onClick={() => setDraft({ ...draft, tone: t })} />)}</div>
+        <label className="settings-label" htmlFor="word-section">Section</label>
+        <select id="word-section" className="settings-select" value={draft.section} onChange={e => setDraft({ ...draft, section: e.target.value })}>{sections.map(s => <option key={s.label}>{s.label}</option>)}</select>
+        <label className="settings-label" htmlFor="word-category">Category</label>
+        <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
+        <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
+        {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
+      </>}</DialogContent></Dialog>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );

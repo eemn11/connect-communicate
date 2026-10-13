@@ -239,3 +239,17 @@
 .wave { display: inline-block; width: 27px; height: 27px; color: var(--primary); vertical-align: middle; }
 @media (max-height: 900px) and (min-width: 760px) { .word-symbol svg { width: 35px; height: 35px; } }
 @media (max-width: 759px) { .word-symbol svg { width: 32px; height: 32px; } .wave { width: 20px; height: 20px; } }
+
+.words-heading-meta { display: flex; align-items: center; gap: 10px; color: var(--muted-foreground); font-size: 11px; }
+.edit-toggle { padding: 6px 12px; font-size: 12px; }
+.edit-toggle.is-active { background: var(--primary); color: var(--primary-foreground); }
+.is-editing { position: relative; outline: 2px dashed var(--primary); outline-offset: 2px; }
+.edit-badge { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); }
+.edit-badge svg { width: 12px; height: 12px; }
+.add-word-card { background: var(--card); border: 2px dashed var(--border); color: var(--muted-foreground); }
+.add-word-card:hover { border-color: var(--primary); color: var(--primary); }
+.icon-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.icon-choice, .tone-choice { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; border: 2px solid var(--border); background: var(--card); color: var(--foreground); cursor: pointer; }
+.icon-choice.is-active, .tone-choice.is-active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--accent); }
+.tone-choice.tone-mint { background: var(--mint); } .tone-choice.tone-yellow { background: var(--yellow); } .tone-choice.tone-rose { background: var(--rose); }
+.tone-choice.tone-blue { background: var(--blue); } .tone-choice.tone-peach { background: var(--peach); } .tone-choice.tone-lavender { background: var(--lavender); }
