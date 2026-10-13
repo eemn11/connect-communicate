@@ -207,6 +207,7 @@ function Index() {
         <select id="word-section" className="settings-select" value={draft.section} onChange={e => setDraft({ ...draft, section: e.target.value })}>{sections.map(s => <option key={s.label}>{s.label}</option>)}</select>
         <label className="settings-label" htmlFor="word-category">Category</label>
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
+        {draft.section === "Daily" && <><label className="settings-label" htmlFor="word-group">Daily label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{dailyGroups.map(g => <option key={g}>{g}</option>)}</select></>}
         <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
         {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
       </>}</DialogContent></Dialog>
