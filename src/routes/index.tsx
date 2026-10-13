@@ -49,7 +49,6 @@ const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
 const STORE = "together-words-v4";
-const TONE_STORE = "together-tone-white-v2";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
@@ -94,20 +93,14 @@ function Index() {
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
   useEffect(() => {
     try {
-      const recolor = !localStorage.getItem(TONE_STORE);
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
       if (Array.isArray(saved)) {
-        const next = saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle, tone: recolor || typeof w.tone !== "string" ? "white" : w.tone }));
-        setWords(next);
-        if (recolor) localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
+        setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle, tone: typeof w.tone === "string" ? w.tone : "white" })));
       }
       const savedLabels = JSON.parse(localStorage.getItem(LABEL_STORE) || "null");
       if (Array.isArray(savedLabels)) {
-        const next = savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: recolor || typeof g.tone !== "string" ? "white" : g.tone, section: typeof g.section === "string" ? g.section : "Daily" }));
-        setLabels(next);
-        if (recolor) localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+        setLabels(savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "white", section: typeof g.section === "string" ? g.section : "Daily" })));
       }
-      if (recolor) localStorage.setItem(TONE_STORE, "1");
     } catch { /* ignore */ }
   }, []);
   const allLabels: SectionLabel[] = labels;
