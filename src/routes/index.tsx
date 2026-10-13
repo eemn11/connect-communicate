@@ -190,8 +190,8 @@ function Index() {
         if (!p.moved && Math.hypot(dx, dy) < 8) return;
         p.moved = true;
         setDragKey(key); setDragDelta({ x: dx, y: dy });
-        const target = document.elementsFromPoint(e.clientX, e.clientY).map(el => (el as HTMLElement).closest?.("[data-card]") as HTMLElement | null).find(el => el && el.dataset.card !== key && el.dataset.card?.[0] === key[0]);
-        setOverKey(target?.dataset.card ?? null);
+        const target = document.elementsFromPoint(e.clientX, e.clientY).map(el => (el as HTMLElement).closest?.("[data-card]") as HTMLElement | null).find(el => el && el.dataset["card"] !== key && el.dataset["card"]?.[0] === key[0]);
+        setOverKey(target?.dataset["card"] ?? null);
       },
       onPointerUp: () => {
         const p = press.current;
