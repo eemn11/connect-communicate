@@ -12,5 +12,7 @@
 - [x] Planning shows day cards: Today, Sunday through Saturday
 - [x] Cards in every section stacked in a single column
 - [x] Cards and their words made bigger
+- [x] Long-press a card to edit its texts, picture and color, or drag to reorder
+- [x] All cards default to white (color picker still offers the six colors)
 
 
