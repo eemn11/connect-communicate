@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type React from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,9 +42,21 @@ const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; 
   { label: "More, please", ko: "더 주세요", icon: Plus, category: "Needs", section: "Situation", tone: "white", group: "Restaurant" },
   { label: "I'm full", ko: "배 불러요", icon: Soup, category: "Food & drink", section: "Situation", tone: "white", group: "Restaurant" },
 ];
-const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
+const iconGroups: { name: string; icons: Record<string, LucideIcon> }[] = [
+  { name: "Everyday", icons: { Star, Heart, Hand, Smile, Frown, ThumbsUp, ThumbsDown, Check, X, Plus, MessageCircle, Users, Handshake, Gift, Speech, Lightbulb, Megaphone, Bell } },
+  { name: "Places", icons: { Hospital, Waves, Utensils, Home, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent } },
+  { name: "Food & drink", icons: { Apple, CupSoda, Soup, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet } },
+  { name: "Body & health", icons: { HeartPulse, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Toilet, Bath, Bed, PersonStanding, Accessibility, Cross } },
+  { name: "Travel", icons: { Plane, TrainFront, Bus, Car, Bike, Ship, Map, MapPin, Luggage, Backpack } },
+  { name: "Calendar & time", icons: { CalendarDays, CalendarClock, Calendar, Clock, AlarmClock, Sun, Moon } },
+  { name: "Play & music", icons: { Music, Gamepad2, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, PartyPopper } },
+  { name: "Animals & nature", icons: { Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Leaf, Bug } },
+  { name: "Things & learning", icons: { BookOpen, Pencil, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } },
+];
+const iconChoices: Record<string, LucideIcon> = Object.assign({}, ...iconGroups.map(g => g.icons));
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
-const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper, Hospital, Waves, HeartPulse, Soup };
+const allIcons = iconChoices;
+const iconLabel = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2").toLowerCase();
 const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
@@ -91,6 +103,7 @@ function Index() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<SectionLabel[]>(baseLabels);
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
+  const [iconQuery, setIconQuery] = useState("");
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
@@ -106,6 +119,22 @@ function Index() {
   const allLabels: SectionLabel[] = labels;
   const labelsFor = (section: string) => allLabels.filter(l => l.section === section);
   const labelNamesFor = (section: string) => labelsFor(section).map(l => l.label);
+  // Called as a function (not a component) so the search box keeps focus while typing.
+  function renderIconPicker(value: string, onPick: (name: string) => void) {
+    const q = iconQuery.trim().toLowerCase();
+    const groups = iconGroups
+      .map(g => ({ name: g.name, entries: Object.entries(g.icons).filter(([name]) => !q || name.toLowerCase().includes(q) || g.name.toLowerCase().includes(q)) }))
+      .filter(g => g.entries.length > 0);
+    return <div className="icon-picker-box">
+      <input type="search" className="settings-select icon-search" aria-label="Search pictures" placeholder="Search pictures…" value={iconQuery} onChange={e => setIconQuery(e.target.value)} />
+      <div className="icon-picker-scroll">
+        {groups.length ? groups.map(g => <div className="icon-group" key={g.name}>
+          <span className="icon-group-name">{g.name}</span>
+          <div className="icon-picker">{g.entries.map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${value === name ? "is-active" : ""}`} aria-label={iconLabel(name)} title={iconLabel(name)} aria-pressed={value === name} onClick={() => onPick(name)}><Icon /></button>)}</div>
+        </div>) : <p className="icon-group-empty">No picture called “{iconQuery}”. Try another word.</p>}
+      </div>
+    </div>;
+  }
   function saveWords(next: Word[]) {
     setWords(next);
     localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
@@ -115,13 +144,13 @@ function Index() {
     localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
   }
   function openNew(section: string, group?: string) {
-    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
+    setIconQuery(""); setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
-    setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
+    setIconQuery(""); setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
   }
   function openLabelEdit(l: SectionLabel) {
-    setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
+    setIconQuery(""); setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
   }
   function commitDraft() {
     if (!draft || !draft.label.trim()) return;
@@ -305,7 +334,7 @@ function Index() {
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
                       ); })}
-                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" })}>
+                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => { setIconQuery(""); setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" }) }}>
                         <span className="word-symbol" aria-hidden="true"><Plus /></span>
                         <span className="word-label">Add label</span>
                         <span className="word-label-ko" lang="ko">라벨 추가</span>
@@ -352,7 +381,7 @@ function Index() {
         <label className="settings-label" htmlFor="word-ko">Korean</label>
         <input id="word-ko" lang="ko" className="settings-select" value={draft.ko} maxLength={30} onChange={e => setDraft({ ...draft, ko: e.target.value })} />
         <span className="settings-label">Picture</span>
-        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${draft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={draft.icon === name} onClick={() => setDraft({ ...draft, icon: name })}><Icon /></button>)}</div>
+        {renderIconPicker(draft.icon, name => setDraft({ ...draft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${draft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={draft.tone === t} onClick={() => setDraft({ ...draft, tone: t })} />)}</div>
         <label className="settings-label" htmlFor="word-section">Section</label>
@@ -360,8 +389,10 @@ function Index() {
         <label className="settings-label" htmlFor="word-category">Category</label>
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
         {labelsFor(draft.section).length > 0 && <><label className="settings-label" htmlFor="word-group">{draft.section} label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{labelNamesFor(draft.section).map(g => <option key={g}>{g}</option>)}</select></>}
-        <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
-        {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
+        <div className="dialog-actions">
+          <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
+          {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
+        </div>
       </>}</DialogContent></Dialog>
       <Dialog open={!!labelDraft} onOpenChange={open => !open && setLabelDraft(null)}><DialogContent className="settings-dialog">{labelDraft && <>
         <DialogHeader><DialogTitle>{labelDraft.index === null ? `Add a ${labelDraft.section} label` : `Edit ${labelDraft.label || "label"}`}</DialogTitle><DialogDescription>Choose a name, a picture, and a color.</DialogDescription></DialogHeader>
@@ -370,11 +401,13 @@ function Index() {
         <label className="settings-label" htmlFor="group-ko">Korean</label>
         <input id="group-ko" lang="ko" className="settings-select" value={labelDraft.ko} maxLength={30} onChange={e => setLabelDraft({ ...labelDraft, ko: e.target.value })} />
         <span className="settings-label">Picture</span>
-        <div className="icon-picker">{Object.entries(iconChoices).map(([name, Icon]) => <button type="button" key={name} className={`icon-choice ${labelDraft.icon === name ? "is-active" : ""}`} aria-label={name} aria-pressed={labelDraft.icon === name} onClick={() => setLabelDraft({ ...labelDraft, icon: name })}><Icon /></button>)}</div>
+        {renderIconPicker(labelDraft.icon, name => setLabelDraft({ ...labelDraft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
-        <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
-        {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
+        <div className="dialog-actions">
+          <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
+          {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
+        </div>
       </>}</DialogContent></Dialog>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
