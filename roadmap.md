@@ -7,3 +7,5 @@
 - [x] Daily shows four folder-style label cards; tapping one opens that group's phrases
 - [x] Daily, Situation and Planning shown side by side (stack only on phones)
 - [x] Sentence bar docked above the bottom navigation so Speak is always on screen
+- [x] Daily label cards: "+ Add label" card at the end so users can create their own Daily labels
+
