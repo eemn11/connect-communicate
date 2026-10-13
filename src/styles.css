@@ -257,3 +257,8 @@
 .word-label-ko { display: block; font-size: 12px; font-weight: 600; color: var(--muted-foreground); line-height: 1.2; }
 .word-section.tone-mint .word-label { font-size: 14px; line-height: 1.2; white-space: normal; text-align: center; }
 .sentence-ko { margin-left: 4px; font-size: 11px; color: var(--muted-foreground); }
+
+.daily-group { margin-top: 14px; }
+.daily-group:first-child { margin-top: 0; }
+.daily-group-label { margin: 0 0 9px; font-family: var(--font-heading); font-size: 12px; font-weight: 800; color: var(--muted-foreground); }
+@media (max-height: 900px) and (min-width: 760px) { .daily-group { margin-top: 10px; } .daily-group-label { margin-bottom: 7px; font-size: 11px; } }

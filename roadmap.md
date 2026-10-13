@@ -3,3 +3,4 @@
 - [x] Accounts (email + Google) and user profile page
 - [x] Profile button at top right of home screen
 - [x] Word blocks split into Daily, Situation and Planning sections
+- [x] Daily cards grouped under four labels: Things I want to do, Things I need to do, Food I want to eat, Things I should not do
