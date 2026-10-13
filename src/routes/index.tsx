@@ -45,10 +45,11 @@ const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; 
 const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
 const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper, Hospital, Waves, HeartPulse, Soup };
-const tones = ["mint", "yellow", "rose", "blue", "peach", "lavender"];
+const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
 const STORE = "together-words-v4";
+const TONE_STORE = "together-tone-white-v1";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
   { label: "Feelings", icon: Smile }, { label: "Food & drink", icon: Utensils },
@@ -93,10 +94,20 @@ function Index() {
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
   useEffect(() => {
     try {
+      const recolor = !localStorage.getItem(TONE_STORE);
       const saved = JSON.parse(localStorage.getItem(STORE) || "null");
-      if (Array.isArray(saved)) setWords(saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle })));
+      if (Array.isArray(saved)) {
+        const next = saved.map((w: any) => ({ ...w, icon: allIcons[w.icon] ?? MessageCircle, tone: recolor || typeof w.tone !== "string" ? "white" : w.tone }));
+        setWords(next);
+        if (recolor) localStorage.setItem(STORE, JSON.stringify(next.map(w => ({ ...w, icon: Object.keys(allIcons).find(k => allIcons[k] === w.icon) ?? "MessageCircle" }))));
+      }
       const savedLabels = JSON.parse(localStorage.getItem(LABEL_STORE) || "null");
-      if (Array.isArray(savedLabels)) setLabels(savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: typeof g.tone === "string" ? g.tone : "mint", section: typeof g.section === "string" ? g.section : "Daily" })));
+      if (Array.isArray(savedLabels)) {
+        const next = savedLabels.filter((g: any) => typeof g?.label === "string" && g.label).map((g: any) => ({ label: g.label, ko: typeof g.ko === "string" ? g.ko : "", icon: allIcons[g.icon] ?? Star, tone: recolor || typeof g.tone !== "string" ? "white" : g.tone, section: typeof g.section === "string" ? g.section : "Daily" }));
+        setLabels(next);
+        if (recolor) localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
+      }
+      if (recolor) localStorage.setItem(TONE_STORE, "1");
     } catch { /* ignore */ }
   }, []);
   const allLabels: SectionLabel[] = labels;
@@ -111,7 +122,7 @@ function Index() {
     localStorage.setItem(LABEL_STORE, JSON.stringify(next.map(g => ({ label: g.label, ko: g.ko, tone: g.tone, section: g.section, icon: Object.keys(allIcons).find(k => allIcons[k] === g.icon) ?? "Star" }))));
   }
   function openNew(section: string, group?: string) {
-    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "mint", group: group ?? labelNamesFor(section)[0] ?? "" });
+    setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
     setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
@@ -301,7 +312,7 @@ function Index() {
                           <span className="word-label-ko" lang="ko">{ko}</span>
                         </Button>
                       ); })}
-                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "mint" })}>
+                      <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" })}>
                         <span className="word-symbol" aria-hidden="true"><Plus /></span>
                         <span className="word-label">Add label</span>
                         <span className="word-label-ko" lang="ko">라벨 추가</span>
