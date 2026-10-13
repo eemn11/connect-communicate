@@ -163,7 +163,7 @@
 .home-footer { display: flex; justify-content: space-between; padding: 21px 0 23px; color: var(--muted-foreground); font-size: 10px; }
 .home-footer > span:first-child { display: flex; align-items: center; gap: 6px; }
 .home-footer svg { width: 12px; height: 12px; color: var(--primary); }
-.settings-dialog { max-width: 400px; }
+.settings-dialog { max-width: 400px; max-height: 86vh; overflow-y: auto; }
 .settings-label { font-size: 14px; font-weight: 600; }
 .settings-select { background: var(--background); border: 1px solid var(--border); border-radius: 5px; height: 45px; padding: 0 10px; }
 .speech-error { color: var(--destructive); font-size: 12px; margin-bottom: 0; }
