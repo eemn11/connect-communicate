@@ -54,6 +54,12 @@ const sections = [
   { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
 const dailyGroups = ["Things I want to do", "Things I need to do", "Food I want to eat", "Things I should not do"] as const;
+const dailyGroupCards = [
+  { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
+  { label: "Things I need to do", ko: "해야 할 일", icon: Check, tone: "yellow" },
+  { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "peach" },
+  { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "rose" },
+] as const;
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
@@ -90,16 +96,20 @@ function Index() {
   const [favorites, setFavorites] = useState(false);
   const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
-  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string }[]>([]);
+  const [dailyOpen, setDailyOpen] = useState<string | null>(null);
+  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string; daily: string | null }[]>([]);
   function goTo(next: { favorites: boolean; category: string }) {
+    setViewHistory(h => [...h, { favorites, category, daily: dailyOpen }]);
+    setDailyOpen(null);
     if (next.favorites === favorites && next.category === category) return;
-    setViewHistory(h => [...h, { favorites, category }]);
     setFavorites(next.favorites); setCategory(next.category);
   }
   function goBack() {
     const prev = viewHistory[viewHistory.length - 1];
-    if (prev) { setViewHistory(h => h.slice(0, -1)); setFavorites(prev.favorites); setCategory(prev.category); }
-    else if (window.history.length > 1) window.history.back();
+    if (prev) {
+      setViewHistory(h => h.slice(0, -1));
+      setFavorites(prev.favorites); setCategory(prev.category); setDailyOpen(prev.daily);
+    } else if (window.history.length > 1) window.history.back();
   }
   const [speaking, setSpeaking] = useState(false);
   const [rate, setRate] = useState("0.85");
