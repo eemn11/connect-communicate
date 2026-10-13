@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type React from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,9 +42,21 @@ const defaultWords: { label: string; ko?: string | undefined; icon: LucideIcon; 
   { label: "More, please", ko: "더 주세요", icon: Plus, category: "Needs", section: "Situation", tone: "white", group: "Restaurant" },
   { label: "I'm full", ko: "배 불러요", icon: Soup, category: "Food & drink", section: "Situation", tone: "white", group: "Restaurant" },
 ];
-const iconChoices: Record<string, LucideIcon> = { Star, Heart, Hand, Smile, Frown, Apple, CupSoda, Music, Bed, Car, Sun, Gamepad2, Gift, Users, MessageCircle };
+const iconGroups: { name: string; icons: Record<string, LucideIcon> }[] = [
+  { name: "Everyday", icons: { Star, Heart, Hand, Smile, Frown, ThumbsUp, ThumbsDown, Check, X, Plus, MessageCircle, Users, Handshake, Gift, Speech, Lightbulb, Megaphone, Bell } },
+  { name: "Places", icons: { Hospital, Waves, Utensils, Home, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent } },
+  { name: "Food & drink", icons: { Apple, CupSoda, Soup, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet } },
+  { name: "Body & health", icons: { HeartPulse, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Toilet, Bath, Bed, PersonStanding, Accessibility, Cross } },
+  { name: "Travel", icons: { Plane, TrainFront, Bus, Car, Bike, Ship, Map, MapPin, Luggage, Backpack } },
+  { name: "Calendar & time", icons: { CalendarDays, CalendarClock, Calendar, Clock, AlarmClock, Sun, Moon } },
+  { name: "Play & music", icons: { Music, Gamepad2, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, PartyPopper } },
+  { name: "Animals & nature", icons: { Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Leaf, Bug } },
+  { name: "Things & learning", icons: { BookOpen, Pencil, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } },
+];
+const iconChoices: Record<string, LucideIcon> = Object.assign({}, ...iconGroups.map(g => g.icons));
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
-const allIcons: Record<string, LucideIcon> = { ...iconChoices, ThumbsUp, ThumbsDown, Handshake, Toilet, Leaf, Plus, PartyPopper, Hospital, Waves, HeartPulse, Soup };
+const allIcons = iconChoices;
+const iconLabel = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2").toLowerCase();
 const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
 type Word = typeof defaultWords[number];
 type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };

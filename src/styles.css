@@ -305,3 +305,11 @@
 .word-grid > .is-drop-target { outline: 3px solid var(--primary); outline-offset: 3px; }
 @keyframes card-wiggle { from { rotate: -0.6deg; } to { rotate: 0.6deg; } }
 @media (prefers-reduced-motion: reduce) { .word-grid > .is-editing { animation: none; } }
+
+/* Symbol picker: search + grouped, scrollable so the dialog stays a tap-friendly height */
+.icon-picker-box { display: grid; gap: 8px; }
+.icon-search { height: 40px; font-size: 15px; }
+.icon-picker-scroll { max-height: 216px; overflow-y: auto; display: grid; gap: 10px; padding-right: 4px; }
+.icon-group { display: grid; gap: 6px; }
+.icon-group-name { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
+.icon-group-empty { font-size: 14px; color: var(--muted-foreground); }
