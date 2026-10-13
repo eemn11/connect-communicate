@@ -11,6 +11,6 @@
 - [x] Situation shows three label cards: Hospital 병원 갔을 때, Swimming pool 수영장 갔을 때, Restaurant 식당 갔을 때
 - [x] Planning shows day cards: Today, Sunday through Saturday
 - [x] Cards in every section stacked in a single column
-- [ ] Cards and their words made bigger
+- [x] Cards and their words made bigger
 
 
