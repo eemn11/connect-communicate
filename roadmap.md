@@ -16,3 +16,4 @@
 - [x] All cards default to white (color picker still offers the six colors)
 
 
+- [x] Symbol picker: more pictures (hospital, pool, calendar, restaurant, ball, music, travel and more) with search and groups
