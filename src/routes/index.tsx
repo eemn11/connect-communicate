@@ -389,8 +389,10 @@ function Index() {
         <label className="settings-label" htmlFor="word-category">Category</label>
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
         {labelsFor(draft.section).length > 0 && <><label className="settings-label" htmlFor="word-group">{draft.section} label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{labelNamesFor(draft.section).map(g => <option key={g}>{g}</option>)}</select></>}
-        <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
-        {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
+        <div className="dialog-actions">
+          <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
+          {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
+        </div>
       </>}</DialogContent></Dialog>
       <Dialog open={!!labelDraft} onOpenChange={open => !open && setLabelDraft(null)}><DialogContent className="settings-dialog">{labelDraft && <>
         <DialogHeader><DialogTitle>{labelDraft.index === null ? `Add a ${labelDraft.section} label` : `Edit ${labelDraft.label || "label"}`}</DialogTitle><DialogDescription>Choose a name, a picture, and a color.</DialogDescription></DialogHeader>
@@ -402,8 +404,10 @@ function Index() {
         {renderIconPicker(labelDraft.icon, name => setLabelDraft({ ...labelDraft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
-        <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
-        {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
+        <div className="dialog-actions">
+          <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
+          {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
+        </div>
       </>}</DialogContent></Dialog>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>

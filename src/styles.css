@@ -313,3 +313,6 @@
 .icon-group { display: grid; gap: 6px; }
 .icon-group-name { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
 .icon-group-empty { font-size: 14px; color: var(--muted-foreground); }
+
+/* Keep the dialog's Save / Delete buttons reachable without scrolling */
+.dialog-actions { position: sticky; bottom: 0; display: grid; gap: 8px; padding: 12px 0 2px; background: var(--background); }
