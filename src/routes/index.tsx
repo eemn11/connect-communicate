@@ -53,7 +53,7 @@ const sections = [
   { label: "Situation", icon: Compass, tone: "blue" },
   { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
-const dailyGroups = ["Things I want to do", "Things I need to do", "Food I want to eat", "Things I should not do"];
+const dailyGroups = ["Things I want to do", "Things I need to do", "Food I want to eat", "Things I should not do"] as const;
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
