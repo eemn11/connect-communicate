@@ -72,6 +72,16 @@ const baseLabels: SectionLabel[] = [
     { label: "Swimming pool", ko: "수영장 갔을 때", icon: Waves, tone: "blue" },
     { label: "Restaurant", ko: "식당 갔을 때", icon: Utensils, tone: "peach" },
   ].map(g => ({ ...g, section: "Situation" })),
+  ...[
+    { label: "Today", ko: "오늘", icon: Sun, tone: "yellow" },
+    { label: "Sunday", ko: "일요일", icon: CalendarDays, tone: "rose" },
+    { label: "Monday", ko: "월요일", icon: CalendarDays, tone: "peach" },
+    { label: "Tuesday", ko: "화요일", icon: CalendarDays, tone: "yellow" },
+    { label: "Wednesday", ko: "수요일", icon: CalendarDays, tone: "mint" },
+    { label: "Thursday", ko: "목요일", icon: CalendarDays, tone: "blue" },
+    { label: "Friday", ko: "금요일", icon: CalendarDays, tone: "lavender" },
+    { label: "Saturday", ko: "토요일", icon: CalendarDays, tone: "blue" },
+  ].map(g => ({ ...g, section: "Planning" })),
 ];
 
 function Index() {
