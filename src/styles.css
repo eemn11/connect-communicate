@@ -164,6 +164,7 @@
 .home-footer > span:first-child { display: flex; align-items: center; gap: 6px; }
 .home-footer svg { width: 12px; height: 12px; color: var(--primary); }
 .settings-dialog { max-width: 400px; max-height: 86vh; overflow-y: auto; }
+.settings-dialog:has(.dialog-actions) { padding-bottom: 0; }
 .settings-label { font-size: 14px; font-weight: 600; }
 .settings-select { background: var(--background); border: 1px solid var(--border); border-radius: 5px; height: 45px; padding: 0 10px; }
 .speech-error { color: var(--destructive); font-size: 12px; margin-bottom: 0; }
@@ -315,4 +316,4 @@
 .icon-group-empty { font-size: 14px; color: var(--muted-foreground); }
 
 /* Keep the dialog's Save / Delete buttons reachable without scrolling */
-.dialog-actions { position: sticky; bottom: 0; display: grid; gap: 8px; padding: 12px 0 2px; background: var(--background); }
+.dialog-actions { position: sticky; bottom: 0; display: grid; gap: 8px; padding: 12px 0 16px; background: var(--background); }
