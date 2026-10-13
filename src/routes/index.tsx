@@ -54,6 +54,12 @@ const sections = [
   { label: "Planning", icon: CalendarClock, tone: "lavender" },
 ];
 const dailyGroups = ["Things I want to do", "Things I need to do", "Food I want to eat", "Things I should not do"] as const;
+const dailyGroupCards = [
+  { label: "Things I want to do", ko: "하고 싶은 것", icon: Star, tone: "mint" },
+  { label: "Things I need to do", ko: "해야 할 일", icon: Check, tone: "yellow" },
+  { label: "Food I want to eat", ko: "먹고 싶은 음식", icon: Apple, tone: "peach" },
+  { label: "Things I should not do", ko: "하지 말아야 할 것", icon: X, tone: "rose" },
+] as const;
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
@@ -90,15 +96,21 @@ function Index() {
   const [favorites, setFavorites] = useState(false);
   const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
-  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string }[]>([]);
+  const [dailyOpen, setDailyOpen] = useState<string | null>(null);
+  const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string; daily: string | null }[]>([]);
   function goTo(next: { favorites: boolean; category: string }) {
+    setViewHistory(h => [...h, { favorites, category, daily: dailyOpen }]);
+    setDailyOpen(null);
     if (next.favorites === favorites && next.category === category) return;
-    setViewHistory(h => [...h, { favorites, category }]);
     setFavorites(next.favorites); setCategory(next.category);
   }
   function goBack() {
     const prev = viewHistory[viewHistory.length - 1];
-    if (prev) { setViewHistory(h => h.slice(0, -1)); setFavorites(prev.favorites); setCategory(prev.category); }
+    if (prev) {
+      setViewHistory(h => h.slice(0, -1));
+      setFavorites(prev.favorites); setCategory(prev.category); setDailyOpen(prev.daily);
+    } else if (dailyOpen) setDailyOpen(null);
+    else if (favorites || category !== "All words") { setFavorites(false); setCategory("All words"); }
     else if (window.history.length > 1) window.history.back();
   }
   const [speaking, setSpeaking] = useState(false);
@@ -153,13 +165,23 @@ function Index() {
                     <span className="section-rule" aria-hidden="true" />
                     <span className="section-count">{sectionWords.length} words</span>
                   </header>
-                  {label === "Daily" ? dailyGroups.map(group => (
-                    <div className="daily-group" key={group}>
-                      <h3 className="daily-group-label">{group}</h3>
+                  {label === "Daily" ? (dailyOpen ? (
+                    <>
+                      <Button variant="aac" className="daily-back" onClick={() => setDailyOpen(null)} aria-label="Back to all Daily labels"><ArrowLeft /><span>All Daily labels</span><span className="word-label-ko" lang="ko">전체</span></Button>
                       <div className="word-grid">
-                        {sectionWords.filter(word => word.group === group).map(renderWord)}
-                        {addCard(group)}
+                        {sectionWords.filter(word => word.group === dailyOpen).map(renderWord)}
+                        {addCard(dailyOpen)}
                       </div>
+                    </>
+                  ) : (
+                    <div className="word-grid daily-group-cards">
+                      {dailyGroupCards.map(({ label: groupLabel, ko, icon: GroupIcon, tone }) => (
+                        <Button key={groupLabel} variant="word" className={`tone-${tone}`} aria-label={`Open ${groupLabel}`} onClick={() => setDailyOpen(groupLabel)}>
+                          <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
+                          <span className="word-label">{groupLabel}</span>
+                          <span className="word-label-ko" lang="ko">{ko}</span>
+                        </Button>
+                      ))}
                     </div>
                   )) : (
                     <div className="word-grid">
