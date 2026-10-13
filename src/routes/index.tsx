@@ -163,13 +163,23 @@ function Index() {
                     <span className="section-rule" aria-hidden="true" />
                     <span className="section-count">{sectionWords.length} words</span>
                   </header>
-                  {label === "Daily" ? dailyGroups.map(group => (
-                    <div className="daily-group" key={group}>
-                      <h3 className="daily-group-label">{group}</h3>
+                  {label === "Daily" ? (dailyOpen ? (
+                    <>
+                      <Button variant="aac" className="daily-back" onClick={() => setDailyOpen(null)} aria-label="Back to all Daily labels"><ArrowLeft /><span>All Daily labels</span><span className="word-label-ko" lang="ko">전체</span></Button>
                       <div className="word-grid">
-                        {sectionWords.filter(word => word.group === group).map(renderWord)}
-                        {addCard(group)}
+                        {sectionWords.filter(word => word.group === dailyOpen).map(renderWord)}
+                        {addCard(dailyOpen)}
                       </div>
+                    </>
+                  ) : (
+                    <div className="word-grid daily-group-cards">
+                      {dailyGroupCards.map(({ label: groupLabel, ko, icon: GroupIcon, tone }) => (
+                        <Button key={groupLabel} variant="word" className={`tone-${tone}`} aria-label={`Open ${groupLabel}`} onClick={() => setDailyOpen(groupLabel)}>
+                          <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
+                          <span className="word-label">{groupLabel}</span>
+                          <span className="word-label-ko" lang="ko">{ko}</span>
+                        </Button>
+                      ))}
                     </div>
                   )) : (
                     <div className="word-grid">
