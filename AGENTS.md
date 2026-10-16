@@ -12,7 +12,6 @@
 - Keep the AAC home and its category/sentence interactions in the index route; this is one communication screen, not separate category pages.
 - Use the shared Button variants and global semantic CSS tokens for AAC controls so word tiles and navigation remain consistent.
 - Use browser speech synthesis only after user interaction; the home screen does not require a backend.
-- Route cards, sentences and task speech through the shared sequential bilingual speech player with locale-matched device voices. Why: English and Korean must not overlap or use the wrong pronunciation.
 - Prebundle the Radix dialog and slot with React in Vite's initial dependency pass to avoid late optimization producing mixed React module identities in an open preview.
 
 - Accounts use Lovable Cloud auth; signed-in pages live under the _authenticated layout and profile data in the profiles table with owner-only access. Why: keeps each user's info private.

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { BilingualField } from "@/components/bilingual-field";
 import { useBilingual } from "@/lib/use-bilingual";
-import { playBilingualSpeech } from "@/lib/bilingual-speech";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -313,20 +312,22 @@ function Index() {
   const [speaking, setSpeaking] = useState(false);
   const [rate, setRate] = useState("0.85");
   const [speechError, setSpeechError] = useState("");
-  const stopSpeech = useRef<(() => void) | null>(null);
-  useEffect(() => () => stopSpeech.current?.(), []);
   const favoriteLabels = ["I want this, please", "Yes, please", "No, thank you", "Help", "I want a drink", "A break"];
   const visibleWords = words.filter(word => favorites ? favoriteLabels.includes(word.label) : category === "All words" || word.category === category);
-  function speak(text: string, korean = "") {
+  function speak(text: string) {
     if (!("speechSynthesis" in window)) { setSpeechError("Speaking isn't available in this browser."); return; }
-    stopSpeech.current?.();
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = Number(rate);
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = (event) => { setSpeaking(false); if (event.error !== "canceled" && event.error !== "interrupted") setSpeechError("Couldn't speak. Please try again."); };
     setSpeechError("");
     setSpeaking(true);
-    stopSpeech.current = playBilingualSpeech(window.speechSynthesis, text, korean, Number(rate), () => setSpeaking(false), setSpeechError);
+    window.speechSynthesis.speak(utterance);
   }
   function addWord(word: typeof words[number]) {
     setSentence(current => [...current, word]);
-    if (sound) speak(word.label, word.ko);
+    if (sound) speak(word.label);
   }
   const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
   return (
@@ -376,7 +377,7 @@ function Index() {
                     const renderItem = (t: { time: string; text: string; ko?: string; i: number }) => (
                       <li key={t.i} className="plan-item">
                         <span className="plan-item-time">{fmtPlanTime(t.time)}</span>
-                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${fmtPlanTime(t.time)}, ${t.text}` : t.text, t.ko ? `${t.time ? `${Number(t.time.slice(0, 2)) < 12 ? "오전" : "오후"} ${Number(t.time.slice(0, 2)) % 12 || 12}시 ${Number(t.time.slice(3))}분, ` : ""}${t.ko}` : "")}><span>{t.text}</span>{t.ko && <span className="block text-sm text-muted-foreground" lang="ko">{t.ko}</span>}</button>
+                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${fmtPlanTime(t.time)}, ${t.text}` : t.text)}><span>{t.text}</span>{t.ko && <span className="block text-sm text-muted-foreground" lang="ko">{t.ko}</span>}</button>
                         <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== t.i) })}><X /></Button>
                       </li>
                     );
@@ -473,7 +474,7 @@ function Index() {
           <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
           <div className="sentence-row">
             <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}{word.ko && <span className="sentence-ko" lang="ko">{word.ko}</span>}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
-            <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "), sentence.map(word => word.ko).filter(Boolean).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
+            <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
           </div>
           {speechError && <p role="alert" className="speech-error">{speechError}</p>}
         </section>

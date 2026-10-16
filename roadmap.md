@@ -23,4 +23,3 @@
 - [x] Time boxes show 00 : 00 with AM/PM; typing or space bar moves to the next box
 - [x] Automatically complete English/Korean cards, labels, tasks and profile descriptions; preserve edits; live card/task translation verified in both directions
 - [ ] Verify profile translation while signed in — blocked: no account exists yet
-- [x] Read communication cards, sentences and tasks in English then Korean; sequence verified (audible playback depends on installed device voices)
