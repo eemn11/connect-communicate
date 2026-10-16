@@ -334,7 +334,13 @@
 .plan-board { display: flex; flex-direction: column; gap: 16px; }
 .plan-input { display: flex; gap: 10px; }
 .plan-input input { height: 56px; border-radius: 16px; border: 1px solid var(--border); background: var(--background); color: var(--foreground); padding: 0 16px; font-size: 18px; }
-.plan-time { width: 150px; }
+.plan-time { display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: 16px; background: var(--background); height: 56px; padding: 0 12px; }
+.plan-seg { width: 44px; height: 100%; border: 0; background: transparent; color: var(--foreground); font-size: 18px; text-align: center; padding: 0; outline: none; }
+.plan-seg::placeholder { color: var(--muted-foreground); }
+.plan-colon { font-size: 18px; color: var(--foreground); }
+.plan-meridiem { display: flex; gap: 2px; margin-left: 4px; }
+.plan-mer { border: 0; background: transparent; color: var(--muted-foreground); font-size: 14px; font-weight: 600; padding: 4px 8px; border-radius: 10px; cursor: pointer; }
+.plan-mer.is-active { background: var(--primary); color: var(--primary-foreground); }
 .plan-text { flex: 1; min-width: 0; }
 .plan-add { height: 56px; }
 .plan-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }

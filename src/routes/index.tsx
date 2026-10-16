@@ -338,7 +338,7 @@ function Index() {
               </header>
               {openLabel.section === "Planning" ? (
                 <div className="plan-board">
-                  <form className="plan-input" onSubmit={e => { e.preventDefault(); const text = planText.trim(); if (!text) return; const list = [...(plans[openLabel.label] ?? []), { time: planTime, text }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [openLabel.label]: list }); setPlanText(""); setPlanTime(""); }}>
+                  <form className="plan-input" onSubmit={e => { e.preventDefault(); const text = planText.trim(); if (!text) return; const list = [...(plans[openLabel.label] ?? []), { time: planTime, text }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [openLabel.label]: list }); setPlanText(""); setPlanHour(""); setPlanMinute(""); }}>
                     <div className="plan-time" role="group" aria-label="Time">
                       <input ref={hourRef} type="text" inputMode="numeric" value={planHour} onChange={e => { const digits = e.target.value.replace(/\D/g, "").slice(0, 2); setPlanHour(digits); if (digits.length === 2) minuteRef.current?.focus(); }} onKeyDown={e => { if (e.key === " ") { e.preventDefault(); minuteRef.current?.focus(); } }} placeholder="HH" aria-label="Hour" className="plan-seg plan-hour" maxLength={2} />
                       <span className="plan-colon" aria-hidden="true">:</span>
