@@ -21,3 +21,4 @@
 - [x] Planning day pages: type a task with a time, saved on this device
 - [x] Timed tasks form a readable schedule grouped Morning / Afternoon / Evening
 - [x] Time boxes show 00 : 00 with AM/PM; typing or space bar moves to the next box
+- [ ] Automatically complete English/Korean cards, labels, tasks and profile descriptions; preserve edits and verify both directions
