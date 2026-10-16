@@ -326,7 +326,7 @@ function Index() {
               const sectionWords = visibleWords.filter(word => word.section === label);
               if (!sectionWords.length && favorites) return null;
               const sectionLabels = labelsFor(label);
-              const open = openLabel && openLabel.section === label ? openLabel.label : null;
+              const open: string | null = null;
               const renderWord = renderWordCard;
               const addCard = (group: string) => <Button variant="word" className="add-word-card" aria-label={group ? `Add a phrase to ${group}` : `Add a word to ${label}`} onClick={() => openNew(label, group || undefined)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">{group || sectionLabels.length ? "Add phrase" : "Add word"}</span><span className="word-label-ko" lang="ko">{group || sectionLabels.length ? "문장 추가" : "단어 추가"}</span></Button>;
               return (
