@@ -45,5 +45,5 @@ export function playBilingualSpeech(
     synthesis.speak(utterance);
   }
   next(0);
-  return () => { stopped = true; current = undefined; synthesis.cancel(); };
+  return () => { stopped = true; if (current) { current.onend = null; current.onerror = null; } current = undefined; synthesis.cancel(); };
 }
