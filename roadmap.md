@@ -23,3 +23,4 @@
 - [x] Time boxes show 00 : 00 with AM/PM; typing or space bar moves to the next box
 - [x] Automatically complete English/Korean cards, labels, tasks and profile descriptions; preserve edits; live card/task translation verified in both directions
 - [ ] Verify profile translation while signed in — blocked: no account exists yet
+- [x] Calendar page for the current year, opened from the bottom bar
