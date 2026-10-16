@@ -16,3 +16,5 @@
 
 - Accounts use Lovable Cloud auth; signed-in pages live under the _authenticated layout and profile data in the profiles table with owner-only access. Why: keeps each user's info private.
 - Profile photos go in a private avatars bucket shown via signed links. Why: workspace blocks public buckets.
+- Use a shared bilingual completion helper with a server-only Lovable AI translation call; never translate credentials, phone numbers or numeric fields. Why: consistent translation without exposing secrets or altering identifiers.
+- Store profile bilingual text as English and Korean lines in existing text fields; cards use label/ko and tasks use text/ko. Why: preserves existing storage and user edits without requiring a schema change.
