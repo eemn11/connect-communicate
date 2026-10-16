@@ -101,7 +101,13 @@ function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const [plans, setPlans] = useState<Record<string, { time: string; text: string }[]>>({});
-  const [planTime, setPlanTime] = useState("");
+  const [planHour, setPlanHour] = useState("");
+  const [planMinute, setPlanMinute] = useState("");
+  const [planMeridiem, setPlanMeridiem] = useState<"AM" | "PM">("AM");
+  const hourRef = useRef<HTMLInputElement>(null);
+  const minuteRef = useRef<HTMLInputElement>(null);
+  const meridiemRef = useRef<HTMLButtonElement>(null);
+  const planTime = planHour && planMinute ? buildPlanTime(planHour, planMinute, planMeridiem) : "";
   const [planText, setPlanText] = useState("");
   useEffect(() => { try { const v = JSON.parse(localStorage.getItem("together-plans-v1") ?? "{}"); if (v && typeof v === "object") setPlans(v); } catch { /* ignore */ } }, []);
   function savePlans(next: Record<string, { time: string; text: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
