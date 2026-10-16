@@ -18,3 +18,6 @@
 
 - [x] Symbol picker: more pictures (hospital, pool, calendar, restaurant, ball, music, travel and more) with search and groups
 - [x] Tapping a folder card opens a full-screen view of its phrases
+- [x] Planning day pages: type a task with a time, saved on this device
+- [x] Timed tasks form a readable schedule grouped Morning / Afternoon / Evening
+- [x] Time boxes show 00 : 00 with AM/PM; typing or space bar moves to the next box
