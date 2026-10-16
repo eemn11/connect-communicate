@@ -351,4 +351,3 @@
 .plan-item { position: relative; }
 .plan-item::before { content: ""; position: absolute; left: -24px; top: 50%; width: 11px; height: 11px; border-radius: 999px; background: var(--primary); border: 2px solid var(--background); transform: translateY(-50%); }
 .plan-item-time { font-weight: 700; font-size: 16px; min-width: 88px; text-align: center; color: var(--primary-foreground); background: var(--primary); border-radius: 999px; padding: 6px 10px; }
-.plan-item-time:has(+ .plan-item-text) { }
