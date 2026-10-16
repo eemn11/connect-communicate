@@ -428,7 +428,7 @@ function Index() {
                   <header className="section-head">
                     <h2 className="section-label"><SectionIcon aria-hidden="true" />{label}</h2>
                     <span className="section-rule" aria-hidden="true" />
-                    <span className="section-count">{sectionWords.length} words</span>
+                    <span className="section-count">{sectionLabels.length ? `${sectionLabels.length} ${sectionLabels.length === 1 ? "card" : "cards"}` : `${sectionWords.length} ${sectionWords.length === 1 ? "word" : "words"}`}</span>
                   </header>
                   {sectionLabels.length ? (open ? (
                     <>
