@@ -94,14 +94,28 @@ const baseLabels: SectionLabel[] = [
     { label: "Thursday", ko: "목요일", icon: CalendarDays, tone: "white" },
     { label: "Friday", ko: "금요일", icon: CalendarDays, tone: "white" },
     { label: "Saturday", ko: "토요일", icon: CalendarDays, tone: "white" },
-  ].map(g => ({ ...g, section: "Planning" })),
+].map(g => ({ ...g, section: "Planning" })),
 ];
+
+function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
+  let hh = Math.min(12, Math.max(1, parseInt(h, 10) || 12));
+  if (mer === "PM" && hh !== 12) hh += 12;
+  if (mer === "AM" && hh === 12) hh = 0;
+  const mm = Math.min(59, Math.max(0, parseInt(m, 10) || 0));
+  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+}
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const [plans, setPlans] = useState<Record<string, { time: string; text: string }[]>>({});
-  const [planTime, setPlanTime] = useState("");
+  const [planHour, setPlanHour] = useState("");
+  const [planMinute, setPlanMinute] = useState("");
+  const [planMeridiem, setPlanMeridiem] = useState<"AM" | "PM">("AM");
+  const hourRef = useRef<HTMLInputElement>(null);
+  const minuteRef = useRef<HTMLInputElement>(null);
+  const meridiemRef = useRef<HTMLButtonElement>(null);
+  const planTime = planHour && planMinute ? buildPlanTime(planHour, planMinute, planMeridiem) : "";
   const [planText, setPlanText] = useState("");
   useEffect(() => { try { const v = JSON.parse(localStorage.getItem("together-plans-v1") ?? "{}"); if (v && typeof v === "object") setPlans(v); } catch { /* ignore */ } }, []);
   function savePlans(next: Record<string, { time: string; text: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
@@ -324,8 +338,16 @@ function Index() {
               </header>
               {openLabel.section === "Planning" ? (
                 <div className="plan-board">
-                  <form className="plan-input" onSubmit={e => { e.preventDefault(); const text = planText.trim(); if (!text) return; const list = [...(plans[openLabel.label] ?? []), { time: planTime, text }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [openLabel.label]: list }); setPlanText(""); setPlanTime(""); }}>
-                    <input type="time" value={planTime} onChange={e => setPlanTime(e.target.value)} aria-label="Time" className="plan-time" />
+                  <form className="plan-input" onSubmit={e => { e.preventDefault(); const text = planText.trim(); if (!text) return; const list = [...(plans[openLabel.label] ?? []), { time: planTime, text }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [openLabel.label]: list }); setPlanText(""); setPlanHour(""); setPlanMinute(""); }}>
+                    <div className="plan-time" role="group" aria-label="Time">
+                      <input ref={hourRef} type="text" inputMode="numeric" value={planHour} onChange={e => { const digits = e.target.value.replace(/\D/g, "").slice(0, 2); setPlanHour(digits); if (digits.length === 2) minuteRef.current?.focus(); }} onKeyDown={e => { if (e.key === " ") { e.preventDefault(); minuteRef.current?.focus(); } }} placeholder="HH" aria-label="Hour" className="plan-seg plan-hour" maxLength={2} />
+                      <span className="plan-colon" aria-hidden="true">:</span>
+                      <input ref={minuteRef} type="text" inputMode="numeric" value={planMinute} onChange={e => { const digits = e.target.value.replace(/\D/g, "").slice(0, 2); setPlanMinute(digits); if (digits.length === 2) meridiemRef.current?.focus(); }} onKeyDown={e => { if (e.key === " ") { e.preventDefault(); meridiemRef.current?.focus(); } else if (e.key === "Backspace" && planMinute === "") { e.preventDefault(); hourRef.current?.focus(); } }} placeholder="MM" aria-label="Minute" className="plan-seg plan-minute" maxLength={2} />
+                      <div className="plan-meridiem">
+                        <button type="button" ref={meridiemRef} className={`plan-mer ${planMeridiem === "AM" ? "is-active" : ""}`} aria-pressed={planMeridiem === "AM"} onClick={() => setPlanMeridiem("AM")}>AM</button>
+                        <button type="button" className={`plan-mer ${planMeridiem === "PM" ? "is-active" : ""}`} aria-pressed={planMeridiem === "PM"} onClick={() => setPlanMeridiem("PM")}>PM</button>
+                      </div>
+                    </div>
                     <input type="text" value={planText} onChange={e => setPlanText(e.target.value)} placeholder="Type a task… / 할 일을 적어요" aria-label="Task" className="plan-text" />
                     <Button type="submit" variant="aac" className="plan-add"><Plus /><span>Add</span></Button>
                   </form>
