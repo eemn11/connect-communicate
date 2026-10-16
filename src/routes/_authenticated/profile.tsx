@@ -7,8 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
+import { BilingualField } from "@/components/bilingual-field";
+import { splitBilingual, joinBilingual } from "@/lib/bilingual";
+import { useBilingual } from "@/lib/use-bilingual";
 import type { Database } from "@/integrations/supabase/types";
 
+const translatedFields = ["display_name", "set_up_by", "likes", "dislikes", "sensory_notes", "caregiver_name", "caregiver_relationship"] as const;
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -18,12 +22,15 @@ export const Route = createFileRoute("/_authenticated/profile")({
       { name: "description", content: "Your Together profile: about you, your voice, your helpers, and permissions." },
       { property: "og:title", content: "My profile — Together" },
       { property: "og:description", content: "Your Together profile: about you, your voice, your helpers, and permissions." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProfilePage,
 });
 
 function ProfilePage() {
+  const { complete, busy: translating, error: translationError } = useBilingual();
   const navigate = useNavigate();
   const [p, setP] = useState<Profile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -60,9 +67,17 @@ function ProfilePage() {
   }
 
   async function save() {
-    if (!p) return;
+    if (!p || translating) return;
     setStatus("Saving…");
-    const { id, created_at, updated_at, ...rest } = p;
+    const next = { ...p };
+    for (const key of translatedFields) {
+      if (!next[key]?.trim()) continue;
+      const pair = await complete(splitBilingual(next[key] ?? ""));
+      if (!pair) { setStatus("Your text is kept. Please retry saving."); return; }
+      next[key] = joinBilingual(pair);
+    }
+    setP(next);
+    const { id, created_at, updated_at, ...rest } = next;
     const { error } = await supabase.from("profiles").update(rest).eq("id", id);
     setStatus(error ? "Couldn't save. Please try again." : "Saved!");
   }
@@ -99,7 +114,9 @@ function ProfilePage() {
 
   if (!p) return <div className="profile-page"><p className="text-muted-foreground">Loading your profile…</p></div>;
 
-  const field = (key: keyof Profile, label: string, multiline = false) => (
+  const field = (key: keyof Profile, label: string, multiline = false) => translatedFields.some(k => k === key) ? (
+    <BilingualField id={key} label={label} multiline={multiline} value={splitBilingual((p[key] as string) ?? "")} onChange={pair => set(key, joinBilingual(pair) as never)} />
+  ) : (
     <div className="grid gap-1.5">
       <Label htmlFor={key}>{label}</Label>
       {multiline
@@ -170,8 +187,9 @@ function ProfilePage() {
           </section>
         </div>
         <div className="profile-head" style={{ marginTop: 24, justifyContent: "flex-end" }}>
+          {translationError && <span role="alert" className="text-sm text-destructive">{translationError}</span>}
           {status && <span role="status" className="text-sm text-muted-foreground">{status}</span>}
-          <Button size="lg" onClick={save}><Check />Save profile</Button>
+          <Button size="lg" disabled={translating || status === "Saving…"} onClick={save}><Check />Save profile</Button>
         </div>
       </div>
     </div>

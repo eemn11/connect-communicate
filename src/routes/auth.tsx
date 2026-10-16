@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { BilingualField } from "@/components/bilingual-field";
+import { joinBilingual } from "@/lib/bilingual";
+import { useBilingual } from "@/lib/use-bilingual";
 import { lovable } from "@/integrations/lovable";
 
 export const Route = createFileRoute("/auth")({
@@ -14,17 +17,20 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Create your Together account to keep your words, voice, and profile with you." },
       { property: "og:title", content: "Sign in — Together" },
       { property: "og:description", content: "Create your Together account to keep your words, voice, and profile with you." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
 });
 
 function AuthPage() {
+  const { complete, error: translationError } = useBilingual();
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [name, setName] = useState({ en: "", ko: "" });
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -40,7 +46,10 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true); setMessage("");
     if (mode === "signup") {
-      const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { full_name: name } } });
+      const pair = await complete(name);
+      if (!pair) { setBusy(false); return; }
+      setName(pair);
+      const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { full_name: joinBilingual(pair) } } });
       if (error) setMessage(error.message);
       else if (!data.session) setMessage("Check your email and tap the link to finish creating your account.");
     } else {
@@ -63,9 +72,10 @@ function AuthPage() {
         <p className="text-muted-foreground">Your words and settings will be saved just for you.</p>
         <Button type="button" variant="outline" onClick={google}>Continue with Google</Button>
         <div className="text-center text-xs text-muted-foreground">or use email</div>
-        {mode === "signup" && <div className="grid gap-1.5"><Label htmlFor="name">Name</Label><Input id="name" value={name} onChange={e => setName(e.target.value)} /></div>}
+        {mode === "signup" && <BilingualField id="name" label="Name" value={name} onChange={setName} />}
         <div className="grid gap-1.5"><Label htmlFor="email">Email</Label><Input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} /></div>
         <div className="grid gap-1.5"><Label htmlFor="password">Password</Label><Input id="password" type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} /></div>
+        {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
         {message && <p role="status" className="text-sm text-muted-foreground">{message}</p>}
         <Button type="submit" disabled={busy}>{mode === "signup" ? "Create account" : "Sign in"}</Button>
         <Button type="button" variant="ghost" onClick={() => { setMode(mode === "signup" ? "signin" : "signup"); setMessage(""); }}>

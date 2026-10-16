@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { BilingualField } from "@/components/bilingual-field";
+import { useBilingual } from "@/lib/use-bilingual";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -106,9 +108,10 @@ function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
 }
 
 function Index() {
+  const { complete, busy: translating, error: translationError } = useBilingual();
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
-  const [plans, setPlans] = useState<Record<string, { time: string; text: string }[]>>({});
+  const [plans, setPlans] = useState<Record<string, { time: string; text: string; ko?: string }[]>>({});
   const [planHour, setPlanHour] = useState("");
   const [planMinute, setPlanMinute] = useState("");
   const [planMeridiem, setPlanMeridiem] = useState<"AM" | "PM">("AM");
@@ -117,8 +120,9 @@ function Index() {
   const meridiemRef = useRef<HTMLButtonElement>(null);
   const planTime = planHour && planMinute ? buildPlanTime(planHour, planMinute, planMeridiem) : "";
   const [planText, setPlanText] = useState("");
+  const [planKo, setPlanKo] = useState("");
   useEffect(() => { try { const v = JSON.parse(localStorage.getItem("together-plans-v1") ?? "{}"); if (v && typeof v === "object") setPlans(v); } catch { /* ignore */ } }, []);
-  function savePlans(next: Record<string, { time: string; text: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
+  function savePlans(next: Record<string, { time: string; text: string; ko?: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
   function fmtPlanTime(t: string) {
     if (!t) return "—";
     const parts = t.split(":");
@@ -181,9 +185,11 @@ function Index() {
   function openLabelEdit(l: SectionLabel) {
     setIconQuery(""); setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
   }
-  function commitDraft() {
-    if (!draft || !draft.label.trim()) return;
-    const w: Word = { label: draft.label.trim(), ko: draft.ko.trim() || undefined, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone, group: labelNamesFor(draft.section).length ? draft.group : undefined };
+  async function commitDraft() {
+    if (!draft || translating || (!draft.label.trim() && !draft.ko.trim())) return;
+    const pair = await complete({ en: draft.label, ko: draft.ko });
+    if (!pair) return;
+    const w: Word = { label: pair.en, ko: pair.ko, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone, group: labelNamesFor(draft.section).length ? draft.group : undefined };
     saveWords(draft.index === null ? [...words, w] : words.map((x, i) => i === draft.index ? w : x));
     setDraft(null);
   }
@@ -191,10 +197,12 @@ function Index() {
     if (!draft || draft.index === null) return;
     saveWords(words.filter((_, i) => i !== draft.index)); setDraft(null);
   }
-  function commitLabel() {
-    if (!labelDraft || !labelDraft.label.trim()) return;
-    const name = labelDraft.label.trim();
-    const entry: SectionLabel = { label: name, ko: labelDraft.ko.trim(), icon: iconChoices[labelDraft.icon] ?? allIcons[labelDraft.icon] ?? Star, tone: labelDraft.tone, section: labelDraft.section };
+  async function commitLabel() {
+    if (!labelDraft || translating || (!labelDraft.label.trim() && !labelDraft.ko.trim())) return;
+    const pair = await complete({ en: labelDraft.label, ko: labelDraft.ko });
+    if (!pair) return;
+    const name = pair.en;
+    const entry: SectionLabel = { label: name, ko: pair.ko, icon: iconChoices[labelDraft.icon] ?? allIcons[labelDraft.icon] ?? Star, tone: labelDraft.tone, section: labelDraft.section };
     if (labelDraft.index === null) {
       if (!labelNamesFor(labelDraft.section).includes(name)) saveLabels([...labels, entry]);
       setOpenLabel({ section: labelDraft.section, label: name });
@@ -328,6 +336,7 @@ function Index() {
           </div>
         </header>
         <main className="home-content">
+          {translationError && <p role="alert" className="text-destructive">{translationError}</p>}
           {openLabel ? (() => { const folder = allLabels.find(l => l.section === openLabel.section && l.label === openLabel.label); const FolderIcon = folder?.icon ?? Star; const folderWords = words.filter(w => w.section === openLabel.section && w.group === openLabel.label); return (
             <section className={`folder-screen tone-${sections.find(s => s.label === openLabel.section)?.tone ?? "white"}`} aria-label={`${openLabel.label} phrases`}>
               <header className="folder-head">
@@ -338,7 +347,7 @@ function Index() {
               </header>
               {openLabel.section === "Planning" ? (
                 <div className="plan-board">
-                  <form className="plan-input" onSubmit={e => { e.preventDefault(); const text = planText.trim(); if (!text) return; const list = [...(plans[openLabel.label] ?? []), { time: planTime, text }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [openLabel.label]: list }); setPlanText(""); setPlanHour(""); setPlanMinute(""); }}>
+                  <form className="plan-input" onSubmit={async e => { e.preventDefault(); if (translating || (!planText.trim() && !planKo.trim())) return; const day = openLabel.label; const pair = await complete({ en: planText, ko: planKo }); if (!pair) return; const list = [...(plans[day] ?? []), { time: planTime, text: pair.en, ko: pair.ko }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [day]: list }); setPlanText(""); setPlanKo(""); setPlanHour(""); setPlanMinute(""); }}>
                     <div className="plan-time" role="group" aria-label="Time">
                       <input ref={hourRef} type="text" inputMode="numeric" value={planHour} onChange={e => { const digits = e.target.value.replace(/\D/g, "").slice(0, 2); setPlanHour(digits); if (digits.length === 2) minuteRef.current?.focus(); }} onKeyDown={e => { if (e.key === " ") { e.preventDefault(); minuteRef.current?.focus(); } }} placeholder="00" aria-label="Hour" className="plan-seg plan-hour" maxLength={2} />
                       <span className="plan-colon" aria-hidden="true">:</span>
@@ -348,8 +357,8 @@ function Index() {
                         <button type="button" className={`plan-mer ${planMeridiem === "PM" ? "is-active" : ""}`} aria-pressed={planMeridiem === "PM"} onClick={() => setPlanMeridiem("PM")}>PM</button>
                       </div>
                     </div>
-                    <input type="text" value={planText} onChange={e => setPlanText(e.target.value)} placeholder="Type a task… / 할 일을 적어요" aria-label="Task" className="plan-text" />
-                    <Button type="submit" variant="aac" className="plan-add"><Plus /><span>Add</span></Button>
+                    <div className="plan-text grid gap-2"><input type="text" value={planText} onChange={e => setPlanText(e.target.value)} placeholder="Type a task…" aria-label="Task (English)" /><input type="text" lang="ko" value={planKo} onChange={e => setPlanKo(e.target.value)} placeholder="할 일을 적어요" aria-label="Task (Korean)" /></div>
+                    <Button type="submit" variant="aac" className="plan-add" disabled={translating}><Plus /><span>{translating ? "Translating…" : "Add"}</span></Button>
                   </form>
                   {(() => {
                     const list = (plans[openLabel.label] ?? []).map((t, i) => ({ ...t, i }));
@@ -360,10 +369,10 @@ function Index() {
                       { key: "afternoon", en: "Afternoon", ko: "오후", items: withTime.filter(t => t.time >= "12:00" && t.time < "18:00") },
                       { key: "evening", en: "Evening", ko: "저녁", items: withTime.filter(t => t.time >= "18:00") },
                     ].filter(p => p.items.length > 0);
-                    const renderItem = (t: { time: string; text: string; i: number }) => (
+                    const renderItem = (t: { time: string; text: string; ko?: string; i: number }) => (
                       <li key={t.i} className="plan-item">
                         <span className="plan-item-time">{fmtPlanTime(t.time)}</span>
-                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${fmtPlanTime(t.time)}, ${t.text}` : t.text)}>{t.text}</button>
+                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${fmtPlanTime(t.time)}, ${t.text}` : t.text)}><span>{t.text}</span>{t.ko && <span className="block text-sm text-muted-foreground" lang="ko">{t.ko}</span>}</button>
                         <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== t.i) })}><X /></Button>
                       </li>
                     );
@@ -477,10 +486,7 @@ function Index() {
       </div>
       <Dialog open={!!draft} onOpenChange={open => !open && setDraft(null)}><DialogContent className="settings-dialog">{draft && <>
         <DialogHeader><DialogTitle>{draft.index === null ? "Add a word" : "Edit word"}</DialogTitle><DialogDescription>Choose the word, picture, and where it goes.</DialogDescription></DialogHeader>
-        <label className="settings-label" htmlFor="word-label">{labelsFor(draft.section).length ? "Phrase (English)" : "Word (English)"}</label>
-        <input id="word-label" className="settings-select" value={draft.label} maxLength={30} autoFocus onChange={e => setDraft({ ...draft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitDraft()} />
-        <label className="settings-label" htmlFor="word-ko">Korean</label>
-        <input id="word-ko" lang="ko" className="settings-select" value={draft.ko} maxLength={30} onChange={e => setDraft({ ...draft, ko: e.target.value })} />
+        <BilingualField id="word-label" label={labelsFor(draft.section).length ? "Phrase" : "Word"} value={{ en: draft.label, ko: draft.ko }} onChange={pair => setDraft(cur => cur ? { ...cur, label: pair.en, ko: pair.ko } : cur)} />
         <span className="settings-label">Picture</span>
         {renderIconPicker(draft.icon, name => setDraft({ ...draft, icon: name }))}
         <span className="settings-label">Color</span>
@@ -491,22 +497,19 @@ function Index() {
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
         {labelsFor(draft.section).length > 0 && <><label className="settings-label" htmlFor="word-group">{draft.section} label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{labelNamesFor(draft.section).map(g => <option key={g}>{g}</option>)}</select></>}
         <div className="dialog-actions">
-          <Button onClick={commitDraft} disabled={!draft.label.trim()}><Check />Save</Button>
+          <Button onClick={commitDraft} disabled={translating || (!draft.label.trim() && !draft.ko.trim())}><Check />{translating ? "Translating…" : "Save"}</Button>
           {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
         </div>
       </>}</DialogContent></Dialog>
       <Dialog open={!!labelDraft} onOpenChange={open => !open && setLabelDraft(null)}><DialogContent className="settings-dialog">{labelDraft && <>
         <DialogHeader><DialogTitle>{labelDraft.index === null ? `Add a ${labelDraft.section} label` : `Edit ${labelDraft.label || "label"}`}</DialogTitle><DialogDescription>Choose a name, a picture, and a color.</DialogDescription></DialogHeader>
-        <label className="settings-label" htmlFor="group-label">Label (English)</label>
-        <input id="group-label" className="settings-select" value={labelDraft.label} maxLength={30} autoFocus onChange={e => setLabelDraft({ ...labelDraft, label: e.target.value })} onKeyDown={e => e.key === "Enter" && commitLabel()} />
-        <label className="settings-label" htmlFor="group-ko">Korean</label>
-        <input id="group-ko" lang="ko" className="settings-select" value={labelDraft.ko} maxLength={30} onChange={e => setLabelDraft({ ...labelDraft, ko: e.target.value })} />
+        <BilingualField id="group-label" label="Label" value={{ en: labelDraft.label, ko: labelDraft.ko }} onChange={pair => setLabelDraft(cur => cur ? { ...cur, label: pair.en, ko: pair.ko } : cur)} />
         <span className="settings-label">Picture</span>
         {renderIconPicker(labelDraft.icon, name => setLabelDraft({ ...labelDraft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
         <div className="dialog-actions">
-          <Button onClick={commitLabel} disabled={!labelDraft.label.trim()}><Check />Save label</Button>
+          <Button onClick={commitLabel} disabled={translating || (!labelDraft.label.trim() && !labelDraft.ko.trim())}><Check />{translating ? "Translating…" : "Save label"}</Button>
           {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
         </div>
       </>}</DialogContent></Dialog>
