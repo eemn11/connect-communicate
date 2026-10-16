@@ -210,6 +210,11 @@ function Index() {
       const old = labels[labelDraft.index];
       saveLabels(labels.map((x, i) => i === labelDraft.index ? entry : x));
       if (old && old.label !== name) saveWords(words.map(w => w.section === old.section && w.group === old.label ? { ...w, group: name } : w));
+      if (old && old.section === "Planning" && old.label !== name && plans[old.label]) {
+        const next = { ...plans, [name]: plans[old.label] ?? [] };
+        delete next[old.label];
+        savePlans(next);
+      }
     }
     setLabelDraft(null);
   }
@@ -497,6 +502,7 @@ function Index() {
         <select id="word-category" className="settings-select" value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value })}>{categories.filter(c => c.label !== "All words").map(c => <option key={c.label}>{c.label}</option>)}</select>
         {labelsFor(draft.section).length > 0 && <><label className="settings-label" htmlFor="word-group">{draft.section} label</label><select id="word-group" className="settings-select" value={draft.group} onChange={e => setDraft({ ...draft, group: e.target.value })}>{labelNamesFor(draft.section).map(g => <option key={g}>{g}</option>)}</select></>}
         <div className="dialog-actions">
+          {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
           <Button onClick={commitDraft} disabled={translating || (!draft.label.trim() && !draft.ko.trim())}><Check />{translating ? "Translating…" : "Save"}</Button>
           {draft.index !== null && <Button variant="outline" onClick={deleteDraft}><Trash2 />Delete word</Button>}
         </div>
@@ -509,6 +515,7 @@ function Index() {
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${labelDraft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={labelDraft.tone === t} onClick={() => setLabelDraft({ ...labelDraft, tone: t })} />)}</div>
         <div className="dialog-actions">
+          {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
           <Button onClick={commitLabel} disabled={translating || (!labelDraft.label.trim() && !labelDraft.ko.trim())}><Check />{translating ? "Translating…" : "Save label"}</Button>
           {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
         </div>

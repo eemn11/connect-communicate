@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useBilingual } from "@/lib/use-bilingual";
-import type { BilingualText } from "@/lib/bilingual";
+import { missingTranslation, type BilingualText } from "@/lib/bilingual";
 
 export function BilingualField({ id, label, value, onChange, multiline = false }: {
   id: string; label: string; value: BilingualText; onChange: (value: BilingualText) => void; multiline?: boolean;
@@ -13,7 +13,7 @@ export function BilingualField({ id, label, value, onChange, multiline = false }
   const revision = useRef(0);
   const Control = multiline ? Textarea : Input;
   async function finish() {
-    if (busy) return;
+    if (busy || !missingTranslation(latest.current)) return;
     const version = revision.current;
     const translated = await complete(latest.current);
     if (translated && version === revision.current) onChange(translated);

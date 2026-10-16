@@ -17,6 +17,11 @@ describe("Automatic English–Korean completion", () => {
     expect(await completeBilingual({ en: "My chosen phrase", ko: "내 문장" }, translate)).toEqual({ en: "My chosen phrase", ko: "내 문장" });
     expect(translate).not.toHaveBeenCalled();
   });
+  it("adds English from the Korean box without altering the Korean input", async () => {
+    const translate = vi.fn().mockResolvedValue("Swimming lesson");
+    expect(await completeBilingual({ en: "", ko: "수영 수업" }, translate)).toEqual({ en: "Swimming lesson", ko: "수영 수업" });
+    expect(translate).toHaveBeenCalledWith("수영 수업", "en");
+  });
   it("does not translate empty input", async () => {
     const translate = vi.fn();
     await completeBilingual({ en: "", ko: "" }, translate);
