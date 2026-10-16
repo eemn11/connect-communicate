@@ -105,6 +105,16 @@ function Index() {
   const [planText, setPlanText] = useState("");
   useEffect(() => { try { const v = JSON.parse(localStorage.getItem("together-plans-v1") ?? "{}"); if (v && typeof v === "object") setPlans(v); } catch { /* ignore */ } }, []);
   function savePlans(next: Record<string, { time: string; text: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
+  function fmtPlanTime(t: string) {
+    if (!t) return "—";
+    const parts = t.split(":");
+    const h = Number(parts[0]);
+    const m = Number(parts[1]);
+    if (Number.isNaN(h) || Number.isNaN(m)) return t;
+    const ampm = h < 12 ? "AM" : "PM";
+    const hh = h % 12 === 0 ? 12 : h % 12;
+    return `${hh}:${String(m).padStart(2, "0")} ${ampm}`;
+  }
   const [draft, setDraft] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<SectionLabel[]>(baseLabels);
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
@@ -319,16 +329,40 @@ function Index() {
                     <input type="text" value={planText} onChange={e => setPlanText(e.target.value)} placeholder="Type a task… / 할 일을 적어요" aria-label="Task" className="plan-text" />
                     <Button type="submit" variant="aac" className="plan-add"><Plus /><span>Add</span></Button>
                   </form>
-                  <ul className="plan-list">
-                    {(plans[openLabel.label] ?? []).map((t, i) => (
-                      <li key={i} className="plan-item">
-                        <span className="plan-item-time">{t.time || "—"}</span>
-                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${t.time}, ${t.text}` : t.text)}>{t.text}</button>
-                        <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== i) })}><X /></Button>
+                  {(() => {
+                    const list = (plans[openLabel.label] ?? []).map((t, i) => ({ ...t, i }));
+                    const withTime = list.filter(t => t.time).sort((a, b) => a.time.localeCompare(b.time));
+                    const noTime = list.filter(t => !t.time);
+                    const parts = [
+                      { key: "morning", en: "Morning", ko: "오전", items: withTime.filter(t => t.time < "12:00") },
+                      { key: "afternoon", en: "Afternoon", ko: "오후", items: withTime.filter(t => t.time >= "12:00" && t.time < "18:00") },
+                      { key: "evening", en: "Evening", ko: "저녁", items: withTime.filter(t => t.time >= "18:00") },
+                    ].filter(p => p.items.length > 0);
+                    const renderItem = (t: { time: string; text: string; i: number }) => (
+                      <li key={t.i} className="plan-item">
+                        <span className="plan-item-time">{fmtPlanTime(t.time)}</span>
+                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${fmtPlanTime(t.time)}, ${t.text}` : t.text)}>{t.text}</button>
+                        <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== t.i) })}><X /></Button>
                       </li>
-                    ))}
-                    {!(plans[openLabel.label] ?? []).length && <li className="plan-empty">No tasks yet. Add one above. / 아직 할 일이 없어요.</li>}
-                  </ul>
+                    );
+                    return (
+                      <div className="plan-schedule" aria-label={`${openLabel.label} schedule`}>
+                        {!list.length && <p className="plan-empty">No tasks yet. Add one above. <span lang="ko">아직 할 일이 없어요.</span></p>}
+                        {parts.map(p => (
+                          <div key={p.key} className="plan-part">
+                            <p className="plan-part-name">{p.en} <span className="plan-part-ko" lang="ko">{p.ko}</span></p>
+                            <ul className="plan-list">{p.items.map(renderItem)}</ul>
+                          </div>
+                        ))}
+                        {noTime.length > 0 && (
+                          <div className="plan-part">
+                            <p className="plan-part-name">No time set <span className="plan-part-ko" lang="ko">시간 미정</span></p>
+                            <ul className="plan-list">{noTime.map(renderItem)}</ul>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               ) : (
               <div className="word-grid folder-grid">
