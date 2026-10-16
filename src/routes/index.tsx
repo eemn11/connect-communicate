@@ -94,8 +94,16 @@ const baseLabels: SectionLabel[] = [
     { label: "Thursday", ko: "목요일", icon: CalendarDays, tone: "white" },
     { label: "Friday", ko: "금요일", icon: CalendarDays, tone: "white" },
     { label: "Saturday", ko: "토요일", icon: CalendarDays, tone: "white" },
-  ].map(g => ({ ...g, section: "Planning" })),
+].map(g => ({ ...g, section: "Planning" })),
 ];
+
+function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
+  let hh = Math.min(12, Math.max(1, parseInt(h, 10) || 12));
+  if (mer === "PM" && hh !== 12) hh += 12;
+  if (mer === "AM" && hh === 12) hh = 0;
+  const mm = Math.min(59, Math.max(0, parseInt(m, 10) || 0));
+  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+}
 
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
