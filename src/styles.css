@@ -342,3 +342,13 @@
 .plan-item-time { font-weight: 600; font-size: 18px; min-width: 64px; color: var(--primary); }
 .plan-item-text { flex: 1; text-align: left; font-size: 18px; background: none; border: 0; color: var(--foreground); cursor: pointer; padding: 6px 0; }
 .plan-empty { color: var(--muted-foreground); padding: 20px; text-align: center; }
+
+/* Generated schedule view on Planning day pages */
+.plan-schedule { display: flex; flex-direction: column; gap: 20px; }
+.plan-part-name { margin: 0 0 2px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); }
+.plan-part-ko { text-transform: none; letter-spacing: 0; font-weight: 600; }
+.plan-part .plan-list { position: relative; margin-left: 10px; padding-left: 18px; border-left: 3px solid color-mix(in oklab, var(--primary) 30%, transparent); }
+.plan-item { position: relative; }
+.plan-item::before { content: ""; position: absolute; left: -24px; top: 50%; width: 11px; height: 11px; border-radius: 999px; background: var(--primary); border: 2px solid var(--background); transform: translateY(-50%); }
+.plan-item-time { font-weight: 700; font-size: 16px; min-width: 88px; text-align: center; color: var(--primary-foreground); background: var(--primary); border-radius: 999px; padding: 6px 10px; }
+.plan-item-time:has(+ .plan-item-text) { }
