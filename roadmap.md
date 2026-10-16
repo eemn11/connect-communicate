@@ -17,3 +17,4 @@
 
 
 - [x] Symbol picker: more pictures (hospital, pool, calendar, restaurant, ball, music, travel and more) with search and groups
+- [x] Tapping a folder card opens a full-screen view of its phrases

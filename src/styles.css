@@ -317,3 +317,15 @@
 
 /* Keep the dialog's Save / Delete buttons reachable without scrolling */
 .dialog-actions { position: sticky; bottom: 0; display: grid; gap: 8px; padding: 12px 0 16px; background: var(--background); }
+
+/* Full-screen folder view */
+.folder-screen { display: flex; flex-direction: column; gap: 20px; padding: 22px; border-radius: 28px; background: var(--card); border: 1px solid var(--border); min-height: 60vh; }
+.folder-head { display: flex; align-items: center; gap: 16px; }
+.folder-head > div { flex: 1; min-width: 0; }
+.folder-icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 20px; background: var(--secondary); color: var(--foreground); flex-shrink: 0; }
+.folder-icon svg { width: 36px; height: 36px; }
+.folder-section { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-foreground); margin: 0; }
+.folder-title { font-size: 30px; line-height: 1.15; margin: 0; }
+.folder-title-ko { font-size: 17px; color: var(--muted-foreground); margin: 2px 0 0; }
+.folder-screen .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+.folder-screen .folder-grid > * { min-height: 120px; }

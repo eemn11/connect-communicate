@@ -253,6 +253,11 @@ function Index() {
     if (next.favorites === favorites && next.category === category) return;
     setFavorites(next.favorites); setCategory(next.category);
   }
+  function openFolder(next: { section: string; label: string }) {
+    setViewHistory(h => [...h, { favorites, category, open: openLabel }]);
+    setOpenLabel(next);
+    window.scrollTo({ top: 0 });
+  }
   function goBack() {
     const prev = viewHistory[viewHistory.length - 1];
     if (prev) {
@@ -282,6 +287,7 @@ function Index() {
     setSentence(current => [...current, word]);
     if (sound) speak(word.label);
   }
+  const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
   return (
     <div className="aac-app">
       <div className="app-main">
@@ -293,6 +299,20 @@ function Index() {
           </div>
         </header>
         <main className="home-content">
+          {openLabel ? (() => { const folder = allLabels.find(l => l.section === openLabel.section && l.label === openLabel.label); const FolderIcon = folder?.icon ?? Star; const folderWords = words.filter(w => w.section === openLabel.section && w.group === openLabel.label); return (
+            <section className={`folder-screen tone-${sections.find(s => s.label === openLabel.section)?.tone ?? "white"}`} aria-label={`${openLabel.label} phrases`}>
+              <header className="folder-head">
+                <Button variant="aac" className="daily-back" onClick={goBack} aria-label="Go back to previous screen"><ArrowLeft /><span>Back</span><span className="word-label-ko" lang="ko">뒤로</span></Button>
+                <span className="folder-icon" aria-hidden="true"><FolderIcon /></span>
+                <div><p className="folder-section">{openLabel.section}</p><h1 className="folder-title">{openLabel.label}</h1>{folder?.ko && <p className="folder-title-ko" lang="ko">{folder.ko}</p>}</div>
+                <Button variant="aac" className={`edit-toggle folder-edit ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit"}</span></Button>
+              </header>
+              <div className="word-grid folder-grid">
+                {folderWords.map(renderWordCard)}
+                <Button variant="word" className="add-word-card" aria-label={`Add a phrase to ${openLabel.label}`} onClick={() => openNew(openLabel.section, openLabel.label)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">Add phrase</span><span className="word-label-ko" lang="ko">문장 추가</span></Button>
+              </div>
+            </section>
+          ); })() : (<>
           <section className="welcome">
             <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, friend <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
             <img src={mascot} alt="A friendly green speech bubble waving hello" width={512} height={512} className="welcome-mascot" />
@@ -306,8 +326,8 @@ function Index() {
               const sectionWords = visibleWords.filter(word => word.section === label);
               if (!sectionWords.length && favorites) return null;
               const sectionLabels = labelsFor(label);
-              const open = openLabel && openLabel.section === label ? openLabel.label : null;
-              const renderWord = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
+              const open: string | null = null;
+              const renderWord = renderWordCard;
               const addCard = (group: string) => <Button variant="word" className="add-word-card" aria-label={group ? `Add a phrase to ${group}` : `Add a word to ${label}`} onClick={() => openNew(label, group || undefined)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">{group || sectionLabels.length ? "Add phrase" : "Add word"}</span><span className="word-label-ko" lang="ko">{group || sectionLabels.length ? "문장 추가" : "단어 추가"}</span></Button>;
               return (
                 <section className={`word-section tone-${tone}`} key={label} aria-label={`${label} words`}>
@@ -327,7 +347,7 @@ function Index() {
                   ) : (
                     <div className="word-grid daily-group-cards">
                       {sectionLabels.map((l) => { const { label: groupLabel, ko, icon: GroupIcon, tone: groupTone } = l; const key = `l:${labels.indexOf(l)}`; return (
-                        <Button key={groupLabel} {...cardProps(key, () => editing ? openLabelEdit(l) : setOpenLabel({ section: label, label: groupLabel }), () => openLabelEdit(l))} variant="word" className={`tone-${groupTone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${groupLabel}` : `Open ${groupLabel}`}>
+                        <Button key={groupLabel} {...cardProps(key, () => editing ? openLabelEdit(l) : openFolder({ section: label, label: groupLabel }), () => openLabelEdit(l))} variant="word" className={`tone-${groupTone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${groupLabel}` : `Open ${groupLabel}`}>
                           {editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}
                           <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
                           <span className="word-label">{groupLabel}</span>
@@ -351,6 +371,7 @@ function Index() {
             })}
             {!visibleWords.length && <p className="words-empty">No words here yet. Try another category.</p>}
           </div>
+          </>)}
           <footer className="home-footer"><span><Heart /> Every voice matters.</span><span>Made for connection, at your pace.</span></footer>
         </main>
       </div>
