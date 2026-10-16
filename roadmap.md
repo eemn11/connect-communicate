@@ -24,3 +24,4 @@
 - [x] Automatically complete English/Korean cards, labels, tasks and profile descriptions; preserve edits; live card/task translation verified in both directions
 - [ ] Verify profile translation while signed in — blocked: no account exists yet
 - [x] Calendar page for the current year, opened from the bottom bar
+- [x] Phrase cards on folder pages can show a photo with their words

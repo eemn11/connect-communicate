@@ -380,3 +380,11 @@
 .calendar-day.is-today { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
 .calendar-foot { display: flex; justify-content: center; }
 @media (max-width: 759px) { .calendar-months { grid-template-columns: repeat(6, minmax(0, 1fr)); } .calendar-head { grid-template-columns: auto 1fr; } .calendar-arrows { grid-column: 1 / -1; justify-content: center; } }
+
+/* Photos on phrase cards (folder pages) */
+.word-photo { width: 100%; max-height: 120px; object-fit: cover; border-radius: 12px; }
+.folder-grid [data-card]:has(.word-photo) { height: auto; flex-direction: column; padding-top: 10px; padding-bottom: 10px; }
+.photo-field { display: grid; gap: 6px; }
+.photo-pick { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border: 1px dashed var(--border); border-radius: 12px; cursor: pointer; font-weight: 600; }
+.photo-preview { display: grid; gap: 8px; }
+.photo-preview img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 12px; }
