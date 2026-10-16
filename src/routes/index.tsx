@@ -59,9 +59,17 @@ const iconChoices: Record<string, LucideIcon> = Object.assign({}, ...iconGroups.
 const iconName = (icon: LucideIcon) => Object.keys(iconChoices).find(k => iconChoices[k] === icon) ?? "";
 const allIcons = iconChoices;
 const iconLabel = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2").toLowerCase();
+async function shrinkPhoto(file: File): Promise<string> {
+  // Keep photos small so they fit in this device's storage.
+  const img = await createImageBitmap(file);
+  const max = 320, scale = Math.min(1, max / Math.max(img.width, img.height));
+  const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+  c.getContext("2d")?.drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.8);
+}
 const tones = ["white", "mint", "yellow", "rose", "blue", "peach", "lavender"];
-type Word = typeof defaultWords[number];
-type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string };
+type Word = typeof defaultWords[number] & { photo?: string };
+type Draft = { index: number | null; label: string; ko: string; icon: string; category: string; section: string; tone: string; group: string; photo?: string };
 const STORE = "together-words-v4";
 const categories = [
   { label: "All words", icon: Grid2X2 }, { label: "Needs", icon: Hand },
@@ -180,7 +188,7 @@ function Index() {
     setIconQuery(""); setDraft({ index: null, label: "", ko: "", icon: "Star", category: category === "All words" || favorites ? "Needs" : category, section, tone: "white", group: group ?? labelNamesFor(section)[0] ?? "" });
   }
   function openEdit(word: Word) {
-    setIconQuery(""); setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "" });
+    setIconQuery(""); setDraft({ index: words.indexOf(word), label: word.label, ko: word.ko ?? "", icon: iconName(word.icon) || "Star", category: word.category, section: word.section, tone: word.tone, group: labelNamesFor(word.section).length ? (word.group ?? labelNamesFor(word.section)[0] ?? "") : "", ...(word.photo ? { photo: word.photo } : {}) });
   }
   function openLabelEdit(l: SectionLabel) {
     setIconQuery(""); setLabelDraft({ index: labels.indexOf(l), section: l.section, label: l.label, ko: l.ko, icon: iconName(l.icon) || "Star", tone: l.tone });
@@ -189,7 +197,7 @@ function Index() {
     if (!draft || translating || (!draft.label.trim() && !draft.ko.trim())) return;
     const pair = await complete({ en: draft.label, ko: draft.ko });
     if (!pair) return;
-    const w: Word = { label: pair.en, ko: pair.ko, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone, group: labelNamesFor(draft.section).length ? draft.group : undefined };
+    const w: Word = { label: pair.en, ko: pair.ko, icon: iconChoices[draft.icon] ?? Star, category: draft.category, section: draft.section, tone: draft.tone, group: labelNamesFor(draft.section).length ? draft.group : undefined, ...(draft.photo ? { photo: draft.photo } : {}) };
     saveWords(draft.index === null ? [...words, w] : words.map((x, i) => i === draft.index ? w : x));
     setDraft(null);
   }
@@ -329,7 +337,7 @@ function Index() {
     setSentence(current => [...current, word]);
     if (sound) speak(word.label);
   }
-  const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}<span className="word-symbol" aria-hidden="true"><word.icon /></span><span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
+  const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}{word.photo ? <img className="word-photo" src={word.photo} alt="" /> : <span className="word-symbol" aria-hidden="true"><word.icon /></span>}<span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
   return (
     <div className="aac-app">
       <div className="app-main">
@@ -494,6 +502,7 @@ function Index() {
         <DialogHeader><DialogTitle>{draft.index === null ? "Add a word" : "Edit word"}</DialogTitle><DialogDescription>Choose the word, picture, and where it goes.</DialogDescription></DialogHeader>
         <BilingualField id="word-label" label={labelsFor(draft.section).length ? "Phrase" : "Word"} value={{ en: draft.label, ko: draft.ko }} onChange={pair => setDraft(cur => cur ? { ...cur, label: pair.en, ko: pair.ko } : cur)} />
         <span className="settings-label">Picture</span>
+        {openLabel && <div className="photo-field"><span className="settings-label">Photo</span>{draft.photo ? <div className="photo-preview"><img src={draft.photo} alt="Card photo" /><Button variant="outline" type="button" onClick={() => setDraft(cur => { if (!cur) return cur; const { photo: _p, ...rest } = cur; return rest; })}><Trash2 />Remove photo</Button></div> : <label className="photo-pick"><Camera />Add a photo<input type="file" accept="image/*" hidden onChange={async e => { const f = e.target.files?.[0]; if (!f) return; const url = await shrinkPhoto(f); setDraft(cur => cur ? { ...cur, photo: url } : cur); }} /></label>}</div>}
         {renderIconPicker(draft.icon, name => setDraft({ ...draft, icon: name }))}
         <span className="settings-label">Color</span>
         <div className="icon-picker">{tones.map(t => <button type="button" key={t} className={`tone-choice tone-${t} ${draft.tone === t ? "is-active" : ""}`} aria-label={t} aria-pressed={draft.tone === t} onClick={() => setDraft({ ...draft, tone: t })} />)}</div>
