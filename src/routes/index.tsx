@@ -100,6 +100,11 @@ const baseLabels: SectionLabel[] = [
 function Index() {
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
+  const [plans, setPlans] = useState<Record<string, { time: string; text: string }[]>>({});
+  const [planTime, setPlanTime] = useState("");
+  const [planText, setPlanText] = useState("");
+  useEffect(() => { try { const v = JSON.parse(localStorage.getItem("together-plans-v1") ?? "{}"); if (v && typeof v === "object") setPlans(v); } catch { /* ignore */ } }, []);
+  function savePlans(next: Record<string, { time: string; text: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
   const [draft, setDraft] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<SectionLabel[]>(baseLabels);
   const [labelDraft, setLabelDraft] = useState<{ index: number | null; section: string; label: string; ko: string; icon: string; tone: string } | null>(null);
@@ -307,10 +312,29 @@ function Index() {
                 <div><p className="folder-section">{openLabel.section}</p><h1 className="folder-title">{openLabel.label}</h1>{folder?.ko && <p className="folder-title-ko" lang="ko">{folder.ko}</p>}</div>
                 <Button variant="aac" className={`edit-toggle folder-edit ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit"}</span></Button>
               </header>
+              {openLabel.section === "Planning" ? (
+                <div className="plan-board">
+                  <form className="plan-input" onSubmit={e => { e.preventDefault(); const text = planText.trim(); if (!text) return; const list = [...(plans[openLabel.label] ?? []), { time: planTime, text }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [openLabel.label]: list }); setPlanText(""); setPlanTime(""); }}>
+                    <input type="time" value={planTime} onChange={e => setPlanTime(e.target.value)} aria-label="Time" className="plan-time" />
+                    <input type="text" value={planText} onChange={e => setPlanText(e.target.value)} placeholder="Type a task… / 할 일을 적어요" aria-label="Task" className="plan-text" />
+                    <Button type="submit" variant="aac" className="plan-add"><Plus /><span>Add</span></Button>
+                  </form>
+                  <ul className="plan-list">
+                    {(plans[openLabel.label] ?? []).map((t, i) => (
+                      <li key={i} className="plan-item">
+                        <span className="plan-item-time">{t.time || "—"}</span>
+                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${t.time}, ${t.text}` : t.text)}>{t.text}</button>
+                        <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== i) })}><X /></Button>
+                      </li>
+                    ))}
+                    {!(plans[openLabel.label] ?? []).length && <li className="plan-empty">No tasks yet. Add one above. / 아직 할 일이 없어요.</li>}
+                  </ul>
+                </div>
+              ) : (
               <div className="word-grid folder-grid">
                 {folderWords.map(renderWordCard)}
                 <Button variant="word" className="add-word-card" aria-label={`Add a phrase to ${openLabel.label}`} onClick={() => openNew(openLabel.section, openLabel.label)}><span className="word-symbol" aria-hidden="true"><Plus /></span><span className="word-label">Add phrase</span><span className="word-label-ko" lang="ko">문장 추가</span></Button>
-              </div>
+              </div>)}
             </section>
           ); })() : (<>
           <section className="welcome">
