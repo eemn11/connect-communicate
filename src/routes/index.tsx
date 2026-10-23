@@ -11,6 +11,7 @@ import { SuggestionInput } from "@/components/suggestion-input";
 import { usePlanning } from "@/lib/use-planning";
 import { DailyStreak } from "@/components/daily-streak";
 import { useBilingual } from "@/lib/use-bilingual";
+import { useNickname } from "@/lib/use-nickname";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -120,6 +121,7 @@ function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
 
 function Index() {
   const { complete, busy: translating, error: translationError } = useBilingual();
+  const nickname = useNickname();
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const { plans, savePlans } = usePlanning();
@@ -418,7 +420,7 @@ function Index() {
             </section>
           ); })() : (<>
           <section className="welcome">
-            <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, friend <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
+            <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, {nickname} <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
             <img src={mascot} alt="A friendly green speech bubble waving hello" width={512} height={512} className="welcome-mascot" />
           </section>
           <nav className="category-bar" aria-label="Word categories">
