@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { BilingualField } from "@/components/bilingual-field";
 import { SuggestionInput } from "@/components/suggestion-input";
+import { usePlanning } from "@/lib/use-planning";
 import { useBilingual } from "@/lib/use-bilingual";
 import mascot from "@/assets/hello-mascot.png";
 
@@ -120,7 +121,7 @@ function Index() {
   const { complete, busy: translating, error: translationError } = useBilingual();
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
-  const [plans, setPlans] = useState<Record<string, { time: string; text: string; ko?: string }[]>>({});
+  const { plans, savePlans } = usePlanning();
   const [planHour, setPlanHour] = useState("");
   const [planMinute, setPlanMinute] = useState("");
   const [planMeridiem, setPlanMeridiem] = useState<"AM" | "PM">("AM");
@@ -130,8 +131,6 @@ function Index() {
   const planTime = planHour && planMinute ? buildPlanTime(planHour, planMinute, planMeridiem) : "";
   const [planText, setPlanText] = useState("");
   const [planKo, setPlanKo] = useState("");
-  useEffect(() => { try { const v = JSON.parse(localStorage.getItem("together-plans-v1") ?? "{}"); if (v && typeof v === "object") setPlans(v); } catch { /* ignore */ } }, []);
-  function savePlans(next: Record<string, { time: string; text: string; ko?: string }[]>) { setPlans(next); localStorage.setItem("together-plans-v1", JSON.stringify(next)); }
   function fmtPlanTime(t: string) {
     if (!t) return "—";
     const parts = t.split(":");
