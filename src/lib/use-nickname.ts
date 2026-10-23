@@ -31,7 +31,7 @@ export function useNickname() {
     });
     return () => {
       active = false;
-      subscription.unsubscribe();
+      subscription.subscription.unsubscribe();
     };
   }, []);
 
