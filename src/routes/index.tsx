@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { BilingualField } from "@/components/bilingual-field";
 import { SuggestionInput } from "@/components/suggestion-input";
 import { usePlanning } from "@/lib/use-planning";
+import { DailyStreak } from "@/components/daily-streak";
 import { useBilingual } from "@/lib/use-bilingual";
 import mascot from "@/assets/hello-mascot.png";
 
@@ -349,6 +350,7 @@ function Index() {
           </div>
         </header>
         <main className="home-content">
+          <DailyStreak />
           {translationError && <p role="alert" className="text-destructive">{translationError}</p>}
           {openLabel ? (() => { const folder = allLabels.find(l => l.section === openLabel.section && l.label === openLabel.label); const FolderIcon = folder?.icon ?? Star; const folderWords = words.filter(w => w.section === openLabel.section && w.group === openLabel.label); return (
             <section className={`folder-screen tone-${sections.find(s => s.label === openLabel.section)?.tone ?? "white"}`} aria-label={`${openLabel.label} phrases`}>

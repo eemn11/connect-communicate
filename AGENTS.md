@@ -20,3 +20,4 @@
 - Store profile bilingual text as English and Korean lines in existing text fields; cards use label/ko and tasks use text/ko. Why: preserves existing storage and user edits without requiring a schema change.
 - Use the shared SuggestionInput for content entry with local word completions, excluding credentials, numeric fields and search; never request predictions remotely. Why: consistent optional assistance without transmitting private keystrokes.
 - Planning and Calendar share usePlanning and the same device-local schedule store; calendar date matching and ordering live in planning.ts. Why: task additions/removals remain consistent without duplicating schedules.
+- Record daily opening rewards through the root DailyStreakProvider using device-local calendar dates and persisted progress; keep reward calculation in streak.ts. Why: every entry page counts once, while navigation and reloads do not duplicate rewards.
