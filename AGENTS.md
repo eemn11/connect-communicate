@@ -21,3 +21,4 @@
 - Use the shared SuggestionInput for content entry with local word completions, excluding credentials, numeric fields and search; never request predictions remotely. Why: consistent optional assistance without transmitting private keystrokes.
 - Planning and Calendar share usePlanning and the same device-local schedule store; calendar date matching and ordering live in planning.ts. Why: task additions/removals remain consistent without duplicating schedules.
 - Record daily opening rewards through the root DailyStreakProvider using device-local calendar dates and persisted progress; keep reward calculation in streak.ts. Why: every entry page counts once, while navigation and reloads do not duplicate rewards.
+- Greet the signed-in user with their saved profile name, falling back to "friend"; the lookup lives in use-nickname.ts and nickname.ts. Why: a personal greeting without making the home screen depend on having an account.

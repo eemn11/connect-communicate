@@ -420,7 +420,7 @@ function Index() {
             </section>
           ); })() : (<>
           <section className="welcome">
-            <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, friend <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
+            <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, {nickname} <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
             <img src={mascot} alt="A friendly green speech bubble waving hello" width={512} height={512} className="welcome-mascot" />
           </section>
           <nav className="category-bar" aria-label="Word categories">
