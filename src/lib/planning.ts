@@ -25,7 +25,7 @@ export function writePlanning(schedules: PlanningSchedules) {
 export function tasksForDate(schedules: PlanningSchedules, date: Date, today: Date): PlanningTask[] {
   const weekday = weekdays[date.getDay()];
   const sameDate = date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
-  return [...(weekday ? schedules[weekday] ?? [] : []), ...(sameDate ? schedules.Today ?? [] : [])]
+  return [...(weekday ? schedules[weekday] ?? [] : []), ...(sameDate ? schedules["Today"] ?? [] : [])]
     .sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
 }
 
