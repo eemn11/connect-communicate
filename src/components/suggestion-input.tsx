@@ -38,7 +38,7 @@ export function SuggestionInput({ value, onValueChange, multiline = false, onBlu
     setFocused(false);
     onBlur?.();
   }}>
-    <Control {...props} value={value} autoComplete="off" ref={el => { control.current = el; }}
+    <Control {...props} value={value} autoComplete="off" ref={(el: HTMLInputElement | HTMLTextAreaElement | null) => { control.current = el; }}
       onFocus={e => { setFocused(true); setCaret(e.currentTarget.selectionStart ?? value.length); }}
       onSelect={e => setCaret(e.currentTarget.selectionStart ?? value.length)}
       onChange={e => { onValueChange(e.target.value); setCaret(e.target.selectionStart ?? e.target.value.length); setDismissed(false); }}

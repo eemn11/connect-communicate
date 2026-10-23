@@ -14,7 +14,7 @@ describe("Optional word completions", () => {
     expect(insertSuggestedWord("I swi today", 5, "swim")).toEqual({ text: "I swim today", caret: 6 });
   });
   it("replaces the entire word at a cursor in its middle", () => {
-    expect(insertSuggestedWord("swiming today", 3, "swimming")).text.toBe("swimming today");
+    expect(insertSuggestedWord("swiming today", 3, "swimming").text).toBe("swimming today");
   });
   it("does not offer suggestions for empty or numeric entries", () => {
     expect(wordSuggestions("", 0, "en")).toEqual([]);
