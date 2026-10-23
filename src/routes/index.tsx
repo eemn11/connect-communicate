@@ -7,6 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { BilingualField } from "@/components/bilingual-field";
+import { SuggestionInput } from "@/components/suggestion-input";
 import { useBilingual } from "@/lib/use-bilingual";
 import mascot from "@/assets/hello-mascot.png";
 
@@ -370,7 +371,7 @@ function Index() {
                         <button type="button" className={`plan-mer ${planMeridiem === "PM" ? "is-active" : ""}`} aria-pressed={planMeridiem === "PM"} onClick={() => setPlanMeridiem("PM")}>PM</button>
                       </div>
                     </div>
-                    <div className="plan-text grid gap-2"><input type="text" value={planText} onChange={e => setPlanText(e.target.value)} placeholder="Type a task…" aria-label="Task (English)" /><input type="text" lang="ko" value={planKo} onChange={e => setPlanKo(e.target.value)} placeholder="할 일을 적어요" aria-label="Task (Korean)" /></div>
+                    <div className="plan-text grid gap-2"><SuggestionInput value={planText} onValueChange={setPlanText} placeholder="Type a task…" aria-label="Task (English)" /><SuggestionInput lang="ko" value={planKo} onValueChange={setPlanKo} placeholder="할 일을 적어요" aria-label="Task (Korean)" /></div>
                     <Button type="submit" variant="aac" className="plan-add" disabled={translating}><Plus /><span>{translating ? "Translating…" : "Add"}</span></Button>
                   </form>
                   {(() => {

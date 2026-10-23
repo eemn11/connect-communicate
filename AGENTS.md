@@ -18,3 +18,4 @@
 - Profile photos go in a private avatars bucket shown via signed links. Why: workspace blocks public buckets.
 - Use a shared bilingual completion helper with a server-only Lovable AI translation call; never translate credentials, phone numbers or numeric fields. Why: consistent translation without exposing secrets or altering identifiers.
 - Store profile bilingual text as English and Korean lines in existing text fields; cards use label/ko and tasks use text/ko. Why: preserves existing storage and user edits without requiring a schema change.
+- Use the shared SuggestionInput for content entry with local word completions, excluding credentials, numeric fields and search; never request predictions remotely. Why: consistent optional assistance without transmitting private keystrokes.

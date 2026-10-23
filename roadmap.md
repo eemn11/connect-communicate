@@ -25,3 +25,4 @@
 - [ ] Verify profile translation while signed in — blocked: no account exists yet
 - [x] Calendar page for the current year, opened from the bottom bar
 - [x] Phrase cards on folder pages can show a photo with their words
+- [x] Optional dismissible English/Korean word suggestions in content fields; selection, dismiss and unchanged typing verified
