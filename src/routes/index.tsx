@@ -11,6 +11,7 @@ import { SuggestionInput } from "@/components/suggestion-input";
 import { usePlanning } from "@/lib/use-planning";
 import { DailyStreak } from "@/components/daily-streak";
 import { useBilingual } from "@/lib/use-bilingual";
+import { useNickname } from "@/lib/use-nickname";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -120,6 +121,7 @@ function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
 
 function Index() {
   const { complete, busy: translating, error: translationError } = useBilingual();
+  const nickname = useNickname();
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const { plans, savePlans } = usePlanning();
