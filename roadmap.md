@@ -26,3 +26,4 @@
 - [x] Calendar page for the current year, opened from the bottom bar
 - [x] Phrase cards on folder pages can show a photo with their words
 - [x] Optional dismissible English/Korean word suggestions in content fields; selection, dismiss and unchanged typing verified
+- [x] Show Planning tasks on matching calendar dates with a readable selected-day schedule; addition, reload and removal verified
