@@ -17,20 +17,20 @@ describe("Planning schedule resets", () => {
   it("resets only the Today schedule when the day passes", () => {
     const saturday = new Date(2026, 9, 24, 8);
     const pruned = prunePlanning(schedules, meta, saturday);
-    expect(pruned.Today).toBeUndefined();
-    expect(pruned.Monday).toEqual(schedules.Monday);
+    expect(pruned["Today"]).toBeUndefined();
+    expect(pruned["Monday"]).toEqual(schedules["Monday"]);
     expect(pruned["My trip"]).toEqual(schedules["My trip"]);
   });
   it("resets the weekday and custom schedules after Saturday, when a new week starts", () => {
     const nextSunday = new Date(2026, 9, 25, 8);
     const pruned = prunePlanning(schedules, meta, nextSunday);
-    expect(pruned.Today).toBeUndefined();
-    expect(pruned.Monday).toBeUndefined();
+    expect(pruned["Today"]).toBeUndefined();
+    expect(pruned["Monday"]).toBeUndefined();
     expect(pruned["My trip"]).toBeUndefined();
   });
   it("keeps weekday schedules saved earlier the same week", () => {
     const savedMonday = { today: "2026-10-19", week: "2026-10-18" };
-    expect(prunePlanning(schedules, savedMonday, friday).Monday).toEqual(schedules.Monday);
+    expect(prunePlanning(schedules, savedMonday, friday).Monday).toEqual(schedules["Monday"]);
   });
   it("treats Sunday as the first day of the week", () => {
     expect(weekStartDay(new Date(2026, 9, 25))).toBe("2026-10-25");
