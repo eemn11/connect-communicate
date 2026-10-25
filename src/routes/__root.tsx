@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { DailyStreakProvider } from "@/components/daily-streak";
+import { applyTheme, readTheme, THEME_CHANGED, THEME_STORE } from "@/lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -117,6 +118,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    const sync = () => applyTheme(readTheme());
+    const onStorage = (event: StorageEvent) => { if (event.key === THEME_STORE || event.key === null) sync(); };
+    sync();
+    window.addEventListener(THEME_CHANGED, sync);
+    window.addEventListener("storage", onStorage);
+    return () => { window.removeEventListener(THEME_CHANGED, sync); window.removeEventListener("storage", onStorage); };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
