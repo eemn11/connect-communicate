@@ -411,3 +411,5 @@
 .photo-pick { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border: 1px dashed var(--border); border-radius: 12px; cursor: pointer; font-weight: 600; }
 .photo-preview { display: grid; gap: 8px; }
 .photo-preview img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 12px; }
+.profile-button { overflow: hidden; }
+.profile-thumb { width: 24px; height: 24px; border-radius: 999px; object-fit: cover; flex-shrink: 0; }
