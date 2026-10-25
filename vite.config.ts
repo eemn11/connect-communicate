@@ -11,7 +11,18 @@ export default defineConfig({
     optimizeDeps: {
       // Prebundle hook-based UI dependencies with React on initial startup,
       // rather than discovering them after an existing preview has loaded.
-      include: ["@radix-ui/react-dialog", "@radix-ui/react-slot", "@radix-ui/react-switch", "@radix-ui/react-label"],
+      include: [
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-slot",
+        "@radix-ui/react-switch",
+        "@radix-ui/react-label",
+        // Prebundle router internals discovered late on server restart,
+        // so an open preview never reloads into stale module URLs.
+        "@tanstack/router-core",
+        "@tanstack/router-core/isServer",
+        "@tanstack/router-core/ssr/client",
+        "seroval",
+      ],
     },
   },
   tanstackStart: {
