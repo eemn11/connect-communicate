@@ -29,3 +29,4 @@
 - [x] Show Planning tasks on matching calendar dates with a readable selected-day schedule; addition, reload and removal verified
 - [x] Daily opening streak and points; once-per-day rewards, consecutive visits and persistence verified
 - [x] Greeting shows the signed-in user's saved name, falling back to "friend"; signed-out fallback verified
+- [x] Planning schedules reset automatically: Today clears when the day passes, weekday and custom schedules clear when a new week starts (after Saturday)
