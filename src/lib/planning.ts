@@ -31,7 +31,7 @@ function readMeta(): PlanningMeta {
     const value: unknown = JSON.parse(localStorage.getItem(PLANNING_META) ?? "null");
     if (value && typeof value === "object" && !Array.isArray(value)) {
       const meta = value as Record<string, unknown>;
-      if (typeof meta.today === "string" && typeof meta.week === "string") return { today: meta.today, week: meta.week };
+      if (typeof meta["today"] === "string" && typeof meta["week"] === "string") return { today: meta["today"], week: meta["week"] };
     }
   } catch { /* Device storage may be unavailable. */ }
   return { today: "", week: "" };
