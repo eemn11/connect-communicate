@@ -30,7 +30,7 @@ describe("Planning schedule resets", () => {
   });
   it("keeps weekday schedules saved earlier the same week", () => {
     const savedMonday = { today: "2026-10-19", week: "2026-10-18" };
-    expect(prunePlanning(schedules, savedMonday, friday).Monday).toEqual(schedules["Monday"]);
+    expect(prunePlanning(schedules, savedMonday, friday)["Monday"]).toEqual(schedules["Monday"]);
   });
   it("treats Sunday as the first day of the week", () => {
     expect(weekStartDay(new Date(2026, 9, 25))).toBe("2026-10-25");
