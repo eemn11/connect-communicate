@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type React from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Church, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Church, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search, Image, Mic } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import { useThemeSettings } from "@/lib/use-theme";
 import { useBilingual } from "@/lib/use-bilingual";
 import { useNickname } from "@/lib/use-nickname";
 import { useAvatarUrl } from "@/lib/use-avatar";
+import { usePermissionsPrompt } from "@/lib/use-permissions-prompt";
+import { requestMediaPermissions } from "@/lib/permissions";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -303,6 +305,8 @@ const avatarUrl = useAvatarUrl();
   const [favorites, setFavorites] = useState(false);
   const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
+  const permissions = usePermissionsPrompt();
+  const [permissionResult, setPermissionResult] = useState<"" | "granted" | "denied" | "unavailable">("");
   const [openLabel, setOpenLabel] = useState<{ section: string; label: string } | null>(null);
   const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string; open: { section: string; label: string } | null }[]>([]);
   function goTo(next: { favorites: boolean; category: string }) {
@@ -539,6 +543,19 @@ const avatarUrl = useAvatarUrl();
           {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
         </div>
       </>}</DialogContent></Dialog>
+      <Dialog open={permissions.open} onOpenChange={open => !open && permissions.dismiss()}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Welcome! A few permissions</DialogTitle><DialogDescription>함께 앱이 더 잘 작동하도록 몇 가지 접근 권한을 허용해 주세요.</DialogDescription></DialogHeader>
+        <div className="permission-list">
+          <div className="permission-row"><span className="permission-icon"><Image aria-hidden="true" /></span><span><strong>Photos</strong><small>사진 — 카드에 나만의 사진을 넣을 때 필요해요</small></span></div>
+          <div className="permission-row"><span className="permission-icon"><Mic aria-hidden="true" /></span><span><strong>Microphone</strong><small>마이크 — 내 목소리를 녹음할 때 필요해요</small></span></div>
+          <div className="permission-row"><span className="permission-icon"><Camera aria-hidden="true" /></span><span><strong>Camera</strong><small>카메라 — 카드용 사진을 직접 찍을 때 필요해요</small></span></div>
+        </div>
+        {permissionResult === "denied" && <p className="permission-note">No problem — you can allow these later in your browser settings. 나중에 브라우저 설정에서 허용할 수 있어요.</p>}
+        {permissionResult === "unavailable" && <p className="permission-note">This device does not support camera or microphone access. 이 기기에서는 카메라와 마이크를 지원하지 않아요.</p>}
+        <div className="dialog-actions">
+          <Button variant="outline" onClick={permissions.dismiss}>Not now · 나중에</Button>
+          <Button onClick={async () => { const result = await requestMediaPermissions(); setPermissionResult(result); if (result === "granted") permissions.dismiss(); }}><Check />Allow access · 허용하기</Button>
+        </div>
+      </DialogContent></Dialog>
       <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Settings</DialogTitle><DialogDescription>Make the app look and sound right for you.</DialogDescription></DialogHeader><span className="settings-label">Screen mode</span><div className="theme-modes"><Button variant={theme.mode === "light" ? "default" : "outline"} aria-pressed={theme.mode === "light"} onClick={() => saveTheme({ ...theme, mode: "light" })}><Sun />Light</Button><Button variant={theme.mode === "dark" ? "default" : "outline"} aria-pressed={theme.mode === "dark"} onClick={() => saveTheme({ ...theme, mode: "dark" })}><Moon />Dark</Button></div><span className="settings-label">Main color</span><div className="theme-accents">{ACCENTS.map(option => <button key={option.id} type="button" className={`theme-accent${theme.accent === option.id ? " is-active" : ""}`} style={{ background: option.primary }} aria-label={`${option.name} · ${option.ko}`} aria-pressed={theme.accent === option.id} onClick={() => saveTheme({ ...theme, accent: option.id })}>{theme.accent === option.id ? <Check aria-hidden="true" /> : null}</button>)}</div><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );
