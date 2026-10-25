@@ -102,10 +102,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+// Runs before any module script: when a stale tab asks the dev server for a
+// module that no longer exists (after a restart/re-optimization), reload once
+// instead of leaving a blank screen. The flag is cleared on a successful load
+// so recovery re-arms, and a failed reload never loops.
+const STALE_CHUNK_RECOVERY = `(function(){var K="together-chunk-reload";function bad(m){return m.indexOf("Importing a module script failed")!==-1||m.indexOf("Failed to fetch dynamically imported module")!==-1||m.indexOf("error loading dynamically imported module")!==-1}function recover(){try{if(sessionStorage.getItem(K))return;sessionStorage.setItem(K,"1")}catch(e){}location.reload()}window.addEventListener("error",function(ev){var t=ev&&ev.target;if(t&&t.tagName==="SCRIPT"){recover();return}var m=(ev&&ev.message)||"";if(bad(m))recover()},true);window.addEventListener("unhandledrejection",function(ev){var r=ev&&ev.reason;var m=String(r&&(r.message||r)||"");if(bad(m))recover()});window.addEventListener("load",function(){try{sessionStorage.removeItem(K)}catch(e){}})})();`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: STALE_CHUNK_RECOVERY }} />
         <HeadContent />
       </head>
       <body>
