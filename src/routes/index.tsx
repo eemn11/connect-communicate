@@ -15,6 +15,8 @@ import { useThemeSettings } from "@/lib/use-theme";
 import { useBilingual } from "@/lib/use-bilingual";
 import { useNickname } from "@/lib/use-nickname";
 import { useAvatarUrl } from "@/lib/use-avatar";
+import { usePermissionsPrompt } from "@/lib/use-permissions-prompt";
+import { requestMediaPermissions } from "@/lib/permissions";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -303,6 +305,8 @@ const avatarUrl = useAvatarUrl();
   const [favorites, setFavorites] = useState(false);
   const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
+  const permissions = usePermissionsPrompt();
+  const [permissionResult, setPermissionResult] = useState<"" | "granted" | "denied" | "unavailable">("");
   const [openLabel, setOpenLabel] = useState<{ section: string; label: string } | null>(null);
   const [viewHistory, setViewHistory] = useState<{ favorites: boolean; category: string; open: { section: string; label: string } | null }[]>([]);
   function goTo(next: { favorites: boolean; category: string }) {
