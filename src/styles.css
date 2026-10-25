@@ -449,3 +449,12 @@
 .dark[data-accent="purple"] { --accent: oklch(.37 .03 300); --welcome: oklch(.32 .026 300); }
 .dark[data-accent="rose"] { --accent: oklch(.37 .03 15); --welcome: oklch(.32 .026 15); }
 .dark[data-accent="orange"] { --accent: oklch(.37 .03 55); --welcome: oklch(.32 .028 55); }
+
+/* First-sign-in permission prompt */
+.permission-list { display: flex; flex-direction: column; gap: 10px; margin: 4px 0; }
+.permission-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+.permission-icon { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: var(--accent); color: var(--primary); }
+.permission-icon svg { width: 20px; height: 20px; }
+.permission-row strong { display: block; font-size: 15px; }
+.permission-row small { display: block; font-size: 12.5px; color: var(--muted-foreground); line-height: 1.35; }
+.permission-note { font-size: 13px; color: var(--muted-foreground); margin: 4px 0 0; line-height: 1.4; }
