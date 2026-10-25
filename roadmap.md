@@ -31,3 +31,5 @@
 - [x] Greeting shows the signed-in user's saved name, falling back to "friend"; signed-out fallback verified
 - [x] Planning schedules reset automatically: Today clears when the day passes, weekday and custom schedules clear when a new week starts (after Saturday)
 - [x] Display settings in the bottom-bar Settings dialog: light/dark mode and main color (green, blue, purple, rose, orange), saved on the device and applied app-wide
+- [x] First-sign-in permission pop-up (photos, microphone, camera), shown once per account per device
+- [x] Fix blank-screen "Importing a module script failed" — prebundle @tanstack/router-core + seroval in vite.config.ts
