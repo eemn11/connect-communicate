@@ -12,6 +12,7 @@ import { usePlanning } from "@/lib/use-planning";
 import { DailyStreak } from "@/components/daily-streak";
 import { useBilingual } from "@/lib/use-bilingual";
 import { useNickname } from "@/lib/use-nickname";
+import { useAvatarUrl } from "@/lib/use-avatar";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -121,7 +122,8 @@ function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
 
 function Index() {
   const { complete, busy: translating, error: translationError } = useBilingual();
-  const nickname = useNickname();
+const nickname = useNickname();
+const avatarUrl = useAvatarUrl();
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const { plans, savePlans } = usePlanning();
@@ -348,7 +350,7 @@ function Index() {
           <div className="wordmark">together<span className="brand-dot">.</span><span className="wordmark-divider" /><span className="page-label">My voice</span></div>
           <div className="topbar-actions">
             <Button variant="aac" className="sound-button" onClick={() => setSound(!sound)} aria-pressed={sound} title="Toggle word audio">{sound ? <Volume2 /> : <VolumeX />}<span>Sound {sound ? "on" : "off"}</span></Button>
-            <Button variant="aac" className="sound-button" asChild><Link to="/profile" aria-label="My profile"><UserRound /><span>Profile</span></Link></Button>
+            <Button variant="aac" className="sound-button profile-button" asChild><Link to="/profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button>
           </div>
         </header>
         <main className="home-content">
