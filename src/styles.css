@@ -413,3 +413,29 @@
 .photo-preview img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 12px; }
 .profile-button { overflow: hidden; }
 .profile-thumb { width: 24px; height: 24px; border-radius: 999px; object-fit: cover; flex-shrink: 0; }
+
+/* Display settings: dark mode palette + theme pickers */
+.dark {
+  --background: oklch(.24 .014 180);
+  --foreground: oklch(.93 .008 175);
+  --card: oklch(.29 .016 180);
+  --secondary: oklch(.34 .018 178);
+  --muted: oklch(.34 .014 178);
+  --muted-foreground: oklch(.72 .016 175);
+  --accent: oklch(.37 .03 170);
+  --border: oklch(.4 .016 178);
+  --welcome: oklch(.32 .028 165);
+  --mint: oklch(.38 .045 162); --mint-border: oklch(.48 .05 162);
+  --yellow: oklch(.4 .045 92); --yellow-border: oklch(.5 .05 88);
+  --rose: oklch(.4 .04 15); --rose-border: oklch(.5 .05 15);
+  --blue: oklch(.38 .04 233); --blue-border: oklch(.48 .045 233);
+  --peach: oklch(.4 .04 55); --peach-border: oklch(.5 .045 55);
+  --lavender: oklch(.39 .035 298); --lavender-border: oklch(.49 .04 298);
+  --white: oklch(.32 .014 180); --white-border: oklch(.44 .016 178);
+  --panel-shadow: 0 3px 12px oklch(0 0 0 / .35);
+}
+.theme-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.theme-accents { display: flex; flex-wrap: wrap; gap: 10px; }
+.theme-accent { width: 44px; height: 44px; border-radius: 999px; border: 2px solid var(--border); cursor: pointer; display: grid; place-items: center; color: oklch(1 0 0); }
+.theme-accent.is-active { border-color: var(--foreground); box-shadow: 0 0 0 3px var(--accent); }
+.theme-accent svg { width: 20px; height: 20px; }
