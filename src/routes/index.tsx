@@ -10,6 +10,8 @@ import { BilingualField } from "@/components/bilingual-field";
 import { SuggestionInput } from "@/components/suggestion-input";
 import { usePlanning } from "@/lib/use-planning";
 import { DailyStreak } from "@/components/daily-streak";
+import { ACCENTS } from "@/lib/theme";
+import { useThemeSettings } from "@/lib/use-theme";
 import { useBilingual } from "@/lib/use-bilingual";
 import { useNickname } from "@/lib/use-nickname";
 import { useAvatarUrl } from "@/lib/use-avatar";
@@ -127,6 +129,7 @@ const avatarUrl = useAvatarUrl();
   const [words, setWords] = useState<Word[]>(defaultWords);
   const [editing, setEditing] = useState(false);
   const { plans, savePlans } = usePlanning();
+  const { theme, saveTheme } = useThemeSettings();
   const [planHour, setPlanHour] = useState("");
   const [planMinute, setPlanMinute] = useState("");
   const [planMeridiem, setPlanMeridiem] = useState<"AM" | "PM">("AM");
@@ -536,7 +539,7 @@ const avatarUrl = useAvatarUrl();
           {labelDraft.index !== null && <Button variant="outline" onClick={deleteLabel}><Trash2 />Delete label</Button>}
         </div>
       </>}</DialogContent></Dialog>
-      <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Voice settings</DialogTitle><DialogDescription>Make your voice feel right for you.</DialogDescription></DialogHeader><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
+      <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Settings</DialogTitle><DialogDescription>Make the app look and sound right for you.</DialogDescription></DialogHeader><span className="settings-label">Screen mode</span><div className="theme-modes"><Button variant={theme.mode === "light" ? "default" : "outline"} aria-pressed={theme.mode === "light"} onClick={() => saveTheme({ ...theme, mode: "light" })}><Sun />Light</Button><Button variant={theme.mode === "dark" ? "default" : "outline"} aria-pressed={theme.mode === "dark"} onClick={() => saveTheme({ ...theme, mode: "dark" })}><Moon />Dark</Button></div><span className="settings-label">Main color</span><div className="theme-accents">{ACCENTS.map(option => <button key={option.id} type="button" className={`theme-accent${theme.accent === option.id ? " is-active" : ""}`} style={{ background: option.primary }} aria-label={`${option.name} · ${option.ko}`} aria-pressed={theme.accent === option.id} onClick={() => saveTheme({ ...theme, accent: option.id })}>{theme.accent === option.id ? <Check aria-hidden="true" /> : null}</button>)}</div><label className="settings-label" htmlFor="speech-rate">Speaking speed</label><select id="speech-rate" className="settings-select" value={rate} onChange={event => setRate(event.target.value)}><option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="1">Normal</option></select><Button variant="outline" onClick={() => setSound(!sound)}>{sound ? <Volume2 /> : <VolumeX />}Word audio {sound ? "on" : "off"}</Button><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );
 }
