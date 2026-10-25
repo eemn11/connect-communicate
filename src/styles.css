@@ -439,3 +439,13 @@
 .theme-accent { width: 44px; height: 44px; border-radius: 999px; border: 2px solid var(--border); cursor: pointer; display: grid; place-items: center; color: oklch(1 0 0); }
 .theme-accent.is-active { border-color: var(--foreground); box-shadow: 0 0 0 3px var(--accent); }
 .theme-accent svg { width: 20px; height: 20px; }
+
+/* Main color choices (green is the :root default) */
+[data-accent="blue"] { --primary: oklch(.5 .11 235); --accent: oklch(.935 .03 233); --welcome: oklch(.955 .024 233); }
+[data-accent="purple"] { --primary: oklch(.5 .12 300); --accent: oklch(.94 .03 300); --welcome: oklch(.955 .022 300); }
+[data-accent="rose"] { --primary: oklch(.55 .14 15); --accent: oklch(.94 .03 15); --welcome: oklch(.955 .025 15); }
+[data-accent="orange"] { --primary: oklch(.55 .12 55); --accent: oklch(.945 .035 55); --welcome: oklch(.96 .03 55); }
+.dark[data-accent="blue"] { --accent: oklch(.37 .03 233); --welcome: oklch(.32 .028 233); }
+.dark[data-accent="purple"] { --accent: oklch(.37 .03 300); --welcome: oklch(.32 .026 300); }
+.dark[data-accent="rose"] { --accent: oklch(.37 .03 15); --welcome: oklch(.32 .026 15); }
+.dark[data-accent="orange"] { --accent: oklch(.37 .03 55); --welcome: oklch(.32 .028 55); }

@@ -1,12 +1,12 @@
 export type ThemeMode = "light" | "dark";
-export type Accent = { id: string; name: string; ko: string; primary: string; accent: string; welcome: string };
+export type Accent = { id: string; name: string; ko: string; primary: string };
 
 export const ACCENTS: Accent[] = [
-  { id: "green", name: "Green", ko: "초록", primary: "oklch(.48 .086 175)", accent: "oklch(.934 .035 166)", welcome: "oklch(.954 .026 164)" },
-  { id: "blue", name: "Blue", ko: "파랑", primary: "oklch(.5 .11 235)", accent: "oklch(.935 .03 233)", welcome: "oklch(.955 .024 233)" },
-  { id: "purple", name: "Purple", ko: "보라", primary: "oklch(.5 .12 300)", accent: "oklch(.94 .03 300)", welcome: "oklch(.955 .022 300)" },
-  { id: "rose", name: "Rose", ko: "분홍", primary: "oklch(.55 .14 15)", accent: "oklch(.94 .03 15)", welcome: "oklch(.955 .025 15)" },
-  { id: "orange", name: "Orange", ko: "주황", primary: "oklch(.55 .12 55)", accent: "oklch(.945 .035 55)", welcome: "oklch(.96 .03 55)" },
+  { id: "green", name: "Green", ko: "초록", primary: "oklch(.48 .086 175)" },
+  { id: "blue", name: "Blue", ko: "파랑", primary: "oklch(.5 .11 235)" },
+  { id: "purple", name: "Purple", ko: "보라", primary: "oklch(.5 .12 300)" },
+  { id: "rose", name: "Rose", ko: "분홍", primary: "oklch(.55 .14 15)" },
+  { id: "orange", name: "Orange", ko: "주황", primary: "oklch(.55 .12 55)" },
 ];
 
 export const THEME_STORE = "together-theme-v1";
@@ -36,15 +36,8 @@ export function applyTheme(settings: ThemeSettings) {
   const root = document.documentElement;
   root.classList.toggle("dark", settings.mode === "dark");
   const accent = accentById(settings.accent);
-  if (accent.id === defaultTheme.accent) {
-    root.style.removeProperty("--primary");
-    root.style.removeProperty("--accent");
-    root.style.removeProperty("--welcome");
-  } else {
-    root.style.setProperty("--primary", accent.primary);
-    root.style.setProperty("--accent", accent.accent);
-    root.style.setProperty("--welcome", accent.welcome);
-  }
+  if (accent.id === defaultTheme.accent) root.removeAttribute("data-accent");
+  else root.setAttribute("data-accent", accent.id);
 }
 
 export function writeTheme(settings: ThemeSettings) {
