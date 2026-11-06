@@ -88,7 +88,7 @@
 .wordmark-divider { height: 21px; width: 1px; background: var(--border); margin: 0 21px; }
 .page-label { font-family: var(--font-sans); font-size: 14px; font-weight: 500; color: var(--muted-foreground); }
 .aac-button { box-shadow: none; }
-.sound-button { background: var(--card); color: var(--muted-foreground); border: 1px solid var(--border); padding: 10px 14px; height: 38px; font-size: 12px; }
+.profile-button { background: var(--card); color: var(--muted-foreground); border: 1px solid var(--border); padding: 10px 14px; height: 38px; font-size: 12px; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
 .profile-page { min-height: 100vh; background: var(--background); padding: 32px 42px 48px; }
 .profile-shell { max-width: 1100px; margin: 0 auto; }
@@ -102,7 +102,7 @@
 .auth-card { width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: var(--panel-shadow); display: grid; gap: 14px; }
 .auth-card h1 { font-family: var(--font-heading); font-size: 28px; font-weight: 800; }
 @media (max-width: 759px) { .profile-grid { grid-template-columns: 1fr; } .profile-page { padding: 20px 14px; } }
-.sound-button:hover { background: var(--muted); }
+.profile-button:hover { background: var(--muted); }
 .home-content { max-width: 1440px; padding: 30px 42px 0; margin: auto; }
 .daily-streak { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; margin-bottom: 18px; padding: 0 0 14px; border-bottom: 1px solid var(--border); }
 .daily-streak-stat { display: flex; align-items: center; gap: 9px; }
@@ -241,8 +241,8 @@
   .bottom-bar .navigation-button, .navigation-button { min-width: 0; flex: 1; height: 50px; padding: 0 6px; font-size: 10px; gap: 6px; }
   .topbar { padding: 0 16px; height: 67px; }
   .wordmark { font-size: 22px; }
-  .wordmark-divider, .page-label, .sound-button span { display: none; }
-  .sound-button { width: 36px; padding: 0; }
+  .wordmark-divider, .page-label, .profile-button span { display: none; }
+  .profile-button { width: 36px; padding: 0; }
   .home-content { padding: 16px 14px 0; }
   .welcome { min-height: 132px; padding: 18px; grid-template-columns: minmax(0,1fr) 62px; }
   .welcome h1 { font-size: 23px; }
