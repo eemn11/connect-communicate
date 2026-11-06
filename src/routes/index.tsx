@@ -483,11 +483,10 @@ const avatarUrl = useAvatarUrl();
         <nav className="bottom-bar" aria-label="Main navigation">
           <div className="bottom-bar-side">
             <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
-            <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => goTo({ favorites: true, category })} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
+            <Button variant="navigation" asChild><Link to="/game" title="Word game"><Gamepad2 /><span>Game</span></Link></Button>
           </div>
           <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => goTo({ favorites: false, category: "All words" })} aria-pressed={!favorites}><Home /><span>Home</span></Button>
           <div className="bottom-bar-side">
-            <Button variant="navigation" asChild><Link to="/game" title="Word game"><Gamepad2 /><span>Game</span></Link></Button>
             <Button variant="navigation" asChild><Link to="/calendar" title="Calendar"><Calendar /><span>Calendar</span></Link></Button>
             <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
           </div>
