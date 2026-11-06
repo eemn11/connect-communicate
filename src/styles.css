@@ -82,14 +82,7 @@
 .navigation-button.is-active { font-weight: 700; }
 .navigation-button:disabled { opacity: .45; }
 .app-main { min-width: 0; flex: 1; }
-.topbar { height: 88px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; padding: 0 42px; border-bottom: 1px solid var(--border); background: var(--card); }
-.wordmark { font-family: var(--font-heading); font-size: 27px; font-weight: 800; display: flex; align-items: center; }
-.brand-dot { color: var(--primary); }
-.wordmark-divider { height: 21px; width: 1px; background: var(--border); margin: 0 21px; }
-.page-label { font-family: var(--font-sans); font-size: 14px; font-weight: 500; color: var(--muted-foreground); }
 .aac-button { box-shadow: none; }
-.profile-button { background: var(--card); color: var(--muted-foreground); border: 1px solid var(--border); padding: 10px 14px; height: 38px; font-size: 12px; }
-.topbar-actions { display: flex; align-items: center; gap: 10px; }
 .profile-page { min-height: 100vh; background: var(--background); padding: 32px 42px 48px; }
 .profile-shell { max-width: 1100px; margin: 0 auto; }
 .profile-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
