@@ -337,12 +337,6 @@ const avatarUrl = useAvatarUrl();
   return (
     <div className="aac-app">
       <div className="app-main">
-        <header className="topbar">
-          <div className="wordmark">together<span className="brand-dot">.</span><span className="wordmark-divider" /><span className="page-label">My voice</span></div>
-          <div className="topbar-actions">
-            <Button variant="aac" className="profile-button" asChild><Link to="/profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button>
-          </div>
-        </header>
         <main className="home-content">
           <DailyStreak />
           {translationError && <p role="alert" className="text-destructive">{translationError}</p>}
@@ -488,6 +482,7 @@ const avatarUrl = useAvatarUrl();
           <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => goTo({ favorites: false, category: "All words" })} aria-pressed={!favorites}><Home /><span>Home</span></Button>
           <div className="bottom-bar-side">
             <Button variant="navigation" asChild><Link to="/calendar" title="Calendar"><Calendar /><span>Calendar</span></Link></Button>
+            <Button variant="navigation" className="profile-button" asChild><Link to="/profile" title="My profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button>
             <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
           </div>
         </nav>

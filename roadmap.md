@@ -1,7 +1,7 @@
 # Roadmap
 - [x] Bottom bar with centered Home
 - [x] Accounts (email + Google) and user profile page
-- [x] Profile button at top right of home screen
+- [x] Profile button at top right of home screen (moved to the bottom menu when the top bar was removed)
 - [x] Word blocks split into Daily, Situation and Planning sections
 - [x] Daily cards grouped under four labels: Things I want to do, Things I need to do, Food I want to eat, Things I should not do
 - [x] Daily shows four folder-style label cards; tapping one opens that group's phrases
@@ -36,3 +36,4 @@
 - [x] Word game (bottom-bar Game button): matching pairs + flashcards, My cards + built-in sets, 5 points per finished game (3 a day)
 - [x] Remove all speech output: no Sound toggle, no Speak button, no word/task/game audio, no speaking speed or voice controls
 - [x] Bottom menu: Favorites removed, Game moved into its spot (Back, Game, Home, Calendar, Settings)
+- [x] Top menu bar removed; Profile (with the user's photo) moved into the bottom menu (Back, Game, Home, Calendar, Profile, Settings)
