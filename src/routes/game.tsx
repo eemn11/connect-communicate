@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Star, Volume2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { awardFinishedGame, BUILT_IN_SETS, GAME_POINTS, pairsFromCards, shuffle, type VocabPair } from "@/lib/game";
 
@@ -20,13 +20,6 @@ export const Route = createFileRoute("/game")({
 
 type Mode = "match" | "flash";
 type Tile = { id: number; pair: number; text: string; lang: "en" | "ko" };
-
-function speak(text: string, lang: "en" | "ko") {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text); u.lang = lang === "ko" ? "ko-KR" : "en-US";
-  window.speechSynthesis.speak(u);
-}
 
 function GamePage() {
   const [myWords, setMyWords] = useState<VocabPair[]>([]);
@@ -70,7 +63,6 @@ function MatchGame({ words }: { words: VocabPair[] }) {
 
   function flip(tile: Tile) {
     if (open.length === 2 || open.includes(tile.id) || found.has(tile.pair)) return;
-    speak(tile.text, tile.lang);
     const next = [...open, tile.id];
     setOpen(next);
     if (next.length < 2) return;
@@ -115,13 +107,12 @@ function Flashcards({ words }: { words: VocabPair[] }) {
   }
   return <section className="game-board" aria-label="Flashcards">
     <p className="game-hint">Tap the card to see the other language · <span lang="ko">카드를 눌러요</span></p>
-    <button type="button" className={`flash-card ${flipped ? "is-open" : ""}`} onClick={() => { const nf = !flipped; setFlipped(nf); speak(nf ? card.ko : card.en, nf ? "ko" : "en"); }} lang={flipped ? "ko" : "en"}>
+    <button type="button" className={`flash-card ${flipped ? "is-open" : ""}`} onClick={() => setFlipped(f => !f)} lang={flipped ? "ko" : "en"}>
       {flipped ? card.ko : card.en}
     </button>
     <div className="flash-controls">
       <Button variant="outline" onClick={() => go(-1)} disabled={index === 0} aria-label="Previous card"><ChevronLeft /></Button>
       <span>{index + 1} / {deck.length}</span>
-      <Button variant="outline" onClick={() => speak(flipped ? card.ko : card.en, flipped ? "ko" : "en")} aria-label="Say it"><Volume2 /></Button>
       <Button variant="outline" onClick={() => { setDeck(shuffle(words)); setIndex(0); setFlipped(false); setEarned(null); }} aria-label="Shuffle"><Shuffle /></Button>
       <Button onClick={() => go(1)} aria-label={index === deck.length - 1 ? "Finish" : "Next card"}>{index === deck.length - 1 ? "Finish" : <ChevronRight />}</Button>
     </div>
