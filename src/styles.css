@@ -458,3 +458,21 @@
 .permission-row strong { display: block; font-size: 15px; }
 .permission-row small { display: block; font-size: 12.5px; color: var(--muted-foreground); line-height: 1.35; }
 .permission-note { font-size: 13px; color: var(--muted-foreground); margin: 4px 0 0; line-height: 1.4; }
+
+/* Word game */
+.game-page { min-height: 100vh; display: flex; flex-direction: column; gap: 14px; padding: 16px 20px; background: var(--background); color: var(--foreground); }
+.game-sets { display: flex; flex-wrap: wrap; gap: 8px; }
+.game-board { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--border); }
+.game-hint { color: var(--muted-foreground); font-size: 15px; text-align: center; }
+.match-grid { width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.match-tile { min-height: 96px; border-radius: 16px; border: 2px solid var(--border); background: var(--secondary); color: var(--foreground); font-size: 22px; font-weight: 700; cursor: pointer; padding: 8px; transition: transform .15s; }
+.match-tile.is-open { background: var(--white); border-color: var(--primary); }
+.match-tile.is-found { background: var(--accent); border-color: var(--primary); opacity: .85; }
+.match-tile:focus-visible, .flash-card:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.flash-card { width: min(520px, 100%); min-height: 220px; border-radius: 24px; border: 2px solid var(--border); background: var(--white); color: var(--foreground); font-size: 40px; font-weight: 800; cursor: pointer; padding: 16px; }
+.flash-card.is-open { border-color: var(--primary); background: var(--accent); }
+.flash-controls { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.game-done { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 20px; border-radius: 16px; background: var(--accent); }
+.game-done svg { color: var(--primary); }
+@media (max-width: 759px) { .match-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .match-tile { transition: none; } }
