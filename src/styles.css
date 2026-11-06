@@ -223,8 +223,11 @@
 }
 
 @media (max-width: 759px) {
-  .bottom-bar { gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
-  .bottom-bar .navigation-button, .navigation-button { min-width: 0; flex: 1; height: 50px; padding: 0 6px; font-size: 10px; gap: 6px; }
+  .bottom-bar { grid-template-columns: repeat(6, minmax(0,1fr)); gap: 4px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
+  .bottom-bar-side { display: contents; }
+  .bottom-bar .navigation-button { min-width: 0; height: 52px; padding: 0 4px; font-size: 9px; gap: 3px; flex-direction: column; }
+  .bottom-bar .navigation-button svg { width: 18px; height: 18px; }
+  .navigation-button { min-width: 0; flex: 1; height: 50px; padding: 0 6px; font-size: 10px; gap: 6px; }
   .home-content { padding: 16px 14px 0; }
   .welcome { min-height: 132px; padding: 18px; grid-template-columns: minmax(0,1fr) 62px; }
   .welcome h1 { font-size: 23px; }
