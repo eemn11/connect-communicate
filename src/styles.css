@@ -158,14 +158,10 @@
 .sentence-heading > span { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
 .sentence-heading svg { width: 15px; height: 15px; color: var(--muted-foreground); }
 .clear-button { color: var(--muted-foreground); height: 27px; font-size: 11px; padding: 4px; }
-.sentence-row { display: grid; grid-template-columns: minmax(0,1fr) 140px; gap: 10px; }
+.sentence-row { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
 .sentence-preview { min-width: 0; height: 61px; display: flex; align-items: center; gap: 7px; padding: 8px 15px; overflow-x: auto; background: var(--background); border: 1px dashed var(--border); border-radius: 5px; }
 .sentence-placeholder { color: var(--muted-foreground); font-size: 15px; }
 .sentence-word { flex-shrink: 0; display: flex; gap: 5px; align-items: center; padding: 8px; background: var(--tile-color); border: 1px solid var(--tile-border); border-radius: 4px; font-size: 13px; }
-.speak-button { height: 61px; background: var(--primary); color: var(--primary-foreground); font-size: 16px; gap: 11px; }
-.speak-button svg { height: 22px; width: 22px; }
-.speak-button:disabled { opacity: 1; background: color-mix(in oklab,var(--primary) 72%,var(--card)); }
-.speak-button:hover { filter: brightness(.94); }
 .home-footer { display: flex; justify-content: space-between; padding: 21px 0 23px; color: var(--muted-foreground); font-size: 10px; }
 .home-footer > span:first-child { display: flex; align-items: center; gap: 6px; }
 .home-footer svg { width: 12px; height: 12px; color: var(--primary); }
@@ -173,7 +169,6 @@
 .settings-dialog:has(.dialog-actions) { padding-bottom: 0; }
 .settings-label { font-size: 14px; font-weight: 600; }
 .settings-select { background: var(--background); border: 1px solid var(--border); border-radius: 5px; height: 45px; padding: 0 10px; }
-.speech-error { color: var(--destructive); font-size: 12px; margin-bottom: 0; }
 @media (min-width: 1500px) {
   .home-content { padding-top: 38px; }
   .word-button { height: 145px; }
@@ -226,7 +221,7 @@
   .word-label-ko { font-size: 11px; }
   .word-grid { gap: 8px; }
   .sentence-section { margin-top: 8px; padding-top: 6px; padding-bottom: 7px; }
-  .sentence-preview, .speak-button { height: 42px; }
+  .sentence-preview { height: 42px; }
   .home-footer { padding: 6px 0; }
   .word-sections { gap: 9px; }
   .word-section { padding: 8px 9px 9px; }
@@ -264,7 +259,6 @@
   .sentence-row { grid-template-columns: minmax(0,1fr); gap: 7px; }
   .sentence-preview { padding: 8px; }
   .sentence-placeholder { font-size: 12px; }
-  .speak-button { height: 48px; }
   .home-footer { display: grid; gap: 7px; font-size: 9px; }
   .word-sections { gap: 11px; }
   .word-section { padding: 9px 9px 11px; }
