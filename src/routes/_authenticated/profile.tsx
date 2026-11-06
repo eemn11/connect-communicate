@@ -19,9 +19,9 @@ export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
       { title: "My profile — Together" },
-      { name: "description", content: "Your Together profile: about you, your voice, your helpers, and permissions." },
+      { name: "description", content: "Your Together profile: about you, your communication settings, your helpers, and permissions." },
       { property: "og:title", content: "My profile — Together" },
-      { property: "og:description", content: "Your Together profile: about you, your voice, your helpers, and permissions." },
+      { property: "og:description", content: "Your Together profile: about you, your communication settings, your helpers, and permissions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -35,7 +35,6 @@ function ProfilePage() {
   const [p, setP] = useState<Profile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [status, setStatus] = useState("");
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -50,11 +49,6 @@ function ProfilePage() {
       setP(data);
       if (data?.avatar_path) loadAvatar(data.avatar_path);
     })();
-    if ("speechSynthesis" in window) {
-      const load = () => setVoices(window.speechSynthesis.getVoices());
-      load();
-      window.speechSynthesis.onvoiceschanged = load;
-    }
   }, []);
 
   async function loadAvatar(path: string) {
@@ -153,19 +147,6 @@ function ProfilePage() {
           </section>
           <section className="profile-card">
             <h2>How I communicate</h2>
-            <div className="grid gap-1.5">
-              <Label htmlFor="voice">Voice</Label>
-              <select id="voice" className="settings-select" value={p.voice_name ?? ""} onChange={e => set("voice_name", e.target.value || null)}>
-                <option value="">Default voice</option>
-                {voices.map(v => <option key={v.name} value={v.name}>{v.name}</option>)}
-              </select>
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="rate">Speaking speed</Label>
-              <select id="rate" className="settings-select" value={String(p.speech_rate)} onChange={e => set("speech_rate", Number(e.target.value))}>
-                <option value="0.65">Slow</option><option value="0.85">Gentle</option><option value="0.9">Calm</option><option value="1">Normal</option>
-              </select>
-            </div>
             <div className="grid gap-1.5">
               <Label htmlFor="size">Picture size</Label>
               <select id="size" className="settings-select" value={p.symbol_size} onChange={e => set("symbol_size", e.target.value)}>
