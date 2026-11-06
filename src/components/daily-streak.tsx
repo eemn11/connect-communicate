@@ -22,11 +22,13 @@ export function DailyStreakProvider({ children }: { children: ReactNode }) {
       timer = setTimeout(visit, midnight.getTime() - now.getTime() + 100);
     }
     function sync(event: StorageEvent) { if (event.key === STREAK_STORE || event.key === null) setProgress(readStreak()); }
+    const refresh = () => setProgress(readStreak());
     visit();
+    window.addEventListener("together-streak-changed", refresh);
     document.addEventListener("visibilitychange", visit);
     window.addEventListener("focus", visit);
     window.addEventListener("storage", sync);
-    return () => { clearTimeout(timer); document.removeEventListener("visibilitychange", visit); window.removeEventListener("focus", visit); window.removeEventListener("storage", sync); };
+    return () => { clearTimeout(timer); window.removeEventListener("together-streak-changed", refresh); document.removeEventListener("visibilitychange", visit); window.removeEventListener("focus", visit); window.removeEventListener("storage", sync); };
   }, []);
   return <StreakContext.Provider value={{ progress, saved }}>{children}</StreakContext.Provider>;
 }
