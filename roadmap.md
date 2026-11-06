@@ -35,3 +35,4 @@
 - [x] Fix blank-screen "Importing a module script failed" — prebundle @tanstack/router-core + seroval in vite.config.ts
 - [x] Word game (bottom-bar Game button): matching pairs + flashcards, My cards + built-in sets, 5 points per finished game (3 a day)
 - [x] Remove all speech output: no Sound toggle, no Speak button, no word/task/game audio, no speaking speed or voice controls
+- [x] Bottom menu: Favorites removed, Game moved into its spot (Back, Game, Home, Calendar, Settings)
