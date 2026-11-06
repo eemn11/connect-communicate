@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type React from "react";
-import { UserRound, Home, Heart, Settings2, Volume2, VolumeX, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Church, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search, Image, Mic } from "lucide-react";
+import { UserRound, Home, Heart, Settings2, MessageCircle, Grid2X2, Utensils, Smile, Users, Shapes, Hand, ArrowLeft, X, Check, ThumbsUp, ThumbsDown, Handshake, Apple, CupSoda, Toilet, Leaf, Plus, Frown, Gamepad2, PartyPopper, Gift, CalendarDays, Compass, CalendarClock, Pencil, Trash2, Star, Music, Bed, Car, Sun, Hospital, Waves, HeartPulse, Soup, Speech, Lightbulb, Megaphone, Bell, School, Store, ShoppingBag, GraduationCap, Building2, Landmark, Tent, Church, Pizza, Sandwich, IceCreamCone, Coffee, UtensilsCrossed, CookingPot, Refrigerator, Droplet, Brain, Eye, Ear, Stethoscope, Pill, Bandage, Syringe, Bath, PersonStanding, Accessibility, Cross, Plane, TrainFront, Bus, Bike, Ship, Map, MapPin, Luggage, Backpack, Calendar, Clock, AlarmClock, Moon, Volleyball, Puzzle, Blocks, Palette, Film, Radio, Tv, Balloon, Drum, Dog, Cat, Fish, Bird, PawPrint, TreePine, Flower2, Mountain, Cloud, CloudRain, Umbrella, Snowflake, Flame, Bug, BookOpen, Phone, Camera, Mail, Wallet, Key, Shirt, WashingMachine, Baby, Armchair, Newspaper, Lock, Ruler, Microscope, Rocket, Search, Image, Mic } from "lucide-react";
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -303,7 +303,6 @@ const avatarUrl = useAvatarUrl();
   const [category, setCategory] = useState("All words");
   const [sentence, setSentence] = useState<typeof words>([]);
   const [favorites, setFavorites] = useState(false);
-  const [sound, setSound] = useState(true);
   const [settings, setSettings] = useState(false);
   const permissions = usePermissionsPrompt();
   const [permissionResult, setPermissionResult] = useState<"" | "granted" | "denied" | "unavailable">("");
@@ -329,25 +328,10 @@ const avatarUrl = useAvatarUrl();
     else if (favorites || category !== "All words") { setFavorites(false); setCategory("All words"); }
     else if (window.history.length > 1) window.history.back();
   }
-  const [speaking, setSpeaking] = useState(false);
-  const [rate, setRate] = useState("0.85");
-  const [speechError, setSpeechError] = useState("");
   const favoriteLabels = ["I want this, please", "Yes, please", "No, thank you", "Help", "I want a drink", "A break"];
   const visibleWords = words.filter(word => favorites ? favoriteLabels.includes(word.label) : category === "All words" || word.category === category);
-  function speak(text: string) {
-    if (!("speechSynthesis" in window)) { setSpeechError("Speaking isn't available in this browser."); return; }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = Number(rate);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = (event) => { setSpeaking(false); if (event.error !== "canceled" && event.error !== "interrupted") setSpeechError("Couldn't speak. Please try again."); };
-    setSpeechError("");
-    setSpeaking(true);
-    window.speechSynthesis.speak(utterance);
-  }
   function addWord(word: typeof words[number]) {
     setSentence(current => [...current, word]);
-    if (sound) speak(word.label);
   }
   const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}{word.photo ? <img className="word-photo" src={word.photo} alt="" /> : <span className="word-symbol" aria-hidden="true"><word.icon /></span>}<span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
   return (
@@ -356,8 +340,7 @@ const avatarUrl = useAvatarUrl();
         <header className="topbar">
           <div className="wordmark">together<span className="brand-dot">.</span><span className="wordmark-divider" /><span className="page-label">My voice</span></div>
           <div className="topbar-actions">
-            <Button variant="aac" className="sound-button" onClick={() => setSound(!sound)} aria-pressed={sound} title="Toggle word audio">{sound ? <Volume2 /> : <VolumeX />}<span>Sound {sound ? "on" : "off"}</span></Button>
-            <Button variant="aac" className="sound-button profile-button" asChild><Link to="/profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button>
+            <Button variant="aac" className="profile-button" asChild><Link to="/profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button>
           </div>
         </header>
         <main className="home-content">
@@ -398,7 +381,7 @@ const avatarUrl = useAvatarUrl();
                     const renderItem = (t: { time: string; text: string; ko?: string; i: number }) => (
                       <li key={t.i} className="plan-item">
                         <span className="plan-item-time">{fmtPlanTime(t.time)}</span>
-                        <button type="button" className="plan-item-text" onClick={() => speak(t.time ? `${fmtPlanTime(t.time)}, ${t.text}` : t.text)}><span>{t.text}</span>{t.ko && <span className="block text-sm text-muted-foreground" lang="ko">{t.ko}</span>}</button>
+                        <span className="plan-item-text"><span>{t.text}</span>{t.ko && <span className="block text-sm text-muted-foreground" lang="ko">{t.ko}</span>}</span>
                         <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== t.i) })}><X /></Button>
                       </li>
                     );
@@ -496,10 +479,10 @@ const avatarUrl = useAvatarUrl();
           <div className="sentence-row">
             <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}{word.ko && <span className="sentence-ko" lang="ko">{word.ko}</span>}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
             <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
+            <Button variant="aac" className="speak-button" disabled={!sentence.length} onClick={() => speak(sentence.map(word => word.label).join(" "))}><Volume2 /><span>{speaking ? "Speaking…" : "Speak"}</span></Button>
           </div>
           {speechError && <p role="alert" className="speech-error">{speechError}</p>}
-        </section>
-        <nav className="bottom-bar" aria-label="Main navigation">
+        </section>        <nav className="bottom-bar" aria-label="Main navigation">
           <div className="bottom-bar-side">
             <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
             <Button variant="navigation" className={favorites ? "is-active" : ""} onClick={() => goTo({ favorites: true, category })} aria-pressed={favorites}><Heart /><span>Favorites</span></Button>
