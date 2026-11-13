@@ -39,6 +39,20 @@ export function shuffle<T>(items: T[], random = Math.random): T[] {
 
 export type GameRewards = { day: string; games: number };
 
+/** How long every card stays face-up at the start of a round so the user can memorize the spots. */
+export const PEEK_MS = 1000;
+
+export type FlipState = { peek: boolean; open: number[]; found: Set<number>; tile: { id: number; pair: number } };
+
+/** A card may only be turned once the memorize moment is over, it is not already face-up, and its pair is not matched. */
+export function canFlipTile({ peek, open, found, tile }: FlipState): boolean {
+  if (peek) return false;
+  if (open.length === 2) return false;
+  if (open.includes(tile.id)) return false;
+  if (found.has(tile.pair)) return false;
+  return true;
+}
+
 /** Points for one finished game; only the first few games each day earn points. */
 export function rewardGame(rewards: GameRewards, now: Date): { rewards: GameRewards; earned: number } {
   const day = localDay(now);

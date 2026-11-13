@@ -448,6 +448,7 @@
 .game-sets { display: flex; flex-wrap: wrap; gap: 8px; }
 .game-board { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--border); }
 .game-hint { color: var(--muted-foreground); font-size: 15px; text-align: center; }
+.game-hint.is-peek { color: var(--primary); font-weight: 700; }
 .match-grid { width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .match-tile { min-height: 96px; border-radius: 16px; border: 2px solid var(--border); background: var(--secondary); color: var(--foreground); font-size: 22px; font-weight: 700; cursor: pointer; padding: 8px; transition: transform .15s; }
 .match-tile.is-open { background: var(--white); border-color: var(--primary); }

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { awardFinishedGame, BUILT_IN_SETS, GAME_POINTS, pairsFromCards, shuffle, type VocabPair } from "@/lib/game";
+import { awardFinishedGame, BUILT_IN_SETS, canFlipTile, GAME_POINTS, pairsFromCards, PEEK_MS, shuffle, type VocabPair } from "@/lib/game";
 
 export const Route = createFileRoute("/game")({
   head: () => ({
@@ -55,14 +55,17 @@ function MatchGame({ words }: { words: VocabPair[] }) {
   const [open, setOpen] = useState<number[]>([]);
   const [found, setFound] = useState<Set<number>>(new Set());
   const [earned, setEarned] = useState<number | null>(null);
+  const [peek, setPeek] = useState(true);
   useEffect(() => {
     const picked = shuffle(words).slice(0, 6);
     setTiles(shuffle(picked.flatMap((w, i) => [{ id: i * 2, pair: i, text: w.en, lang: "en" as const }, { id: i * 2 + 1, pair: i, text: w.ko, lang: "ko" as const }])));
-    setOpen([]); setFound(new Set()); setEarned(null);
+    setOpen([]); setFound(new Set()); setEarned(null); setPeek(true);
+    const timer = setTimeout(() => setPeek(false), PEEK_MS);
+    return () => clearTimeout(timer);
   }, [words, round]);
 
   function flip(tile: Tile) {
-    if (open.length === 2 || open.includes(tile.id) || found.has(tile.pair)) return;
+    if (!canFlipTile({ peek, open, found, tile })) return;
     const next = [...open, tile.id];
     setOpen(next);
     if (next.length < 2) return;
@@ -75,10 +78,10 @@ function MatchGame({ words }: { words: VocabPair[] }) {
   }
 
   return <section className="game-board" aria-label="Matching pairs">
-    <p className="game-hint">Find the English and Korean words that go together · <span lang="ko">같은 뜻을 찾아요</span></p>
+    <p className={`game-hint ${peek ? "is-peek" : ""}`} role="status">{peek ? <>Look and remember where the words are · <span lang="ko">카드를 외워요</span></> : <>Find the English and Korean words that go together · <span lang="ko">같은 뜻을 찾아요</span></>}</p>
     <div className="match-grid">
       {tiles.map(t => {
-        const shown = open.includes(t.id) || found.has(t.pair);
+        const shown = peek || open.includes(t.id) || found.has(t.pair);
         return <button key={t.id} type="button" className={`match-tile ${shown ? "is-open" : ""} ${found.has(t.pair) ? "is-found" : ""}`} onClick={() => flip(t)} aria-label={shown ? t.text : "Hidden card"} lang={shown ? t.lang : undefined}>
           {shown ? t.text : "?"}
         </button>;
