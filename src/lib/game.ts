@@ -40,7 +40,7 @@ export function shuffle<T>(items: T[], random = Math.random): T[] {
 export type GameRewards = { day: string; games: number };
 
 /** How long every card stays face-up at the start of a round so the user can memorize the spots. */
-export const PEEK_MS = 1000;
+export const PEEK_MS = 2000;
 
 export type FlipState = { peek: boolean; open: number[]; found: Set<number>; tile: { id: number; pair: number } };
 

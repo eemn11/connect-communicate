@@ -18,8 +18,8 @@ describe("Word game points", () => {
 });
 
 describe("Matching game memorize moment", () => {
-  it("shows every card face up for one second before play", () => {
-    expect(PEEK_MS).toBe(1000);
+  it("shows every card face up for two seconds before play", () => {
+    expect(PEEK_MS).toBe(2000);
   });
   it("keeps cards unturnable while every card is face up", () => {
     expect(canFlipTile({ peek: true, open: [], found: new Set<number>(), tile: { id: 0, pair: 0 } })).toBe(false);
