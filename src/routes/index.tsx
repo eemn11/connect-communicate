@@ -468,12 +468,6 @@ const avatarUrl = useAvatarUrl();
         </main>
       </div>
       <div className="dock">
-        <section className="sentence-section" aria-label="Sentence builder">
-          <div className="sentence-heading"><span><MessageCircle />My sentence</span><Button variant="ghost" className="clear-button" disabled={!sentence.length} onClick={() => setSentence([])}><X />Clear</Button></div>
-          <div className="sentence-row">
-            <div className="sentence-preview" aria-live="polite">{sentence.length ? sentence.map((word, index) => <span className={`sentence-word tone-${word.tone}`} key={`${word.label}-${index}`}><word.icon aria-hidden="true" />{word.label}{word.ko && <span className="sentence-ko" lang="ko">{word.ko}</span>}</span>) : <span className="sentence-placeholder">I have something to say…</span>}</div>
-          </div>
-        </section>
         <nav className="bottom-bar" aria-label="Main navigation">
           <div className="bottom-bar-side">
             <Button variant="navigation" className="back-button" title="Go back" aria-label="Go back to previous screen" onClick={goBack}><ArrowLeft /><span>Back</span></Button>
