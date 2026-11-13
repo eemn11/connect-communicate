@@ -338,7 +338,7 @@ const avatarUrl = useAvatarUrl();
     <div className="aac-app">
       <div className="app-main">
         <main className="home-content">
-          <DailyStreak />
+          <div className="home-top-row"><DailyStreak /><Button variant="navigation" className="profile-button profile-top" asChild><Link to="/profile" title="My profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button></div>
           {translationError && <p role="alert" className="text-destructive">{translationError}</p>}
           {openLabel ? (() => { const folder = allLabels.find(l => l.section === openLabel.section && l.label === openLabel.label); const FolderIcon = folder?.icon ?? Star; const folderWords = words.filter(w => w.section === openLabel.section && w.group === openLabel.label); return (
             <section className={`folder-screen tone-${sections.find(s => s.label === openLabel.section)?.tone ?? "white"}`} aria-label={`${openLabel.label} phrases`}>
@@ -482,7 +482,6 @@ const avatarUrl = useAvatarUrl();
           <Button variant="navigation" className={`home-button ${!favorites ? "is-active" : ""}`} onClick={() => goTo({ favorites: false, category: "All words" })} aria-pressed={!favorites}><Home /><span>Home</span></Button>
           <div className="bottom-bar-side">
             <Button variant="navigation" asChild><Link to="/calendar" title="Calendar"><Calendar /><span>Calendar</span></Link></Button>
-            <Button variant="navigation" className="profile-button" asChild><Link to="/profile" title="My profile" aria-label="My profile">{avatarUrl ? <img className="profile-thumb" src={avatarUrl} alt="" /> : <UserRound />}<span>Profile</span></Link></Button>
             <Button variant="navigation" onClick={() => setSettings(true)} title="Settings"><Settings2 /><span>Settings</span></Button>
           </div>
         </nav>

@@ -467,3 +467,6 @@
 .game-goal-stats { display: flex; flex-direction: column; gap: 4px; min-width: 220px; font-size: 14px; }
 .game-goal-bar { height: 8px; border-radius: 99px; background: var(--muted); overflow: hidden; }
 .game-goal-bar i { display: block; height: 100%; background: var(--primary); transition: width .3s; }
+.home-top-row { display: flex; align-items: center; gap: 16px; }
+.home-top-row > :first-child { flex: 1; min-width: 0; }
+.home-top-row .profile-top { height: 44px; min-width: 0; padding: 0 14px; flex-shrink: 0; }
