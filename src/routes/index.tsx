@@ -409,9 +409,6 @@ const avatarUrl = useAvatarUrl();
             <div><div className="welcome-eyebrow"><span className="welcome-dot" /> A space for your voice</div><h1>Hello, {nickname} <Hand className="wave" aria-hidden="true" /></h1><p>What’s on your mind today?</p></div>
             <img src={mascot} alt="A friendly green speech bubble waving hello" width={512} height={512} className="welcome-mascot" />
           </section>
-          <nav className="category-bar" aria-label="Word categories">
-            {categories.map(({ label, icon: Icon }) => <Button key={label} variant="aac" className={`category-button ${!favorites && category === label ? "is-active" : ""}`} aria-pressed={!favorites && category === label} onClick={() => goTo({ favorites: false, category: label })}><Icon /><span>{label}</span></Button>)}
-          </nav>
           <div className="words-heading"><h2>{favorites ? "Favorite words" : category === "All words" ? "Everyday words" : category}</h2><span className="words-heading-meta"><Button variant="aac" className={`edit-toggle ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit words"}</span></Button>{editing ? "Tap a card to change it · drag to move it" : <>{visibleWords.length} words <span className="heading-dot">·</span> Hold a card to edit</>}</span></div>
           <div className="word-sections">
             {sections.map(({ label, icon: SectionIcon, tone }) => {
