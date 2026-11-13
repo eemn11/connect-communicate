@@ -38,3 +38,4 @@
 - [x] Bottom menu: Favorites removed, Game moved into its spot (Back, Game, Home, Calendar, Settings)
 - [x] Top menu bar removed; Profile (with the user's photo) moved into the bottom menu (Back, Game, Home, Calendar, Profile, Settings)
 - [x] Match game: every card is shown face up for one second at the start of each round so the user can memorize the spots; cards cannot be turned during that moment.
+- [x] Fixed blank-screen crash: prebundle @tanstack/react-router and react-query with React; keep @tanstack/react-start out of the prebundle list

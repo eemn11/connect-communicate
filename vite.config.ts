@@ -16,6 +16,13 @@ export default defineConfig({
         "@radix-ui/react-slot",
         "@radix-ui/react-switch",
         "@radix-ui/react-label",
+        // Prebundle the React-facing router and query packages with React itself, so a
+        // route discovered later (like the game) never loads a second React copy
+        // and crash the open preview with a null dispatcher.
+        // @tanstack/react-start is deliberately NOT listed: prebundling it drags Node's
+        // async_hooks AsyncLocalStorage into the browser and blanks every page.
+        "@tanstack/react-router",
+        "@tanstack/react-query",
         // Prebundle router internals discovered late on server restart,
         // so an open preview never reloads into stale module URLs.
         "@tanstack/router-core",
