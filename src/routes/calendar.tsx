@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePlanning } from "@/lib/use-planning";
 import { planningTime, tasksForDate } from "@/lib/planning";
+import { SecondLine } from "@/lib/second-line";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -76,7 +77,7 @@ function CalendarPage() {
       </div>
       <section className="calendar-agenda" aria-label="Selected day schedule">
         <header><div><h2>{dateTitle}</h2><p lang="ko">{selectedDate.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" })}</p></div><span>{selectedTasks.length} {selectedTasks.length === 1 ? "task" : "tasks"}</span></header>
-        {selectedTasks.length ? <ol>{selectedTasks.map((task, i) => <li key={i}><span className="calendar-agenda-time">{planningTime(task.time)}</span><div><p>{task.text}</p>{task.ko && <p lang="ko">{task.ko}</p>}</div></li>)}</ol> : <p className="text-muted-foreground">No tasks / 할 일 없음</p>}
+        {selectedTasks.length ? <ol>{selectedTasks.map((task, i) => <li key={i}><span className="calendar-agenda-time">{planningTime(task.time)}</span><div><p>{task.text}</p><SecondLine text={task.text} storedKo={task.ko} className="block" /></div></li>)}</ol> : <p className="text-muted-foreground">No tasks / 할 일 없음</p>}
       </section>
       <nav className="calendar-foot">
         <Button variant="aac" asChild className="home-button"><Link to="/"><Home /><span>Home</span></Link></Button>

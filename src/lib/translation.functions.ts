@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 export const translate = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ text: z.string().trim().min(1).max(4000), target: z.enum(["en", "ko"]) }))
+  .inputValidator(z.object({ text: z.string().trim().min(1).max(4000), target: z.enum(["en", "ko", "es", "zh", "ja", "vi", "hmn"]) }))
   .handler(async ({ data }) => {
     try {
       const { translateText } = await import("./ai/translation.server");

@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GOAL_OPTIONS, GOALS_CHANGED, matchScore, readGoals, saveGameResult, writeGoals, type GameGoals, awardFinishedGame, BUILT_IN_SETS, canFlipTile, GAME_POINTS, pairsFromCards, PEEK_MS, shuffle, type VocabPair } from "@/lib/game";
+import { useLanguage } from "@/lib/use-language";
+import { useSecondTexts } from "@/lib/second-line";
 
 export const Route = createFileRoute("/game")({
   head: () => ({
@@ -19,7 +21,7 @@ export const Route = createFileRoute("/game")({
 });
 
 type Mode = "match" | "flash";
-type Tile = { id: number; pair: number; text: string; lang: "en" | "ko" };
+type Tile = { id: number; pair: number; text: string; lang: string };
 
 function GamePage() {
   const [myWords, setMyWords] = useState<VocabPair[]>([]);
@@ -30,6 +32,10 @@ function GamePage() {
   }, []);
   const sets = [...(myWords.length >= 2 ? [{ id: "mine", name: "My cards", ko: "내 카드", words: myWords }] : []), ...BUILT_IN_SETS];
   const active = sets.find(s => s.id === setId) ?? sets[0]!;
+  const { language } = useLanguage();
+  const seconds = useSecondTexts(active.words);
+  const secondsSig = seconds.join("");
+  const words = useMemo(() => active.words.map((w, i) => ({ en: w.en, ko: seconds[i] ?? "" })), [active.words, secondsSig]);
 
   return (
     <main className="game-page">
@@ -45,7 +51,7 @@ function GamePage() {
         {sets.map(s => <Button key={s.id} variant={s.id === active.id ? "default" : "outline"} aria-pressed={s.id === active.id} onClick={() => setSetId(s.id)}>{s.name} <span lang="ko">{s.ko}</span></Button>)}
       </div>
       <GoalPanel />
-      {mode === "match" ? <MatchGame key={active.id} words={active.words} /> : <Flashcards key={active.id} words={active.words} />}
+      {mode === "match" ? <MatchGame key={`${active.id}-${language}`} words={words} lang={language} /> : <Flashcards key={`${active.id}-${language}`} words={words} lang={language} />}
     </main>
   );
 }
@@ -72,7 +78,7 @@ function GoalPanel() {
   </section>;
 }
 
-function MatchGame({ words }: { words: VocabPair[] }) {
+function MatchGame({ words, lang }: { words: VocabPair[]; lang: string }) {
   const [round, setRound] = useState(0);
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [open, setOpen] = useState<number[]>([]);
@@ -82,8 +88,8 @@ function MatchGame({ words }: { words: VocabPair[] }) {
   const [misses, setMisses] = useState(0);
   const [score, setScore] = useState<{ score: number; best: boolean } | null>(null);
   useEffect(() => {
-    const picked = shuffle(words).slice(0, 6);
-    setTiles(shuffle(picked.flatMap((w, i) => [{ id: i * 2, pair: i, text: w.en, lang: "en" as const }, { id: i * 2 + 1, pair: i, text: w.ko, lang: "ko" as const }])));
+    const picked = shuffle(words.filter(w => w.ko.trim())).slice(0, 6);
+    setTiles(shuffle(picked.flatMap((w, i) => [{ id: i * 2, pair: i, text: w.en, lang: "en" }, { id: i * 2 + 1, pair: i, text: w.ko, lang }])));
     setOpen([]); setFound(new Set()); setEarned(null); setPeek(true); setMisses(0); setScore(null);
     const timer = setTimeout(() => setPeek(false), PEEK_MS);
     return () => clearTimeout(timer);
@@ -108,8 +114,9 @@ function MatchGame({ words }: { words: VocabPair[] }) {
     } else { setMisses(m => m + 1); setTimeout(() => setOpen([]), 1000); }
   }
 
+  if (!tiles.length) return <section className="game-board" aria-label="Matching pairs"><p className="game-hint" role="status">Translating words…</p></section>;
   return <section className="game-board" aria-label="Matching pairs">
-    <p className={`game-hint ${peek ? "is-peek" : ""}`} role="status">{peek ? <>Look and remember where the words are · <span lang="ko">카드를 외워요</span></> : <>Find the English and Korean words that go together · <span lang="ko">같은 뜻을 찾아요</span></>}</p>
+    <p className={`game-hint ${peek ? "is-peek" : ""}`} role="status">{peek ? <>Look and remember where the words are · <span lang="ko">카드를 외워요</span></> : <>Find the words that go together · <span lang="ko">같은 뜻을 찾아요</span></>}</p>
     <div className="match-grid">
       {tiles.map(t => {
         const shown = peek || open.includes(t.id) || found.has(t.pair);
@@ -128,11 +135,13 @@ function MatchGame({ words }: { words: VocabPair[] }) {
   </section>;
 }
 
-function Flashcards({ words }: { words: VocabPair[] }) {
-  const [deck, setDeck] = useState(words);
+function Flashcards({ words, lang }: { words: VocabPair[]; lang: string }) {
+  const [deck, setDeck] = useState(words.filter(w => w.ko.trim()));
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [earned, setEarned] = useState<number | null>(null);
+  useEffect(() => { setDeck(words.filter(w => w.ko.trim())); setIndex(0); setFlipped(false); }, [words]);
+  if (!deck.length) return <section className="game-board" aria-label="Flashcards"><p className="game-hint" role="status">Translating words…</p></section>;
   const card = deck[index]!;
   function go(step: number) {
     const next = index + step;
@@ -142,7 +151,7 @@ function Flashcards({ words }: { words: VocabPair[] }) {
   }
   return <section className="game-board" aria-label="Flashcards">
     <p className="game-hint">Tap the card to see the other language · <span lang="ko">카드를 눌러요</span></p>
-    <button type="button" className={`flash-card ${flipped ? "is-open" : ""}`} onClick={() => setFlipped(f => !f)} lang={flipped ? "ko" : "en"}>
+    <button type="button" className={`flash-card ${flipped ? "is-open" : ""}`} onClick={() => setFlipped(f => !f)} lang={flipped ? lang : "en"}>
       {flipped ? card.ko : card.en}
     </button>
     <div className="flash-controls">

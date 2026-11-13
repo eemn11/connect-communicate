@@ -17,6 +17,11 @@ import { useNickname } from "@/lib/use-nickname";
 import { useAvatarUrl } from "@/lib/use-avatar";
 import { usePermissionsPrompt } from "@/lib/use-permissions-prompt";
 import { requestMediaPermissions } from "@/lib/permissions";
+import { LANGUAGES } from "@/lib/language";
+import { useLanguage } from "@/lib/use-language";
+import { SecondLine } from "@/lib/second-line";
+import { translate } from "@/lib/translation.functions";
+import { useServerFn } from "@tanstack/react-start";
 import mascot from "@/assets/hello-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -126,6 +131,8 @@ function buildPlanTime(h: string, m: string, mer: "AM" | "PM") {
 
 function Index() {
   const { complete, busy: translating, error: translationError } = useBilingual();
+  const { language, saveLanguage } = useLanguage();
+  const translateCall = useServerFn(translate);
 const nickname = useNickname();
 const avatarUrl = useAvatarUrl();
   const [words, setWords] = useState<Word[]>(defaultWords);
@@ -333,7 +340,7 @@ const avatarUrl = useAvatarUrl();
   function addWord(word: typeof words[number]) {
     setSentence(current => [...current, word]);
   }
-  const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}{word.photo ? <img className="word-photo" src={word.photo} alt="" /> : <span className="word-symbol" aria-hidden="true"><word.icon /></span>}<span className="word-label">{word.label}</span>{word.ko && <span className="word-label-ko" lang="ko">{word.ko}</span>}</Button>; };
+  const renderWordCard = (word: Word, i: number) => { const key = `w:${words.indexOf(word)}`; return <Button key={`${word.label}-${i}`} {...cardProps(key, () => editing ? openEdit(word) : addWord(word), () => openEdit(word))} variant="word" className={`tone-${word.tone} ${editing ? "is-editing" : ""} ${dragKey === key ? "is-dragging" : ""} ${overKey === key ? "is-drop-target" : ""}`} style={dragKey === key ? { transform: `translate(${dragDelta.x}px, ${dragDelta.y}px)` } : undefined} aria-label={editing ? `Edit ${word.label}` : undefined}>{editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}{word.photo ? <img className="word-photo" src={word.photo} alt="" /> : <span className="word-symbol" aria-hidden="true"><word.icon /></span>}<span className="word-label">{word.label}</span><SecondLine text={word.label} storedKo={word.ko} className="word-label-ko" /></Button>; };
   return (
     <div className="aac-app">
       <div className="app-main">
@@ -345,12 +352,12 @@ const avatarUrl = useAvatarUrl();
               <header className="folder-head">
                 <Button variant="aac" className="daily-back" onClick={goBack} aria-label="Go back to previous screen"><ArrowLeft /><span>Back</span><span className="word-label-ko" lang="ko">뒤로</span></Button>
                 <span className="folder-icon" aria-hidden="true"><FolderIcon /></span>
-                <div><p className="folder-section">{openLabel.section}</p><h1 className="folder-title">{openLabel.label}</h1>{folder?.ko && <p className="folder-title-ko" lang="ko">{folder.ko}</p>}</div>
+                <div><p className="folder-section">{openLabel.section}</p><h1 className="folder-title">{openLabel.label}</h1><SecondLine text={openLabel.label} storedKo={folder?.ko} className="folder-title-ko" /></div>
                 <Button variant="aac" className={`edit-toggle folder-edit ${editing ? "is-active" : ""}`} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? <Check /> : <Pencil />}<span>{editing ? "Done editing" : "Edit"}</span></Button>
               </header>
               {openLabel.section === "Planning" ? (
                 <div className="plan-board">
-                  <form className="plan-input" onSubmit={async e => { e.preventDefault(); if (translating || (!planText.trim() && !planKo.trim())) return; const day = openLabel.label; const pair = await complete({ en: planText, ko: planKo }); if (!pair) return; const list = [...(plans[day] ?? []), { time: planTime, text: pair.en, ko: pair.ko }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [day]: list }); setPlanText(""); setPlanKo(""); setPlanHour(""); setPlanMinute(""); }}>
+                  <form className="plan-input" onSubmit={async e => { e.preventDefault(); if (translating || (!planText.trim() && !planKo.trim())) return; const day = openLabel.label; let text = planText.trim(); let second = planKo.trim(); if (language === "ko") { const pair = await complete({ en: planText, ko: planKo }); if (!pair) return; text = pair.en; second = pair.ko; } else if (text && !second) { const r = await translateCall({ data: { text, target: language } }); if (r.error) return; second = r.translation.trim(); } else if (!text && second) { const r = await translateCall({ data: { text: second, target: "en" } }); if (r.error) return; text = r.translation.trim(); } const list = [...(plans[day] ?? []), { time: planTime, text, ko: second }].sort((a, b) => (a.time || "99").localeCompare(b.time || "99")); savePlans({ ...plans, [day]: list }); setPlanText(""); setPlanKo(""); setPlanHour(""); setPlanMinute(""); }}>
                     <div className="plan-time" role="group" aria-label="Time">
                       <input ref={hourRef} type="text" inputMode="numeric" value={planHour} onChange={e => { const digits = e.target.value.replace(/\D/g, "").slice(0, 2); setPlanHour(digits); if (digits.length === 2) minuteRef.current?.focus(); }} onKeyDown={e => { if (e.key === " ") { e.preventDefault(); minuteRef.current?.focus(); } }} placeholder="00" aria-label="Hour" className="plan-seg plan-hour" maxLength={2} />
                       <span className="plan-colon" aria-hidden="true">:</span>
@@ -360,7 +367,7 @@ const avatarUrl = useAvatarUrl();
                         <button type="button" className={`plan-mer ${planMeridiem === "PM" ? "is-active" : ""}`} aria-pressed={planMeridiem === "PM"} onClick={() => setPlanMeridiem("PM")}>PM</button>
                       </div>
                     </div>
-                    <div className="plan-text grid gap-2"><SuggestionInput value={planText} onValueChange={setPlanText} placeholder="Type a task…" aria-label="Task (English)" /><SuggestionInput lang="ko" value={planKo} onValueChange={setPlanKo} placeholder="할 일을 적어요" aria-label="Task (Korean)" /></div>
+                    <div className="plan-text grid gap-2"><SuggestionInput value={planText} onValueChange={setPlanText} placeholder="Type a task…" aria-label="Task (English)" />{language === "ko" ? <SuggestionInput lang="ko" value={planKo} onValueChange={setPlanKo} placeholder="할 일을 적어요" aria-label="Task (Korean)" /> : <SuggestionInput lang={language} value={planKo} onValueChange={setPlanKo} placeholder={`Or in ${LANGUAGES.find(l => l.id === language)?.name ?? ""}…`} aria-label={`Task (${LANGUAGES.find(l => l.id === language)?.name ?? language})`} />}</div>
                     <Button type="submit" variant="aac" className="plan-add" disabled={translating}><Plus /><span>{translating ? "Translating…" : "Add"}</span></Button>
                   </form>
                   {(() => {
@@ -375,7 +382,7 @@ const avatarUrl = useAvatarUrl();
                     const renderItem = (t: { time: string; text: string; ko?: string; i: number }) => (
                       <li key={t.i} className="plan-item">
                         <span className="plan-item-time">{fmtPlanTime(t.time)}</span>
-                        <span className="plan-item-text"><span>{t.text}</span>{t.ko && <span className="block text-sm text-muted-foreground" lang="ko">{t.ko}</span>}</span>
+                        <span className="plan-item-text"><span>{t.text}</span><SecondLine text={t.text} storedKo={t.ko} className="block text-sm text-muted-foreground" /></span>
                         <Button variant="aac" className="plan-remove" aria-label={`Remove ${t.text}`} onClick={() => savePlans({ ...plans, [openLabel.label]: (plans[openLabel.label] ?? []).filter((_, j) => j !== t.i) })}><X /></Button>
                       </li>
                     );
@@ -440,7 +447,7 @@ const avatarUrl = useAvatarUrl();
                           {editing && <span className="edit-badge" aria-hidden="true"><Pencil /></span>}
                           <span className="word-symbol" aria-hidden="true"><GroupIcon /></span>
                           <span className="word-label">{groupLabel}</span>
-                          <span className="word-label-ko" lang="ko">{ko}</span>
+                          <SecondLine text={groupLabel} storedKo={ko} className="word-label-ko" />
                         </Button>
                       ); })}
                       <Button variant="word" className="add-word-card" aria-label={`Add a ${label} label`} onClick={() => { setIconQuery(""); setLabelDraft({ index: null, section: label, label: "", ko: "", icon: "Star", tone: "white" }) }}>
@@ -522,7 +529,7 @@ const avatarUrl = useAvatarUrl();
           <Button onClick={async () => { const result = await requestMediaPermissions(); setPermissionResult(result); if (result === "granted") permissions.dismiss(); }}><Check />Allow access · 허용하기</Button>
         </div>
       </DialogContent></Dialog>
-      <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Settings</DialogTitle><DialogDescription>Make the app look right for you.</DialogDescription></DialogHeader><span className="settings-label">Screen mode</span><div className="theme-modes"><Button variant={theme.mode === "light" ? "default" : "outline"} aria-pressed={theme.mode === "light"} onClick={() => saveTheme({ ...theme, mode: "light" })}><Sun />Light</Button><Button variant={theme.mode === "dark" ? "default" : "outline"} aria-pressed={theme.mode === "dark"} onClick={() => saveTheme({ ...theme, mode: "dark" })}><Moon />Dark</Button></div><span className="settings-label">Main color</span><div className="theme-accents">{ACCENTS.map(option => <button key={option.id} type="button" className={`theme-accent${theme.accent === option.id ? " is-active" : ""}`} style={{ background: option.primary }} aria-label={`${option.name} · ${option.ko}`} aria-pressed={theme.accent === option.id} onClick={() => saveTheme({ ...theme, accent: option.id })}>{theme.accent === option.id ? <Check aria-hidden="true" /> : null}</button>)}</div><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
+      <Dialog open={settings} onOpenChange={setSettings}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>Settings</DialogTitle><DialogDescription>Make the app look right for you.</DialogDescription></DialogHeader><span className="settings-label">Screen mode</span><div className="theme-modes"><Button variant={theme.mode === "light" ? "default" : "outline"} aria-pressed={theme.mode === "light"} onClick={() => saveTheme({ ...theme, mode: "light" })}><Sun />Light</Button><Button variant={theme.mode === "dark" ? "default" : "outline"} aria-pressed={theme.mode === "dark"} onClick={() => saveTheme({ ...theme, mode: "dark" })}><Moon />Dark</Button></div><span className="settings-label">Main color</span><div className="theme-accents">{ACCENTS.map(option => <button key={option.id} type="button" className={`theme-accent${theme.accent === option.id ? " is-active" : ""}`} style={{ background: option.primary }} aria-label={`${option.name} · ${option.ko}`} aria-pressed={theme.accent === option.id} onClick={() => saveTheme({ ...theme, accent: option.id })}>{theme.accent === option.id ? <Check aria-hidden="true" /> : null}</button>)}</div><span className="settings-label">Second language</span><div className="theme-modes lang-modes">{LANGUAGES.map(l => <Button key={l.id} variant={language === l.id ? "default" : "outline"} aria-pressed={language === l.id} onClick={() => saveLanguage(l.id)}>{l.name} · <span lang={l.id}>{l.native}</span></Button>)}</div><Button onClick={() => setSettings(false)}><Check />Done</Button></DialogContent></Dialog>
     </div>
   );
 }
