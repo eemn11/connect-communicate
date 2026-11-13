@@ -75,3 +75,42 @@ export function awardFinishedGame(now = new Date()): number {
     return earned;
   } catch { return 0; }
 }
+
+/** Daily game goal + today's best Match score, saved on this device. */
+export const GOALS_STORE = "together-game-goals-v1";
+export const GOALS_CHANGED = "together-game-goals-changed";
+export const GOAL_OPTIONS = [1, 3, 5, 10] as const;
+export type GameGoals = { goal: number; day: string; played: number; best: number };
+
+/** Match score: 100 for a perfect game, minus 10 per wrong try, never below 10. */
+export function matchScore(misses: number): number {
+  return Math.max(10, 100 - 10 * Math.max(0, misses));
+}
+
+export function goalsForToday(g: GameGoals, now: Date): GameGoals {
+  const day = localDay(now);
+  return g.day === day ? g : { goal: g.goal, day, played: 0, best: 0 };
+}
+
+export function recordGame(g: GameGoals, score: number | null, now: Date): GameGoals {
+  const t = goalsForToday(g, now);
+  return { ...t, played: t.played + 1, best: score === null ? t.best : Math.max(t.best, score) };
+}
+
+export function readGoals(now = new Date()): GameGoals {
+  try {
+    const s = JSON.parse(localStorage.getItem(GOALS_STORE) ?? "null");
+    if (s && Number.isSafeInteger(s.goal) && typeof s.day === "string" && Number.isSafeInteger(s.played) && Number.isSafeInteger(s.best)) return goalsForToday(s, now);
+  } catch { /* fall through */ }
+  return { goal: 3, day: localDay(now), played: 0, best: 0 };
+}
+
+export function writeGoals(g: GameGoals) {
+  try { localStorage.setItem(GOALS_STORE, JSON.stringify(g)); window.dispatchEvent(new Event(GOALS_CHANGED)); } catch { /* ignore */ }
+}
+
+export function saveGameResult(score: number | null, now = new Date()): GameGoals {
+  const next = recordGame(readGoals(now), score, now);
+  writeGoals(next);
+  return next;
+}

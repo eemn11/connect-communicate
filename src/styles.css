@@ -461,3 +461,9 @@
 .game-done svg { color: var(--primary); }
 @media (max-width: 759px) { .match-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .match-tile { transition: none; } }
+
+.game-goals { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); margin-bottom: 12px; }
+.game-goal-pick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 600; }
+.game-goal-stats { display: flex; flex-direction: column; gap: 4px; min-width: 220px; font-size: 14px; }
+.game-goal-bar { height: 8px; border-radius: 99px; background: var(--muted); overflow: hidden; }
+.game-goal-bar i { display: block; height: 100%; background: var(--primary); transition: width .3s; }

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, RotateCcw, Shuffle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { awardFinishedGame, BUILT_IN_SETS, canFlipTile, GAME_POINTS, pairsFromCards, PEEK_MS, shuffle, type VocabPair } from "@/lib/game";
+import { GOAL_OPTIONS, GOALS_CHANGED, matchScore, readGoals, saveGameResult, writeGoals, type GameGoals, awardFinishedGame, BUILT_IN_SETS, canFlipTile, GAME_POINTS, pairsFromCards, PEEK_MS, shuffle, type VocabPair } from "@/lib/game";
 
 export const Route = createFileRoute("/game")({
   head: () => ({
@@ -44,9 +44,32 @@ function GamePage() {
       <div className="game-sets" role="group" aria-label="Word set">
         {sets.map(s => <Button key={s.id} variant={s.id === active.id ? "default" : "outline"} aria-pressed={s.id === active.id} onClick={() => setSetId(s.id)}>{s.name} <span lang="ko">{s.ko}</span></Button>)}
       </div>
+      <GoalPanel />
       {mode === "match" ? <MatchGame key={active.id} words={active.words} /> : <Flashcards key={active.id} words={active.words} />}
     </main>
   );
+}
+
+function GoalPanel() {
+  const [g, setG] = useState<GameGoals | null>(null);
+  useEffect(() => {
+    const load = () => setG(readGoals());
+    load(); window.addEventListener(GOALS_CHANGED, load);
+    return () => window.removeEventListener(GOALS_CHANGED, load);
+  }, []);
+  if (!g) return null;
+  const done = g.played >= g.goal;
+  return <section className="game-goals" aria-label="Today's goal">
+    <div className="game-goal-pick" role="group" aria-label="Daily goal">
+      <span>Daily goal · <span lang="ko">오늘 목표</span></span>
+      {GOAL_OPTIONS.map(n => <Button key={n} size="sm" variant={g.goal === n ? "default" : "outline"} aria-pressed={g.goal === n} onClick={() => writeGoals({ ...g, goal: n })}>{n} {n === 1 ? "game" : "games"}</Button>)}
+    </div>
+    <div className="game-goal-stats">
+      <span><strong>{Math.min(g.played, g.goal)}/{g.goal}</strong> played{done ? " — goal reached! · 목표 달성!" : ""}</span>
+      <div className="game-goal-bar" aria-hidden="true"><i style={{ width: `${Math.min(100, (g.played / g.goal) * 100)}%` }} /></div>
+      <span>Best score today · <span lang="ko">오늘 최고 점수</span>: <strong>{g.best || "—"}</strong></span>
+    </div>
+  </section>;
 }
 
 function MatchGame({ words }: { words: VocabPair[] }) {
@@ -56,10 +79,12 @@ function MatchGame({ words }: { words: VocabPair[] }) {
   const [found, setFound] = useState<Set<number>>(new Set());
   const [earned, setEarned] = useState<number | null>(null);
   const [peek, setPeek] = useState(true);
+  const [misses, setMisses] = useState(0);
+  const [score, setScore] = useState<{ score: number; best: boolean } | null>(null);
   useEffect(() => {
     const picked = shuffle(words).slice(0, 6);
     setTiles(shuffle(picked.flatMap((w, i) => [{ id: i * 2, pair: i, text: w.en, lang: "en" as const }, { id: i * 2 + 1, pair: i, text: w.ko, lang: "ko" as const }])));
-    setOpen([]); setFound(new Set()); setEarned(null); setPeek(true);
+    setOpen([]); setFound(new Set()); setEarned(null); setPeek(true); setMisses(0); setScore(null);
     const timer = setTimeout(() => setPeek(false), PEEK_MS);
     return () => clearTimeout(timer);
   }, [words, round]);
@@ -73,8 +98,14 @@ function MatchGame({ words }: { words: VocabPair[] }) {
     if (a!.pair === b!.pair) {
       const nf = new Set(found).add(a!.pair);
       setFound(nf); setOpen([]);
-      if (nf.size * 2 === tiles.length) setEarned(awardFinishedGame());
-    } else setTimeout(() => setOpen([]), 1000);
+      if (nf.size * 2 === tiles.length) {
+        const sc = matchScore(misses);
+        const before = readGoals().best;
+        saveGameResult(sc);
+        setScore({ score: sc, best: sc > before });
+        setEarned(awardFinishedGame());
+      }
+    } else { setMisses(m => m + 1); setTimeout(() => setOpen([]), 1000); }
   }
 
   return <section className="game-board" aria-label="Matching pairs">
@@ -90,6 +121,7 @@ function MatchGame({ words }: { words: VocabPair[] }) {
     {earned !== null && <div className="game-done" role="status">
       <Star aria-hidden="true" />
       <strong>All matched! · <span lang="ko">다 찾았어요!</span></strong>
+      {score && <span>Score: <strong>{score.score}</strong>{score.best ? " — new best today! · 오늘 최고 기록!" : ""}</span>}
       <span>{earned ? `+${earned} points` : "No more points today — keep playing for fun!"}</span>
       <Button onClick={() => setRound(r => r + 1)}><RotateCcw /> Play again</Button>
     </div>}
@@ -104,7 +136,7 @@ function Flashcards({ words }: { words: VocabPair[] }) {
   const card = deck[index]!;
   function go(step: number) {
     const next = index + step;
-    if (next >= deck.length) { if (earned === null) setEarned(awardFinishedGame()); return; }
+    if (next >= deck.length) { if (earned === null) { saveGameResult(null); setEarned(awardFinishedGame()); } return; }
     if (next < 0) return;
     setIndex(next); setFlipped(false);
   }
